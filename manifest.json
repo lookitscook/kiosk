@@ -18,6 +18,7 @@
     "system.display",
     "power",
     "webview",
-    "alwaysOnTopWindows"
+    "alwaysOnTopWindows",
+    "storage"
   ]
 }

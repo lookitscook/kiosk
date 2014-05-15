@@ -1,9 +1,27 @@
 <!DOCTYPE html>
 <html>
-  <head><title>Kiosk</title></head>
+  <head>
+    <title>Kiosk: Options</title>
+    <script language="javascript" type="text/javascript" src="../js/lib/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/options.js"></script></head>
+  </head>
   <body style="text-align:center;">
-      <form>
-        <p>Options:</p>
+      <h1>Options</h1>
+      <form action="options.html">
+          <p>
+            <label><strong>Content URL:</strong></label><br>
+            <input id="url" value="" size="80">
+          </p>
+          <p>
+          <label>Change Password:</label>
+          <input id="password" type="password" value=""><br>
+          <label>Repeat Password:</label>
+          <input id="password_repeat" type="password" value="">
+          </p>
+          <p>
+            <input id="save" type="submit" value="Save">
+            <input id="cancel" type="button" value="Cancel">
+          <p>
       </form>
   </body>
 </html>

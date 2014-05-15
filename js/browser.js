@@ -2,6 +2,10 @@ $(function(){
 
   var display;
   
+  chrome.storage.local.get('url',function(x){
+     $('#browser').attr('src',x["url"]).get(0).reload();
+  });
+  
   chrome.system.display.getInfo(function(d){
     display = d[0].bounds;
     $(document).on("keypress", function(e) {

@@ -2,17 +2,30 @@ $(function(){
 
   var display;
   
+  $('#password').focus();
+  
   chrome.system.display.getInfo(function(d){
     display = d[0].bounds;
     $('#cancel').click(function(e){
       e.preventDefault();
       window.close();
     });
+    $('form').submit(function(e){
+      e.preventDefault();
+      chrome.storage.local.get('password',function(x){
+        if(x['password'] == $('#password').val()){
+          window.close();
+          openOptionsWindow();
+        }else{
+          //passwords don't match
+        }
+      });
+    });
   });
   
   function openOptionsWindow(){
-    var w = display.height*0.75;
-    var h = display.height*0.75;
+    var w = display.width*0.5;
+    var h = 200;
     var t = display.height/2-h/2;
     var l = display.width/2-w/2;
     chrome.app.window.create("windows/options.html", {

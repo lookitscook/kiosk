@@ -1,0 +1,21 @@
+{
+  "name": "Kiosk",
+  "description": "Launch a URL as a fullscreen kiosk. Also prevents sleep mode.",
+  "manifest_version": 2,
+  "version": "1",
+  "kiosk_enabled": true,
+  "icons": {
+    "16": "icon_16.png",
+    "128": "icon_128.png"
+  },
+  "app": {
+    "background": {
+      "scripts": ["main.js"],
+      "persistent": false
+    }
+  },
+  "permissions": [
+    "system.display",
+    "power"
+  ]
+}

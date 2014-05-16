@@ -1,6 +1,6 @@
 {
   "name": "Kiosk",
-  "description": "Launch a URL as a fullscreen kiosk, also prevents sleep mode.",
+  "description": "Launch any URL as a full screen kiosk.",
   "manifest_version": 2,
   "version": "1",
   "kiosk_enabled": true,

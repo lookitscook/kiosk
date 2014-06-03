@@ -4,7 +4,7 @@ chrome.app.runtime.onRestarted.addListener(init);
 function init() {
 
   //don't let computer sleep
-  chrome.power.requestKeepAwake("system");
+  chrome.power.requestKeepAwake("display");
   
   chrome.storage.local.get('url',function(x){
     if(('url' in x)){

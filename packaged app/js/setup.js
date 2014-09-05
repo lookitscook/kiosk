@@ -1,7 +1,7 @@
 $(function(){
 
   $('#url').focus();
-  
+ 
   $('form').submit(function(e){
     e.preventDefault();
     var url = $('#url').val();
@@ -10,5 +10,10 @@ $(function(){
       chrome.runtime.reload();
     }
   });
-  
+
+  $('#demo').click(function(e){
+    e.preventDefault();
+    chrome.runtime.sendMessage('demo');
+  }); 
+
 });

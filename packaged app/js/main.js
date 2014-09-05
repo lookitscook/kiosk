@@ -2,6 +2,7 @@ chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);
 
 function init() {
+  var win;
 
   //don't let computer sleep
   chrome.power.requestKeepAwake("display");
@@ -15,12 +16,18 @@ function init() {
       openWindow("windows/setup.html");
     }
   });
+
+  chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
+    if(request == "demo") openWindow("windows/demo.html");
+  });
   
   function openWindow(path){
+    if(win) win.close();
     chrome.system.display.getInfo(function(d){
       chrome.app.window.create(path, {
         'frame': 'none',
         'id': 'browser',
+        'state': 'fullscreen',
         'bounds':{
            'left':0,
            'top':0,
@@ -28,7 +35,11 @@ function init() {
            'height':d[0].bounds.height
         }
       },function(w){
-        w.fullscreen();
+        win = w;
+        win.fullscreen();
+        setTimeout(function(){
+          win.fullscreen();
+        },1000);
       });
     });
   }

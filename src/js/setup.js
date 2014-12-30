@@ -1,6 +1,6 @@
 $(function(){
 
-  chrome.socket.getNetworkList(function(interfaces) {
+  chrome.system.network.getNetworkInterfaces(function(interfaces) {
     for(var i in interfaces) {
       var interface = interfaces[i];
       var opt = document.createElement("option");

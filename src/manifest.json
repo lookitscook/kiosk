@@ -19,13 +19,18 @@
       "persistent": false
     }
   },
+  "sockets":{
+    "tcpServer": {
+      "listen": "*"
+    }
+  },
   "permissions": [
     "system.display",
+    "system.network",
     "power",
     "webview",
     "alwaysOnTopWindows",
     "storage",
-    {"socket": ["tcp-connect", "tcp-listen"]},
-    {"fileSystem": ["write","directory"]}
+    {"fileSystem": ["directory"]}
   ]
 }

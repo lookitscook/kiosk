@@ -3,7 +3,6 @@ chrome.app.runtime.onRestarted.addListener(init);
 
 function init() {
   var win, basePath, socketInfo;
-  var socket = chrome.socket;
   var filesMap = {};
 
   //don't let computer sleep
@@ -12,15 +11,13 @@ function init() {
   chrome.storage.local.get(['url','host','port'],function(data){
     if(('url' in data)){
       //setup has been completed
-      console.log("setup completed");
       if(data['host'] && data['port']){
-        console.log("starting webserver");
         startWebserver(data['host'],data['port'],'www');
       }
       openWindow("windows/browser.html");
     }else{
       //need to run setup
-      openWindow("www/setup.html");
+      openWindow("windows/setup.html");
     }
   });
 
@@ -59,10 +56,11 @@ function init() {
         basePath = webroot.fullPath;
         readDirectory(webroot);
 
-        socket.create("tcp", {}, function(_socketInfo) {
+        chrome.sockets.tcpServer.create({}, function(_socketInfo) {
           socketInfo = _socketInfo;
-          socket.listen(socketInfo.socketId, host, port, 50, function(result) {
-            socket.accept(socketInfo.socketId, onAccept);
+          chrome.sockets.tcpServer.listen(socketInfo.socketId, host, port, null, function(result){
+            chrome.sockets.tcpServer.onAccept.addListener(onAccept);
+            chrome.sockets.tcp.onReceive.addListener(onReceive);
           });
         });
 
@@ -103,34 +101,19 @@ function init() {
     return str;
   };
 
-  var logToScreen = function(log) {
-    console.log(log);
-  }
-
   var writeErrorResponse = function(socketId, errorCode, keepAlive) {
     var file = { size: 0 };
-    console.info("writeErrorResponse:: begin... ");
-    console.info("writeErrorResponse:: file = " + file);
     var contentType = "text/plain"; //(file.type === "") ? "text/plain" : file.type;
     var contentLength = file.size;
     var header = stringToUint8Array("HTTP/1.0 " + errorCode + " Not Found\nContent-length: " + file.size + "\nContent-type:" + contentType + ( keepAlive ? "\nConnection: keep-alive" : "") + "\n\n");
-    console.info("writeErrorResponse:: Done setting header...");
     var outputBuffer = new ArrayBuffer(header.byteLength + file.size);
     var view = new Uint8Array(outputBuffer)
     view.set(header, 0);
-    console.info("writeErrorResponse:: Done setting view...");
-    socket.write(socketId, outputBuffer, function(writeInfo) {
-      console.log("WRITE", writeInfo);
-      if (keepAlive) {
-        readFromSocket(socketId);
-      } else {
-        socket.destroy(socketId);
-        socket.accept(socketInfo.socketId, onAccept);
+    chrome.sockets.tcp.send(socketId, outputBuffer, function(writeInfo) {
+      if (!keepAlive) {
+        chrome.sockets.tcp.close(socketId);
       }
     });
-    console.info("writeErrorResponse::filereader:: end onload...");
-
-    console.info("writeErrorResponse:: end...");
   };
 
   var write200Response = function(socketId, file, keepAlive) {
@@ -144,13 +127,9 @@ function init() {
     var fileReader = new FileReader();
     fileReader.onload = function(e) {
       view.set(new Uint8Array(e.target.result), header.byteLength);
-      socket.write(socketId, outputBuffer, function(writeInfo) {
-        console.log("WRITE", writeInfo);
-        if (keepAlive) {
-          readFromSocket(socketId);
-        } else {
-          socket.destroy(socketId);
-          socket.accept(socketInfo.socketId, onAccept);
+      chrome.sockets.tcp.send(socketId, outputBuffer, function(writeInfo) {
+        if (!keepAlive) {
+          chrome.sockets.tcp.close(socketId);
         }
       });
     };
@@ -158,47 +137,40 @@ function init() {
     fileReader.readAsArrayBuffer(file);
   };
 
-  var onAccept = function(acceptInfo) {
-    console.log("ACCEPT", acceptInfo)
-    readFromSocket(acceptInfo.socketId);
+  var onAccept = function(info) {
+    chrome.sockets.tcp.setPaused(info.clientSocketId,false);
   };
 
-  var readFromSocket = function(socketId) {
-    //  Read in the data
-    socket.read(socketId, function(readInfo) {
-      console.log("READ", readInfo);
-      // Parse the request.
-      var data = arrayBufferToString(readInfo.data);
-      if(data.indexOf("GET ") == 0) {
-        var keepAlive = false;
-        if (data.indexOf("Connection: keep-alive") != -1) {
-          keepAlive = true;
-        }
-
-        // we can only deal with GET requests
-        var uriEnd =  data.indexOf(" ", 4);
-        if(uriEnd < 0) { /* throw a wobbler */ return; }
-        var uri = data.substring(4, uriEnd);
-        // strip qyery string
-        var q = uri.indexOf("?");
-        if (q != -1) {
-          uri = uri.substring(0, q);
-        }
-
-        var file = filesMap[uri];
-        if(!!file == false) {
-          console.warn("File does not exist..." + uri);
-          writeErrorResponse(socketId, 404, keepAlive);
-          return;
-        }
-        logToScreen("GET 200 " + uri);
-        write200Response(socketId, file, keepAlive);
+  var onReceive = function(info) {
+    // Parse the request.
+    var data = arrayBufferToString(info.data);
+    if(data.indexOf("GET ") == 0) {
+      var keepAlive = false;
+      if (data.indexOf("Connection: keep-alive") != -1) {
+        keepAlive = true;
       }
-      else {
-        // Throw an error
-        socket.destroy(socketId);
+
+      // we can only deal with GET requests
+      var uriEnd =  data.indexOf(" ", 4);
+      if(uriEnd < 0) { /* throw a wobbler */ return; }
+      var uri = data.substring(4, uriEnd);
+      // strip qyery string
+      var q = uri.indexOf("?");
+      if (q != -1) {
+        uri = uri.substring(0, q);
       }
-    });
+      if(uri == "/") uri = "/index.html";
+      var file = filesMap[uri];
+      if(!!file == false) {
+        console.warn("File does not exist..." + uri);
+        writeErrorResponse(info.socketId, 404, keepAlive);
+        return;
+      }
+      write200Response(info.socketId, file, keepAlive);
+    }else{
+      // Throw an error
+      chrome.sockets.tcp.close(info.socketId);
+    }
   };
 
 }

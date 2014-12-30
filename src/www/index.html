@@ -5,12 +5,54 @@
     <script language="javascript" type="text/javascript" src="./js/lib/jquery.min.js"></script>
     <script type="text/javascript">
       $(function(){
-        $("#logout").attr('href','http://log:out@'+location.hostname+(location.port ? ':'+location.port: ''));
+        var address = location.hostname+(location.port ? ':'+location.port: '');
+        $("#logout").attr('href','http://log:out@'+address);
+        $.getJSON("http://"+address+'/data',function(data){
+          console.log(data);
+          $('#url').val(data.url);
+          $('#username').val(data.username);
+          $('body').removeClass('loading');
+        });
       })
     </script>
+    <style type="text/css">
+    .disabled{
+      display:none;
+      visibility:hidden;
+    }
+    #loading{
+      display:none;
+      visibility:hidden;
+    }
+    body.loading #loading{
+      display:block;
+      visibility:visible;
+    }
+    body.loading #settings{
+      display:none;
+      visibility:hidden;
+    }
+    </style>
   </head>
-  <body style="text-align:center;padding:80px;">
+  <body style="text-align:center;padding:80px;" class="loadeding">
       <h1>Administration</h1>
       <a id="logout" href="#">Log out.</a>
+      <div id="loading"><h2>Loading...</h2></div>
+      <div id="settings">
+        <form>
+          <p>
+            <label><strong>Content URL:</strong></label><br>
+            URL must include "http://" or "https://"<br>
+            <input id="url" placeholder="http://" size="80">
+          </p>
+          <p>
+            <label><strong>Remote Administration:</strong></label><br>
+              Username:  <input id="username" value=""/><br>
+              Password:  <input type="password" id="password" value=""/><br>
+              Confirm Password:  <input type="password" id="confirm_password" value=""/><br>
+            <input id="save" type="submit" value="Save">
+          </p>
+        </form>
+      </div>
   </body>
 </html>

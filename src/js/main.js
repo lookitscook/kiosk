@@ -2,18 +2,18 @@ chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);
 
 function init() {
-  var win, basePath, socketInfo, username, password;
+  var win, basePath, socketInfo, data;
   var filesMap = {};
 
   //don't let computer sleep
   chrome.power.requestKeepAwake("display");
 
-  chrome.storage.local.get(['url','host','port','username','password'],function(data){
+  chrome.storage.local.get(['url','host','port','username','password'],function(d){
+    data = d;
+    console.log(data);
     if(('url' in data)){
       //setup has been completed
       if(data['host'] && data['port']){
-        username = data['username'];
-        password = data['password'];
         startWebserver(data['host'],data['port'],'www');
       }
       openWindow("windows/browser.html");
@@ -118,9 +118,8 @@ function init() {
     });
   };
 
-  var write200Response = function(socketId, file, keepAlive) {
+  var write200FileResponse = function(socketId, file, keepAlive) {
     var contentType = (file.type === "") ? "text/plain" : file.type;
-    var contentLength = file.size;
     var header = stringToUint8Array("HTTP/1.0 200 OK\nContent-length: " + file.size + "\nContent-type:" + contentType + ( keepAlive ? "\nConnection: keep-alive" : "") + "\n\n");
     var outputBuffer = new ArrayBuffer(header.byteLength + file.size);
     var view = new Uint8Array(outputBuffer)
@@ -139,53 +138,76 @@ function init() {
     fileReader.readAsArrayBuffer(file);
   };
 
+  var write200JSONResponse = function (socketId, json, keepAlive){
+    var content = stringToUint8Array(json);
+    var header = stringToUint8Array("HTTP/1.0 200 OK\nContent-length: " + content.byteLength + "\nContent-type:text/json" + ( keepAlive ? "\nConnection: keep-alive" : "") + "\n\n");
+    var outputBuffer = new ArrayBuffer(header.byteLength + content.byteLength);
+    var view = new Uint8Array(outputBuffer)
+    view.set(header, 0);
+    view.set(content,header.byteLength);
+    chrome.sockets.tcp.send(socketId, outputBuffer, function(writeInfo) {
+      if (!keepAlive) {
+        chrome.sockets.tcp.close(socketId);
+      }
+    });
+  }
+
   var onAccept = function(info) {
     chrome.sockets.tcp.setPaused(info.clientSocketId,false);
   };
 
   var onReceive = function(info) {
-    // Parse the request.
-    var data = arrayBufferToString(info.data);
-    if(data.indexOf("GET ") == 0) {
-      var keepAlive = false;
 
-      if (data.indexOf("Connection: keep-alive") != -1) {
-        keepAlive = true;
-      }
+    // parse the request.
+    var request = arrayBufferToString(info.data);
 
-      var auth = data.indexOf("Authorization: Basic");
-      if (auth >= 0){
-        auth = data.substring(auth,data.indexOf('\n',auth)).split(' ');
-        auth = window.atob(auth[auth.length-1]).split(':');
-        console.log(auth,username,password);
-        if(auth.length == 2 && auth[0] == username && auth[1] == password){
-          //request is authorized, continue
-        }else{
-          writeErrorResponse(info.socketId, "401 Not Authorized", keepAlive);
-          return;
-        }
+    // check keep-alive
+    var keepAlive = false;
+    if (request.indexOf("Connection: keep-alive") != -1) {
+      keepAlive = true;
+    }
+
+    // verify authorization
+    var auth = request.indexOf("Authorization: Basic");
+    if (auth >= 0){
+      auth = request.substring(auth,request.indexOf('\n',auth)).split(' ');
+      auth = window.atob(auth[auth.length-1]).split(':');
+      if(auth.length == 2 && auth[0] == data["username"] && auth[1] == data["password"]){
+        //request is authorized, continue
       }else{
         writeErrorResponse(info.socketId, "401 Not Authorized", keepAlive);
         return;
       }
+    }else{
+      writeErrorResponse(info.socketId, "401 Not Authorized", keepAlive);
+      return;
+    }
 
-      // we can only deal with GET requests
-      var uriEnd =  data.indexOf(" ", 4);
+    // parse the request
+    if(request.indexOf("GET ") == 0) {
+      var uriEnd =  request.indexOf(" ", 4);
       if(uriEnd < 0) { /* throw a wobbler */ return; }
-      var uri = data.substring(4, uriEnd);
-      // strip qyery string
+      var uri = request.substring(4, uriEnd);
+      // strip query string
       var q = uri.indexOf("?");
       if (q != -1) {
         uri = uri.substring(0, q);
       }
-      if(uri == "/") uri = "/index.html";
-      var file = filesMap[uri];
-      if(!!file == false) {
-        console.warn("File does not exist..." + uri);
-        writeErrorResponse(info.socketId, "404 Not Found", keepAlive);
-        return;
+      if(uri.substr(0,5) == '/data'){
+        //this is a REST request for data
+        console.log("is json request");
+        write200JSONResponse(info.socketId, JSON.stringify(data), keepAlive);
+      }else{
+        //treat as a file request
+        if(uri == "/") uri = "/index.html";
+        var file = filesMap[uri];
+        if(!!file == false) {
+          console.warn("File does not exist..." + uri);
+          writeErrorResponse(info.socketId, "404 Not Found", keepAlive);
+          return;
+        }
+        write200FileResponse(info.socketId, file, keepAlive);
       }
-      write200Response(info.socketId, file, keepAlive);
     }else{
       // Throw an error
       chrome.sockets.tcp.close(info.socketId);

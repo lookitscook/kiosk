@@ -24,6 +24,8 @@
     "power",
     "webview",
     "alwaysOnTopWindows",
-    "storage"
+    "storage",
+    {"socket": ["tcp-connect", "tcp-listen"]},
+    {"fileSystem": ["write","directory"]}
   ]
 }

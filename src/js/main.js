@@ -184,7 +184,21 @@ function init() {
     }
 
     // parse the request
-    if(request.indexOf("GET ") == 0) {
+    if(request.indexOf("PUT ") == 0){
+      var newData = request.split("\n\r");
+      newData = newData[newData.length-1];
+      newData = newData.trim().split('&');
+      for(var i = 0; i < newData.length; i++){
+        var d = newData[i].split('=');
+        var key = decodeURIComponent(d[0]);
+        var value = decodeURIComponent(d[1]);
+        if(data.hasOwnProperty(key)){
+          data[key] = value;
+          chrome.storage.local.set({key:value});
+        }
+      }
+      write200JSONResponse(info.socketId, JSON.stringify(data), keepAlive);
+    }else if(request.indexOf("GET ") == 0) {
       var uriEnd =  request.indexOf(" ", 4);
       if(uriEnd < 0) { /* throw a wobbler */ return; }
       var uri = request.substring(4, uriEnd);
@@ -195,7 +209,6 @@ function init() {
       }
       if(uri.substr(0,5) == '/data'){
         //this is a REST request for data
-        console.log("is json request");
         write200JSONResponse(info.socketId, JSON.stringify(data), keepAlive);
       }else{
         //treat as a file request

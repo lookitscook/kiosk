@@ -3,8 +3,14 @@
   <head>
     <title>Kiosk: Administration</title>
     <script language="javascript" type="text/javascript" src="./js/lib/jquery.min.js"></script>
+    <script type="text/javascript">
+      $(function(){
+        $("#logout").attr('href','http://log:out@'+location.hostname+(location.port ? ':'+location.port: ''));
+      })
+    </script>
   </head>
   <body style="text-align:center;padding:80px;">
       <h1>Administration</h1>
+      <a id="logout" href="#">Log out.</a>
   </body>
 </html>

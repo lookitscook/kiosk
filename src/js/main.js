@@ -2,16 +2,18 @@ chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);
 
 function init() {
-  var win, basePath, socketInfo;
+  var win, basePath, socketInfo, username, password;
   var filesMap = {};
 
   //don't let computer sleep
   chrome.power.requestKeepAwake("display");
 
-  chrome.storage.local.get(['url','host','port'],function(data){
+  chrome.storage.local.get(['url','host','port','username','password'],function(data){
     if(('url' in data)){
       //setup has been completed
       if(data['host'] && data['port']){
+        username = data['username'];
+        password = data['password'];
         startWebserver(data['host'],data['port'],'www');
       }
       openWindow("windows/browser.html");
@@ -105,7 +107,7 @@ function init() {
     var file = { size: 0 };
     var contentType = "text/plain"; //(file.type === "") ? "text/plain" : file.type;
     var contentLength = file.size;
-    var header = stringToUint8Array("HTTP/1.0 " + errorCode + " Not Found\nContent-length: " + file.size + "\nContent-type:" + contentType + ( keepAlive ? "\nConnection: keep-alive" : "") + "\n\n");
+    var header = stringToUint8Array("HTTP/1.0 " + errorCode + "\nWWW-Authenticate: Basic\nContent-length: " + file.size + "\nContent-type:" + contentType + ( keepAlive ? "\nConnection: keep-alive" : "") + "\n\n");
     var outputBuffer = new ArrayBuffer(header.byteLength + file.size);
     var view = new Uint8Array(outputBuffer)
     view.set(header, 0);
@@ -146,8 +148,25 @@ function init() {
     var data = arrayBufferToString(info.data);
     if(data.indexOf("GET ") == 0) {
       var keepAlive = false;
+
       if (data.indexOf("Connection: keep-alive") != -1) {
         keepAlive = true;
+      }
+
+      var auth = data.indexOf("Authorization: Basic");
+      if (auth >= 0){
+        auth = data.substring(auth,data.indexOf('\n',auth)).split(' ');
+        auth = window.atob(auth[auth.length-1]).split(':');
+        console.log(auth,username,password);
+        if(auth.length == 2 && auth[0] == username && auth[1] == password){
+          //request is authorized, continue
+        }else{
+          writeErrorResponse(info.socketId, "401 Not Authorized", keepAlive);
+          return;
+        }
+      }else{
+        writeErrorResponse(info.socketId, "401 Not Authorized", keepAlive);
+        return;
       }
 
       // we can only deal with GET requests
@@ -163,7 +182,7 @@ function init() {
       var file = filesMap[uri];
       if(!!file == false) {
         console.warn("File does not exist..." + uri);
-        writeErrorResponse(info.socketId, 404, keepAlive);
+        writeErrorResponse(info.socketId, "404 Not Found", keepAlive);
         return;
       }
       write200Response(info.socketId, file, keepAlive);

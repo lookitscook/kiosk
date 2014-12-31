@@ -185,6 +185,7 @@ function init() {
 
     // parse the request
     if(request.indexOf("PUT ") == 0){
+      //REST request to set data
       var newData = request.split("\n\r");
       newData = newData[newData.length-1];
       newData = newData.trim().split('&');
@@ -195,6 +196,9 @@ function init() {
         if(data.hasOwnProperty(key)){
           data[key] = value;
           chrome.storage.local.set({key:value});
+          if(key == "url"){
+            chrome.runtime.sendMessage({url: value});
+          }
         }
       }
       write200JSONResponse(info.socketId, JSON.stringify(data), keepAlive);

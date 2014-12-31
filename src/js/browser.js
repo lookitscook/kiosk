@@ -15,4 +15,10 @@ $(function(){
      }).attr('src',data["url"]).get(0).reload();
   });
 
+  chrome.runtime.onMessage.addListener(function(data){
+    if(data.url && data.url != $("#browser").attr('src')){
+      $("#browser").attr('src',data.url);
+    }
+  });
+
 });

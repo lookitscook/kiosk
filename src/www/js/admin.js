@@ -16,6 +16,22 @@ $(function(){
     $('body').removeClass('loading');
   });
 
+  $('.tooltip').tooltip();
+
+  $('#restart').click(function(e){
+    e.preventDefault();
+    $('body').addClass('loading');
+    $('#loading h4').text('Restarting...');
+    $.ajax({
+      url: "http://"+address+'/data',
+      type: 'PUT',
+      data: {'restart': true},
+      success: function(){
+        window.location.reload();
+      }
+    })
+  });
+
   $('#save').click(function(e){
     e.preventDefault();
     var error = [];

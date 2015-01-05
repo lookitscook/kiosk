@@ -10,7 +10,6 @@ function init() {
 
   chrome.storage.local.get(['url','host','port','username','password'],function(d){
     data = d;
-    console.log(data);
     if(('url' in data)){
       //setup has been completed
       if(data['host'] && data['port']){
@@ -190,6 +189,7 @@ function init() {
       newData = newData[newData.length-1];
       newData = newData.trim().split('&');
       var saveData = {};
+      var restart = false;
       for(var i = 0; i < newData.length; i++){
         var d = newData[i].split('=');
         var key = decodeURIComponent(d[0]);
@@ -200,10 +200,13 @@ function init() {
           if(key == "url"){
             chrome.runtime.sendMessage({url: value});
           }
+        }else if(key == "restart"){
+          restart = true;
         }
       }
       chrome.storage.local.set(saveData);
       write200JSONResponse(info.socketId, JSON.stringify(data), keepAlive);
+      if(restart) chrome.runtime.restart();
     }else if(request.indexOf("GET ") == 0) {
       var uriEnd =  request.indexOf(" ", 4);
       if(uriEnd < 0) { /* throw a wobbler */ return; }

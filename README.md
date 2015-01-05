@@ -7,6 +7,7 @@ Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen ki
 ##Changelog
 - v.5.2.0
 	- added remote administration 
+	- remote restart for ChromeOS devices in kiosk mode
 	- skinned with [Materialize](http://materializecss.com/)
 
 - v5.1.2

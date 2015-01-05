@@ -5,6 +5,9 @@
 Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen kiosk in Google Chrome or Chrome OS, also disables device sleep mode while app is running.
 
 ##Changelog
+- v.5.2.0
+	- added remote administration 
+	- skinned with [Materialize](http://materializecss.com/)
 
 - v5.1.2
 	- automatically attempt to reconnect to content if connection broken

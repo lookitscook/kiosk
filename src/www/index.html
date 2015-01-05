@@ -2,106 +2,78 @@
 <html>
   <head>
     <title>Kiosk: Administration</title>
-    <script language="javascript" type="text/javascript" src="./js/lib/jquery.min.js"></script>
-    <script type="text/javascript">
-      $(function(){
-        var address = location.hostname+(location.port ? ':'+location.port: '');
-        var data;
-
-        $("#logout").attr('href','http://log:out@'+address);
-
-        $.getJSON("http://"+address+'/data',function(d){
-          data = d;
-          console.log(data);
-          $('#url').val(data.url);
-          $('#username').val(data.username);
-          $('body').removeClass('loading');
-        });
-
-        $('form').submit(function(e){
-          e.preventDefault();
-          var error = [];
-          var url = $('#url').val();
-          var username = $("#username").val();
-          var password = $("#password").val();
-          var passwordConfirm = $("#confirm_password").val();
-          if(url && (url.indexOf("http://") >= 0 || url.indexOf("https://") >= 0 )){
-            //url is valid
-          }else{
-            error.push("URL must be specified.");
-          }
-          if(password && password != passwordConfirm){
-            error.push("Passwords must match.");
-          }
-
-          if(error.length){
-            var h = "";
-            for(var i = 0; i < error.length; i++){
-              h += '<p>'+error[i]+'</p>';
-            }
-            $('#error').html(h);
-            return false;
-          }else{
-            //ready to reload
-            $('body').addClass('loading');
-            $('#loading').text('Saving...');
-            var newData = {};
-            if(username != data.username) newData['username'] = username;
-            if(password && password != data.password) newData['password'] = password;
-            if(url != data.url) newData['url'] = url;
-            $.ajax({
-              url: "http://"+address+'/data',
-              type: 'PUT',
-              data: newData,
-              success: function(){
-                window.location.reload();
-              }
-            })
-          }
-        });
-
-      })
-    </script>
-    <style type="text/css">
-    .disabled{
-      display:none;
-      visibility:hidden;
-    }
-    #loading{
-      display:none;
-      visibility:hidden;
-    }
-    body.loading #loading{
-      display:block;
-      visibility:visible;
-    }
-    body.loading #settings{
-      display:none;
-      visibility:hidden;
-    }
-    </style>
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+    <link type="text/css" rel="stylesheet" href="./css/materialize.min.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="./css/shared.css"  media="screen,projection"/>
+    <script language="javascript" type="text/javascript" src="./js/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/materialize.min.js"></script>
+    <script language="javascript" type="text/javascript" src="./js/admin.js"></script>
   </head>
-  <body style="text-align:center;" class="loading">
-      <div id="error"></div>
-      <h1>Administration</h1>
-      <a id="logout" href="#">Log out.</a>
-      <div id="loading"><h2>Loading...</h2></div>
-      <div id="settings">
-        <form>
-          <p>
-            <label><strong>Content URL:</strong></label><br>
-            URL must include "http://" or "https://"<br>
-            <input id="url" placeholder="http://" size="80">
-          </p>
-          <p>
-            <label><strong>Remote Administration:</strong></label><br>
-              Username:  <input id="username" value=""/><br>
-              Password:  <input type="password" id="password" value=""/><br>
-              Confirm Password:  <input type="password" id="confirm_password" value=""/><br>
-            <input id="save" type="submit" value="Save"><br>
-            Kiosk application will restart upon saving.
-          </p>
-        </form>
+  <body class="">
+    <nav role="navigation">
+      <div class="container">
+        <div class="nav-wrapper"><a id="logo-container" href="http://www.zebradog.com" target="_blank" class="brand-logo"><img src="./img/logo.png" alt=""></a>
+          <ul id="nav-mobile" class="right side-nav">
+            <li><a href="http://demo.zebradog.com"  id="demo" target="_blank">View Examples</a></li>
+            <li><a href="#" id="logout">Log out</a></li>
+          </ul><a href="#" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+        </div>
       </div>
+    </nav>
+    <div class="container">
+      <div id="loading" style="text-align:center;padding:4em 0 0 0;">
+        <div class="preloader-wrapper big active">
+          <div class="spinner-layer spinner-blue">
+            <div class="circle-clipper left">
+              <div class="circle"></div>
+            </div><div class="gap-patch">
+              <div class="circle"></div>
+            </div><div class="circle-clipper right">
+              <div class="circle"></div>
+            </div>
+          </div>
+        </div>
+        <h4>Loading...</h4>
+      </div>
+      <div id="settings">
+
+          <p>
+            <strong>Content:</strong><br>
+
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="url" type="text">
+                <label for="url">URL (must start with http:// or https://)</label>
+              </div>
+            </div>
+
+          </p>
+          <p>
+            <strong>Remote Administration:</strong><br>
+
+            <div class="row">
+              <div class="input-field col s12">
+                <input id="username" type="text">
+                <label for="username">Username</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="input-field col s6">
+                <input id="password" type="password">
+                <label for="password">Change Password</label>
+              </div>
+              <div class="input-field col s6">
+                <input id="confirm_password" type="password">
+                <label for="confirm_password">Confirm Password</label>
+              </div>
+            </div>
+
+            <a class="btn-large waves-effect" id="save">Save</a>
+
+          </p>
+
+      </div>
+    </div>
   </body>
 </html>

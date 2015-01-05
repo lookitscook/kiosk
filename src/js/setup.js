@@ -1,5 +1,7 @@
 $(function(){
 
+  $("#host").on('change',hostChanged);
+
   chrome.system.network.getNetworkInterfaces(function(interfaces) {
     for(var i in interfaces) {
       var interface = interfaces[i];
@@ -8,19 +10,20 @@ $(function(){
       opt.innerText = interface.name + " - " + interface.address;
       document.getElementById("host").appendChild(opt);
     }
+    $('select').material_select();
   });
 
   $('#url').focus();
 
-  $("#host").change(function(){
+  function hostChanged(){
     if($("#host").val()){
       $('.admin').removeClass('disabled');
     }else{
       $('.admin').addClass('disabled');
     }
-  });
+  }
 
-  $('form').submit(function(e){
+  $('#save').click(function(e){
     e.preventDefault();
     var error = [];
     var url = $('#url').val();
@@ -33,20 +36,23 @@ $(function(){
     if(url && (url.indexOf("http://") >= 0 || url.indexOf("https://") >= 0 )){
       //url is valid
     }else{
-      error.push("URL must be specified.");
+      error.push("URL must be valid.");
     }
-    if(host && (password != passwordConfirm)){
+    if(host && !username){
+      error.push("Username is required");
+    }
+    if(host && !password){
+      error.push("Password is required.")
+    }else if(host && (password != passwordConfirm)){
       error.push("Passwords must match.");
     }
     if(host && !port){
       error.push("Port must be specified.");
     }
     if(error.length){
-      var h = "";
       for(var i = 0; i < error.length; i++){
-        h += '<p>'+error[i]+'</p>';
+        toast(error[i], 4000);
       }
-      $('#error').html(h);
       return false;
     }else{
       if(host && port){

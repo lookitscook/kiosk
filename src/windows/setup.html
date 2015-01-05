@@ -2,40 +2,75 @@
 <html>
   <head>
     <title>Kiosk: Setup</title>
-    <script language="javascript" type="text/javascript" src="../www/js/lib/jquery.min.js"></script>
+    <link rel="shortcut icon" href="../www/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../www/favicon.ico" type="image/x-icon">
+    <link type="text/css" rel="stylesheet" href="../www/css/materialize.min.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="../www/css/shared.css"  media="screen,projection"/>
+    <script language="javascript" type="text/javascript" src="../www/js/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../www/js/materialize.min.js"></script>
     <script language="javascript" type="text/javascript" src="../js/setup.js"></script></head>
-    <style type="text/css">
-      .disabled{
-        display:none;
-        visibility:hidden;
-      }
-    </style>
   </head>
-  <body style="text-align:center;padding:80px;">
-      <div id="error"></div>
+  <body>
+    <nav role="navigation">
+      <div class="container">
+        <div class="nav-wrapper"><a id="logo-container" href="http://www.zebradog.com" target="_blank" class="brand-logo"><img src="../www/img/logo.png" alt=""></a>
+          <ul id="nav-mobile" class="right side-nav">
+            <li><a href="http://demo.zebradog.com"  id="demo" target="_blank">View Examples</a></li>
+          </ul><a href="#" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+        </div>
+      </div>
+    </nav>
+    <div class="container">
       <h1>Setup</h1>
-      <p>To re-run setup application must be removed and re-installed.</p>
-        <form>
-          <p>
-            <label><strong>Content URL:</strong></label><br>
-            URL must include "http://" or "https://"<br>
-            <input id="url" placeholder="http://" size="80">
-          </p>
-          <p>
-            <label><strong>Remote Administration:</strong></label><br>
-            Host: <select id="host">
-              <option value="">Disabled</option>
+
+      <p>
+        <strong>Content:</strong><br>
+
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="url" type="text">
+            <label for="url">URL (must start with http:// or https://)</label>
+          </div>
+        </div>
+
+      </p>
+      <p>
+        <strong>Remote Administration:</strong><br>
+
+        <div class="row">
+          <div class="col s10">
+            <label for="host">Host</label>
+             <select id="host" class="browser-default">
+              <option value="" selected>Disabled</option>
               <option value="127.0.0.1">lo - 127.0.0.1</option>
             </select>
-            <div class="admin disabled">
-            Port: <input type="text" id="port" value="80"/><br />
-            Username:  <input id="username" value=""/><br>
-            Password:  <input type="password" id="password" value=""/><br>
-            Confirm Password:  <input type="password" id="confirm_password" value=""/>
+          </div>
+          <div class="col s2 admin disabled">
+            <label for="port">Port</label>
+            <input id="port" type="text" value="80">
+          </div>
+        </div>
+
+          <div class="row admin disabled">
+            <div class="input-field col s12">
+              <input id="username" type="text">
+              <label for="username">Username</label>
             </div>
-            <input id="save" type="submit" value="Save">
-          </p>
-        </form>
-        <p><a id="demo" target="_blank" href="http://demo.zebradog.com">See what else ZEBRADOG can do</a></p>
+          </div>
+          <div class="row admin disabled">
+            <div class="input-field col s6">
+              <input id="password" type="password">
+              <label for="password">Change Password</label>
+            </div>
+            <div class="input-field col s6">
+              <input id="confirm_password" type="password">
+              <label for="confirm_password">Confirm Password</label>
+            </div>
+          </div>
+
+          <a class="btn-large waves-effect" id="save">Save</a>
+
+        </p>
+      </div>
   </body>
 </html>

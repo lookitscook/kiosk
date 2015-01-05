@@ -189,18 +189,20 @@ function init() {
       var newData = request.split("\n\r");
       newData = newData[newData.length-1];
       newData = newData.trim().split('&');
+      var saveData = {};
       for(var i = 0; i < newData.length; i++){
         var d = newData[i].split('=');
         var key = decodeURIComponent(d[0]);
         var value = decodeURIComponent(d[1]);
         if(data.hasOwnProperty(key)){
           data[key] = value;
-          chrome.storage.local.set({key:value});
+          saveData[key] = value;
           if(key == "url"){
             chrome.runtime.sendMessage({url: value});
           }
         }
       }
+      chrome.storage.local.set(saveData);
       write200JSONResponse(info.socketId, JSON.stringify(data), keepAlive);
     }else if(request.indexOf("GET ") == 0) {
       var uriEnd =  request.indexOf(" ", 4);

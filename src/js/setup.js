@@ -1,12 +1,5 @@
 $(function(){
 
-  $("#host").on('change',function(){
-    if($("#host").val()){
-      $('.admin').hide().removeClass('disabled').slideDown();
-    }else{
-      $('.admin').slideUp();
-    }
-  });
   $("#reset").on('change',function(){
     if($("#reset").is(':checked')){
       $('.reset').hide().removeClass('disabled').slideDown();
@@ -19,6 +12,24 @@ $(function(){
       $('.restart').hide().removeClass('disabled').slideDown();
     }else{
       $('.restart').slideUp();
+    }
+  });
+  $("#local").on('change',function(){
+    if($("#local").is(':checked')){
+      $('.local').hide().removeClass('disabled').slideDown();
+      if(!$("#remote").is(':checked')) $('.admin').hide().removeClass('disabled').slideDown();
+    }else{
+      $('.local').slideUp();
+      if(!$("#remote").is(':checked')) $('.admin').slideUp();
+    }
+  });
+  $("#remote").on('change',function(){
+    if($("#remote").is(':checked')){
+      $('.remote').hide().removeClass('disabled').slideDown();
+      if(!$("#local").is(':checked')) $('.admin').hide().removeClass('disabled').slideDown();
+    }else{
+      $('.remote').slideUp();
+      if(!$("#local").is(':checked')) $('.admin').slideUp();
     }
   });
 
@@ -35,13 +46,13 @@ $(function(){
 
   $('#url').focus();
 
-
-
   $('#save').click(function(e){
     e.preventDefault();
     var error = [];
     var url = $('#url').val();
     var host = $('#host').val();
+    var remote = $("#remote").is(':checked');
+    var remote = $("#local").is(':checked');
     var reset = $("#reset").is(':checked');
     var restart = $("#restart").is(':checked');
     var port = parseInt($('#port').val());
@@ -55,7 +66,7 @@ $(function(){
       if(!reset) reset = 0;
       if(reset <= 0 ){
         reset = false;
-        error.push("Please specify reset interval");
+        error.push("Reset interval is required.");
       }
     }
     if(url && (url.indexOf("http://") >= 0 || url.indexOf("https://") >= 0 )){
@@ -63,16 +74,19 @@ $(function(){
     }else{
       error.push("URL must be valid.");
     }
-    if(host && !username){
-      error.push("Username is required");
+    if((remote || local) && !username){
+      error.push("Username is required.");
     }
-    if(host && !password){
+    if((host || local) && !password){
       error.push("Password is required.")
-    }else if(host && (password != passwordConfirm)){
+    }else if((host || local) && (password != passwordConfirm)){
       error.push("Passwords must match.");
     }
-    if(host && !port){
-      error.push("Port must be specified.");
+    if(remote && !port){
+      error.push("Port is required.");
+    }
+    if(remote && !host){
+      error.push("Host is required.");
     }
     if(error.length){
       for(var i = 0; i < error.length; i++){

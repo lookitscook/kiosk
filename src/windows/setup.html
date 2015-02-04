@@ -22,16 +22,14 @@
     </nav>
     <div class="container">
       <h1>Setup</h1>
-      <p>
-        <strong>Content</strong><br>
+
         <div class="row">
           <div class="input-field col s12">
             <input id="url" type="text">
             <label for="url">URL (must start with http:// or https://)</label>
           </div>
         </div>
-      </p>
-      <p>
+
         <div class="row">
           <div class="col s3">
             <input type="checkbox" id="reset" />
@@ -50,7 +48,7 @@
             <input type="checkbox" id="restart" />
             <label for="restart">Daily Restart</label>
             <div class="row restart disabled">
-              <div class="col input-field s4">
+              <div class="col input-field s6">
                  <select id="hour">
                    <option value="1">1:00</option>
                    <option value="2">2:00</option>
@@ -66,7 +64,7 @@
                    <option value="12">12:00</option>
                 </select>
               </div>
-              <div class="col input-field s4">
+              <div class="col input-field s6">
                  <select id="houroffset">
                    <option value="0" selected>AM</option>
                    <option value="12">PM</option>
@@ -74,45 +72,52 @@
               </div>
             </div>
           </div>
+          <div class="col s3">
+            <input type="checkbox" id="local" />
+            <label for="local">Local Administration</label>
+            <div class="row local disabled">
+              <div class="col s12"><p>Press <strong>CTRL + A</strong> to activate after setup.</p></div>
+            </div>
+          </div>
+          <div class="col s3">
+            <input type="checkbox" id="remote" />
+            <label for="remote">Remote Administration</label>
+          </div>
         </div>
-
-      </p>
-      <p>
-        <strong>Remote Administration</strong><br>
-        <div class="row">
-          <div class="col s10">
+        <div class="row admin disabled">
+          <div class="input-field col s12">
+            <input id="username" type="text">
+            <label for="username">Username</label>
+          </div>
+        </div>
+        <div class="row admin disabled">
+          <div class="input-field col s6">
+            <input id="password" type="password">
+            <label for="password">Change Password</label>
+          </div>
+          <div class="input-field col s6">
+            <input id="confirm_password" type="password">
+            <label for="confirm_password">Confirm Password</label>
+          </div>
+        </div>
+        <div class="row disabled remote">
+          <div class="col s11">
             <label for="host">Host</label>
-             <select id="host" class="browser-default">
-              <option value="" selected>Disabled</option>
+             <select id="host">
               <option value="127.0.0.1">lo - 127.0.0.1</option>
             </select>
           </div>
-          <div class="col s2 admin disabled">
+          <div class="col s1">
             <label for="port">Port</label>
             <input id="port" type="text" value="80">
           </div>
         </div>
-
-          <div class="row admin disabled">
-            <div class="input-field col s12">
-              <input id="username" type="text">
-              <label for="username">Username</label>
-            </div>
+        <div class="row">
+          <div class="col s12">
+            <p><a class="btn-large waves-effect" id="save">Save</a></p>
           </div>
-          <div class="row admin disabled">
-            <div class="input-field col s6">
-              <input id="password" type="password">
-              <label for="password">Change Password</label>
-            </div>
-            <div class="input-field col s6">
-              <input id="confirm_password" type="password">
-              <label for="confirm_password">Confirm Password</label>
-            </div>
-          </div>
+        </div>
 
-          <a class="btn-large waves-effect" id="save">Save</a>
-
-        </p>
       </div>
   </body>
 </html>

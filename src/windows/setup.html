@@ -36,11 +36,12 @@
           <div class="col s3">
             <input type="checkbox" id="reset" />
             <label for="reset">Inactivity Reset</label>
-            <br><br>
             <div class="row reset disabled">
-              <div class="col input-field s6">
+              <div class="col input-field s4">
                 <input id="resetinterval" type="text" value="5">
-                <label for="resetinterval">Minutes</label>
+              </div>
+              <div class="col input-field s8">
+                <label for="reset">minutes</label>
               </div>
             </div>
 
@@ -48,7 +49,6 @@
           <div class="col s3">
             <input type="checkbox" id="restart" />
             <label for="restart">Daily Restart</label>
-            <br><br>
             <div class="row restart disabled">
               <div class="col input-field s4">
                  <select id="hour">
@@ -63,17 +63,16 @@
                    <option value="9">9:00</option>
                    <option value="10">10:00</option>
                    <option value="11">11:00</option>
-                   <option value="12">22:00</option>
+                   <option value="12">12:00</option>
                 </select>
               </div>
               <div class="col input-field s4">
-                 <select id="time">
-                   <option value="am" selected>AM</option>
-                   <option value="pm">PM</option>
+                 <select id="houroffset">
+                   <option value="0" selected>AM</option>
+                   <option value="12">PM</option>
                 </select>
               </div>
             </div>
-
           </div>
         </div>
 

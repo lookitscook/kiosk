@@ -10,6 +10,9 @@ Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen ki
 - [Daily restart will only work on ChromeOS devices in Kiosk mode](https://developer.chrome.com/extensions/runtime#method-restart)
 
 ##Changelog
+- v.5.3.0
+    - updated to Materialize v0.95.1
+
 - v.5.2.0
 	- added remote administration 
 	- remote restart for ChromeOS devices in kiosk mode

@@ -6,9 +6,9 @@ Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen ki
 
 ##Known Limitations
 
-- [Remote management is inaccessible on ChromeOS](https://github.com/zebradog/kiosk/issues/14)
-- [Daily restart will only work on ChromeOS devices in Kiosk mode](https://developer.chrome.com/extensions/runtime#method-restart)
-- [Content URLs must be public (http:// or https://)](https://github.com/zebradog/kiosk/issues/9).
+- [Remote management is inaccessible on ChromeOS.](https://github.com/zebradog/kiosk/issues/14)
+- [Daily restart will only work on ChromeOS devices in Kiosk mode.](https://developer.chrome.com/extensions/runtime#method-restart)
+- [Content URLs must be public. (http:// or https://)](https://github.com/zebradog/kiosk/issues/9)
 
 ##Changelog
 - v.5.3.0

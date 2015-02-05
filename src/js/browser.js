@@ -2,6 +2,11 @@ $(function(){
 
   var display;
 
+  $(document).keydown(function(e) {
+    if(e.which == 65 && e.ctrlKey)
+      $('#admin').openModal();
+  });
+
   chrome.storage.local.get('url',function(data){
      var restarting = false;
      $('#browser').on('loadabort',function(e){

@@ -52,7 +52,7 @@ $(function(){
     var url = $('#url').val();
     var host = $('#host').val();
     var remote = $("#remote").is(':checked');
-    var remote = $("#local").is(':checked');
+    var local = $("#local").is(':checked');
     var reset = $("#reset").is(':checked');
     var restart = $("#restart").is(':checked');
     var port = parseInt($('#port').val());
@@ -74,19 +74,23 @@ $(function(){
     }else{
       error.push("URL must be valid.");
     }
-    if((remote || local) && !username){
-      error.push("Username is required.");
-    }
-    if((host || local) && !password){
-      error.push("Password is required.")
-    }else if((host || local) && (password != passwordConfirm)){
-      error.push("Passwords must match.");
-    }
-    if(remote && !port){
-      error.push("Port is required.");
-    }
-    if(remote && !host){
-      error.push("Host is required.");
+    if((remote || local)){
+      if(!username){
+        error.push("Username is required.");
+      }
+      if(!password){
+        error.push("Password is required.")
+      }else if(password != passwordConfirm){
+        error.push("Passwords must match.");
+      }
+      if(remote){
+        if(!port){
+          error.push("Port is required.");
+        }
+        if(!host){
+          error.push("Host is required.");
+        }
+      }
     }
     if(error.length){
       for(var i = 0; i < error.length; i++){
@@ -94,9 +98,13 @@ $(function(){
       }
       return false;
     }else{
-      if(host && port){
-        chrome.storage.local.set({'host':host});
-        chrome.storage.local.set({'port':port});
+      chrome.storage.local.set({'local':local});
+      chrome.storage.local.set({'remote':remote});
+      if(local || remote){
+        if(remote){
+          chrome.storage.local.set({'host':host});
+          chrome.storage.local.set({'port':port});
+        }
         chrome.storage.local.set({'username':username});
         chrome.storage.local.set({'password':password});
       }

@@ -11,7 +11,7 @@ Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen ki
 - [Content URLs must be public. (http:// or https://)](https://github.com/zebradog/kiosk/issues/9)
 
 ##Changelog
-- v.5.3.0
+- v.5.3.0 (in progress)
     - updated to Materialize v0.95.1
     - added local administration
     - added daily restart

@@ -4,6 +4,10 @@
 
 Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen kiosk in Google Chrome or Chrome OS, also disables device sleep mode while app is running.
 
+##Support
+
+This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/zebradog/kiosk/issues Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@zebradog.com for a quote. 
+
 ##Known Limitations
 
 - [Remote management is inaccessible on ChromeOS.](https://github.com/zebradog/kiosk/issues/14)

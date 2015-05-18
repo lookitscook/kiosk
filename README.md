@@ -16,7 +16,7 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
 
 ##Changelog
 - v.5.3.0 (in progress)
-    - updated to Materialize v0.95.1
+    - updated to Materialize v0.96.1
     - added local administration
     - added daily restart
     - added inactivity reset

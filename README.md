@@ -20,6 +20,9 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
     - added local administration
     - added daily restart
     - added inactivity reset
+    
+- v.5.2.1
+	- auto-restart on content crash or unresponsive
 
 - v.5.2.0
 	- added remote administration 

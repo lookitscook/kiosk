@@ -1,5 +1,6 @@
 $(function(){
 
+  var RESTART_DELAY = 1000;
   var display;
 
   $(document).keydown(function(e) {
@@ -9,15 +10,23 @@ $(function(){
 
   chrome.storage.local.get('url',function(data){
      var restarting = false;
-     $('#browser').on('loadabort',function(e){
-       if(e.originalEvent.isTopLevel && !restarting){
+
+     $('#browser').on('exit',function(e){ restart(); });
+     $('#browser').on('unresponsive',function(e){ if(e.originalEvent.isTopLevel) restart(); });
+     $('#browser')
+      .on('loadabort',function(e){ if(e.originalEvent.isTopLevel) restart(); })
+      .attr('src',data["url"]).get(0).reload();
+
+     function restart(){
+       if(!restarting){ 
          restarting = true;
          setTimeout(function(){
            restarting = false;
-           $('#browser').get(0).reload();
-         },1000);
-       }
-     }).attr('src',data["url"]).get(0).reload();
+           $('#browser').attr('src',data["url"]).get(0).reload();
+         },RESTART_DELAY);
+      }
+     }
+
   });
 
   chrome.runtime.onMessage.addListener(function(data){

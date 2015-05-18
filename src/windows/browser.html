@@ -13,9 +13,24 @@
   <body style="margin:0;padding:0;background:black">
     <webview id="browser" src="" style="width:100%; height:100%; position:absolute; top:0; left:0; right:0; bottom:0;"></webview>
     <div id="admin" class="modal">
-      <h4>Modal Header</h4>
       <div class="action-bar">
-        <a href="#" class="waves-effect waves-green btn-flat modal-action modal-close">Agree</a>
+        <div class="row">&nbsp;</div>
+        <div class="row">
+          <div class="input-field col offset-s2  s8">
+            <input id="username" type="text" class="validate">
+            <label for="username">Username</label>
+          </div>
+
+          <div class="input-field offset-s2  col s8">
+            <input id="password" type="password" class="validate">
+            <label for="password">Password</label>
+          </div>
+
+          <div class="input-field col offset-s2  s8">
+            <a href="#" id="submit" class="btn-large waves-effect" style="float:right">Go</a>
+          </div>
+        </div>
+        <div class="row">&nbsp;</div>
       </div>
     </div>
   </body>

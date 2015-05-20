@@ -2,20 +2,36 @@ $(function(){
 
   var RESTART_DELAY = 1000;
 
-  chrome.storage.local.get('url',function(data){
+  var win = window;
+
+  chrome.storage.local.get(null,function(data){
      var restarting = false;
 
-     $(document).keydown(function(e) {
-       if(e.which == 65 && e.ctrlKey)
-         $('#admin').openModal();
-     });
+     if(data.local){
 
-     $('#submit').click(function(e){
-       e.preventDefault();
-       console.log('foo',$(this).val(),data);
-     });
+       $(document).keydown(function(e) {
+         if(e.which == 65 && e.ctrlKey)
+           $('#login').openModal();
+       });
 
-     loadContent(data["url"]);
+       $('#submit').click(function(e){
+         e.preventDefault();
+         var username = $('#username').val();
+         var password = $("#password").val();
+         if(username == data.username && password == data.password){
+           $('#login').closeModal();
+           $('#username').val('');
+           $("#password").val('');
+           openWindow("windows/setup.html");
+        }else{
+          Materialize.toast('Invalid login.', 4000);
+        }
+
+       });
+
+     }
+
+     loadContent(data.url);
 
      function loadContent(url){
        $('<webview id="browser"/>')
@@ -41,7 +57,7 @@ $(function(){
          restarting = true;
          $("#browser").remove();
          setTimeout(function(){
-           loadContent(data["url"]);
+           loadContent(data.url);
            restarting = false;
          },RESTART_DELAY);
       }
@@ -54,5 +70,28 @@ $(function(){
       $("#browser").attr('src',data.url);
     }
   });
+
+  function openWindow(path){
+    chrome.system.display.getInfo(function(d){
+      chrome.app.window.create(path, {
+        'frame': 'none',
+        'id': 'setup',
+        'state': 'fullscreen',
+        'bounds':{
+           'left':0,
+           'top':0,
+           'width':d[0].bounds.width,
+           'height':d[0].bounds.height
+        }
+      },function(w){
+        chrome.app.window.current().close();
+        win = w;
+        win.fullscreen();
+        setTimeout(function(){
+          win.fullscreen();
+        },1000);
+      });
+    });
+  }
 
 });

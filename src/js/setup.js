@@ -94,7 +94,7 @@ $(function(){
     }
     if(error.length){
       for(var i = 0; i < error.length; i++){
-        toast(error[i], 4000);
+        Materialize.toast(error[i], 4000);
       }
       return false;
     }else{

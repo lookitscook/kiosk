@@ -49,7 +49,7 @@
             <label for="restart">Daily Restart</label>
             <div class="row restart disabled">
               <div class="col input-field s6">
-                 <select id="hour">
+                 <select id="hour" class="browser-default">
                    <option value="1">1:00</option>
                    <option value="2">2:00</option>
                    <option value="3">3:00</option>
@@ -73,9 +73,9 @@
             </div>
           </div>
           <div class="col s3">
-            <input type="checkbox" id="local" />
-            <label for="local">Local Administration</label>
-            <div class="row local disabled">
+            <input type="checkbox" id="local" checked/>
+            <label for="local" class="active">Local Administration</label>
+            <div class="row local">
               <div class="col s12"><p>Press <strong>CTRL + A</strong> to activate after setup.</p></div>
             </div>
           </div>
@@ -84,16 +84,16 @@
             <label for="remote">Remote Administration</label>
           </div>
         </div>
-        <div class="row admin disabled">
+        <div class="row admin">
           <div class="input-field col s12">
-            <input id="username" type="text">
-            <label for="username">Username</label>
+            <input id="username" type="text" value="admin">
+            <label for="username" class="active">Username</label>
           </div>
         </div>
-        <div class="row admin disabled">
+        <div class="row admin">
           <div class="input-field col s6">
             <input id="password" type="password">
-            <label for="password">Change Password</label>
+            <label for="password">Password</label>
           </div>
           <div class="input-field col s6">
             <input id="confirm_password" type="password">
@@ -103,7 +103,7 @@
         <div class="row disabled remote">
           <div class="col s11">
             <label for="host">Host</label>
-             <select id="host">
+             <select id="host" class="browser-default">
               <option value="127.0.0.1">lo - 127.0.0.1</option>
             </select>
           </div>

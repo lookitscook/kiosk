@@ -31,6 +31,24 @@ $(function(){
 
      }
 
+     if(data.reset && parseFloat(data.reset)){
+       var reset = parseFloat(data.reset);
+       var activeTimeout;
+
+       active();
+
+       $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
+
+       function active(){
+         if(activeTimeout) clearTimeout(activeTimeout);
+         activeTimeout = setTimeout(function(){
+           $("#browser").remove();
+           loadContent(data.url);
+         },reset*60*1000);
+       }
+
+     }
+
      loadContent(data.url);
 
      function loadContent(url){

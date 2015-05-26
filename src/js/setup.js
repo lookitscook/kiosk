@@ -30,8 +30,8 @@ $(function(){
   }
   if(data.port) $("#port").val(data.port);
 
-  if(data.reset && parseInt(data.reset)){
-    var reset = parseInt(data.reset);
+  if(data.reset && parseFloat(data.reset)){
+    var reset = parseFloat(data.reset);
     $("#reset").prop("checked",true);
     $('.reset').removeClass('disabled');
     $("#resetinterval").val(data.reset).siblings('label').addClass('active');

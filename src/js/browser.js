@@ -31,6 +31,18 @@ $(function(){
 
      }
 
+     if(data.restart && parseInt(data.restart)){
+       var hour = parseInt(data.restart) - 1;
+       var now = moment();
+       var restart = moment();
+       restart.hour(hour);
+       if(now.isAfter(restart)) restart.add(1,'d'); //if we're past the time today, do it tomorrow
+       setInterval(function(){
+          var now = moment();
+          if(now.isAfter(reset)) chrome.runtime.reload();
+        },60*1000);
+     }
+
      if(data.reset && parseFloat(data.reset)){
        var reset = parseFloat(data.reset);
        var activeTimeout;

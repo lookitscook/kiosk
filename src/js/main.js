@@ -206,7 +206,7 @@ function init() {
       }
       chrome.storage.local.set(saveData);
       write200JSONResponse(info.socketId, JSON.stringify(data), keepAlive);
-      if(restart) chrome.runtime.restart();
+      if(restart) chrome.runtime.reload();
     }else if(request.indexOf("GET ") == 0) {
       var uriEnd =  request.indexOf(" ", 4);
       if(uriEnd < 0) { /* throw a wobbler */ return; }

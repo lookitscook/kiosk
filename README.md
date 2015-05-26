@@ -6,12 +6,11 @@ Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen ki
 
 ##Support
 
-This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/zebradog/kiosk/issues Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@zebradog.com for a quote. 
+This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/zebradog/kiosk/issues Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@zebradog.com for a quote.
 
 ##Known Limitations
 
 - [Remote management is inaccessible on ChromeOS.](https://github.com/zebradog/kiosk/issues/14)
-- [Daily restart will only work on ChromeOS devices in Kiosk mode.](https://developer.chrome.com/extensions/runtime#method-restart)
 - [Content URLs must be public. (http:// or https://)](https://github.com/zebradog/kiosk/issues/9)
 
 ##Changelog
@@ -20,12 +19,12 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
     - added local administration
     - added daily restart
     - added inactivity reset
-    
+
 - v.5.2.1
 	- auto-restart on content crash or unresponsive
 
 - v.5.2.0
-	- added remote administration 
+	- added remote administration
 	- remote restart for ChromeOS devices in kiosk mode
 	- skinned with [Materialize](http://materializecss.com/)
 
@@ -36,22 +35,22 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
 	- fixed 1/5 screen fullscreen bug on Windows 8
 
 - v5.1.0
-	- started using proper semver 
+	- started using proper semver
 	- added demo link
 
 - v5.0
 	- added support for offline use
-	
+
 - v4.0
 	- prevent system sleep	(previously only prevented display sleep)
-	
+
 - v3.0
 	- cleaned up design files
-	
+
 - v2.0
 	- added branding
 	- cleaned up interface
 	- switched to setup page from key-combo options page
-	
+
 - v1.0
 	- initial draft version

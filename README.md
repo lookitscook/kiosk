@@ -14,6 +14,9 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
 - [Content URLs must be public. (http:// or https://)](https://github.com/zebradog/kiosk/issues/9)
 
 ##Changelog
+-v5.3.1
+    - Prevent inactivity reset via `console.log("kiosk:active")` in content page.
+
 - v.5.3.0
     - updated to Materialize v0.96.1
     - added local administration

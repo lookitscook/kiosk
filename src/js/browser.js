@@ -43,15 +43,15 @@ $(function(){
         },60*1000);
      }
 
-     if(data.reset && parseFloat(data.reset)){
-       var reset = parseFloat(data.reset);
-       var activeTimeout;
+     var reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
+     var activeTimeout;
 
-       active();
+     active();
 
-       $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
+     $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
 
-       function active(){
+     function active(){
+       if(reset){
          if(activeTimeout) clearTimeout(activeTimeout);
          activeTimeout = setTimeout(function(){
            $("#browser").remove();
@@ -78,6 +78,9 @@ $(function(){
         .on('exit',onEnded)
         .on('unresponsive',onEnded)
         .on('loadabort',onEnded)
+        .on('consolemessage',function(e){
+          if(e.originalEvent.message == 'kiosk:active') active();
+        })
         .attr('src',url)
         .prependTo('body');
      }

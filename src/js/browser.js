@@ -81,6 +81,30 @@ $(function(){
         .on('consolemessage',function(e){
           if(e.originalEvent.message == 'kiosk:active') active();
         })
+        .on('permissionrequest',function(e){
+          if(e.originalEvent.permission === 'media') {
+            e.preventDefault();
+            chrome.permissions.contains({
+              permissions: ['audioCapture','videoCapture']
+            }, function(result) {
+              if (result) {
+                // The app has the permissions.
+                e.originalEvent.request.allow();
+              } else {
+                // The app doesn't have the permissions.
+                // request it
+                $('#mediaPermission .ok').click(function(){
+                  chrome.permissions.request({
+                    permissions: ['audioCapture','videoCapture']
+                  },function(granted){
+                    if(granted) e.originalEvent.request.allow();
+                  });
+                });
+                $('#mediaPermission').openModal();
+              }
+            });
+          }
+        })
         .attr('src',url)
         .prependTo('body');
      }

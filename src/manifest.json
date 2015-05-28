@@ -2,7 +2,7 @@
   "name": "Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.3.1",
+  "version": "5.3.2",
   "author": {
     "name": "ZEBRADOG",
     "email": "support@zebradog.com"
@@ -32,5 +32,6 @@
     "alwaysOnTopWindows",
     "storage",
     {"fileSystem": ["directory"]}
-  ]
+  ],
+  "optional_permissions": [ "audioCapture", "videoCapture" ]
 }

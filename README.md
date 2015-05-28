@@ -15,6 +15,9 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
 
 ##Changelog
 
+- v.5.3.2
+    - Optional webcam/mic access added.
+
 - v.5.3.1
     - Prevent inactivity reset via `console.log("kiosk:active")` in content page.
 

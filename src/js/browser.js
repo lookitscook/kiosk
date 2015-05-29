@@ -3,6 +3,8 @@ $(function(){
   var RESTART_DELAY = 1000;
 
   var win = window;
+  var activeTimeout;
+  var restart;
 
   chrome.storage.local.get(null,function(data){
      var restarting = false;
@@ -34,23 +36,23 @@ $(function(){
      if(data.restart && parseInt(data.restart)){
        var hour = parseInt(data.restart) - 1;
        var now = moment();
-       var restart = moment();
+       restart = moment();
        restart.hour(hour);
        if(now.isAfter(restart)) restart.add(1,'d'); //if we're past the time today, do it tomorrow
        setInterval(function(){
           var now = moment();
-          if(now.isAfter(reset)) chrome.runtime.reload();
+          if(now.isAfter(restart)) chrome.runtime.reload();
         },60*1000);
      }
 
      var reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
-     var activeTimeout;
 
      active();
 
      $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
 
      function active(){
+
        if(reset){
          if(activeTimeout) clearTimeout(activeTimeout);
          activeTimeout = setTimeout(function(){
@@ -77,7 +79,7 @@ $(function(){
         .attr('partition','persistant:kiosk')
         .on('exit',onEnded)
         .on('unresponsive',onEnded)
-        .on('loadabort',onEnded)
+        .on('loadabort',function(e){if(e.isTopLevel) onEnded(e); })
         .on('consolemessage',function(e){
           if(e.originalEvent.message == 'kiosk:active') active();
         })

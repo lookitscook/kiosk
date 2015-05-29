@@ -33,5 +33,5 @@
     "storage",
     {"fileSystem": ["directory"]}
   ],
-  "optional_permissions": [ "audioCapture", "videoCapture" ]
+  "optional_permissions": [ "audioCapture", "videoCapture","background"]
 }

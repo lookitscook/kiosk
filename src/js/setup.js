@@ -62,8 +62,27 @@ $(function(){
     }
   });
   $("#restart").on('change',function(){
+    console.log("change");
     if($("#restart").is(':checked')){
-      $('.restart').hide().removeClass('disabled').slideDown();
+      console.log("checked");
+      chrome.permissions.contains({
+        permissions: ['background']
+      }, function(result) {
+        console.log("permissions",result);
+        if (result) {
+          // The app has the permissions.
+          $('.restart').hide().removeClass('disabled').slideDown();
+        } else {
+          // The app doesn't have the permissions.
+          // request it
+            chrome.permissions.request({
+              permissions: ['background']
+            },function(granted){
+              if(granted) $('.restart').hide().removeClass('disabled').slideDown();
+             //else
+            });
+        }
+      });
     }else{
       $('.restart').slideUp();
     }

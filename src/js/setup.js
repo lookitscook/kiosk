@@ -62,13 +62,10 @@ $(function(){
     }
   });
   $("#restart").on('change',function(){
-    console.log("change");
     if($("#restart").is(':checked')){
-      console.log("checked");
       chrome.permissions.contains({
         permissions: ['background']
       }, function(result) {
-        console.log("permissions",result);
         if (result) {
           // The app has the permissions.
           $('.restart').hide().removeClass('disabled').slideDown();
@@ -79,7 +76,10 @@ $(function(){
               permissions: ['background']
             },function(granted){
               if(granted) $('.restart').hide().removeClass('disabled').slideDown();
-             //else
+             else {
+               $("#restart").prop("checked", false);
+               Materialize.toast("Restart permission denied", 4000);
+             }
             });
         }
       });

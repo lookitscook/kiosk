@@ -37,7 +37,7 @@ $(function(){
        var hour = parseInt(data.restart) - 1;
        var now = moment();
        restart = moment();
-       restart.hour(hour);
+       restart.hour(hour).set({'minute':0, 'second':0, 'millisecond':0});
        if(now.isAfter(restart)) restart.add(1,'d'); //if we're past the time today, do it tomorrow
        setInterval(function(){
           var now = moment();

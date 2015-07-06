@@ -63,26 +63,7 @@ $(function(){
   });
   $("#restart").on('change',function(){
     if($("#restart").is(':checked')){
-      chrome.permissions.contains({
-        permissions: ['background']
-      }, function(result) {
-        if (result) {
-          // The app has the permissions.
-          $('.restart').hide().removeClass('disabled').slideDown();
-        } else {
-          // The app doesn't have the permissions.
-          // request it
-            chrome.permissions.request({
-              permissions: ['background']
-            },function(granted){
-              if(granted) $('.restart').hide().removeClass('disabled').slideDown();
-             else {
-               $("#restart").prop("checked", false);
-               Materialize.toast("Restart permission denied", 4000);
-             }
-            });
-        }
-      });
+      $('.restart').hide().removeClass('disabled').slideDown();
     }else{
       $('.restart').slideUp();
     }

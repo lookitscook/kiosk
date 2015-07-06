@@ -15,6 +15,9 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
 
 ##Changelog
 
+- v5.3.4
+    - Fixed bug with restart scheduling
+
 - v.5.3.3
     - Fixed bug with reset/restart combo.
 

@@ -1,6 +1,13 @@
 chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);
 
+$(function(){
+  console.log("jquery started");
+  $.getJSON( "http://files.zebradog.com/test-schedule.txt", function( data ) {
+    console.log( "loaded" ,data);
+  });
+});
+
 function init() {
   var win, basePath, socketInfo, data;
   var filesMap = {};

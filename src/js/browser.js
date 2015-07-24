@@ -1,16 +1,55 @@
 $(function(){
 
   var RESTART_DELAY = 1000;
+  var UPDATE_SCHEDULE_DELAY = 15 * 60 * 1000; //check for updated schedule every 15 minutes
+  var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
 
+  var restarting = false;
+  var reset = false;
   var win = window;
   var activeTimeout;
   var restart;
+  var schedule,scheduleURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout;
+
+  function updateSchedule(){
+    $.getJSON(scheduleURL, function(s) {
+      if(s && s.schedule && s.schedule.Value && s.schedule.Value.items && s.schedule.Value.items.length){
+        var s = s.schedule.Value.items;
+        for(var i = 0; i < s.length; i++){
+          s[i].start = new Date(Date.parse(s[i].start));
+          s[i].end = new Date(Date.parse(s[i].end));
+          //s[i].duration is in seconds
+        }
+        schedule = s;
+        checkSchedule();
+      }
+    });
+  }
+
+  function checkSchedule(){
+    var s = schedule;
+    if(s && s.length){
+      var now = Date.now();
+      var hasScheduledContent = false;
+      for(var i = 0; i < s.length; i++){
+        if(now >= s[i].start && now < s[i].end){
+          hasScheduledContent = true;
+          if(s[i].content != currentURL){
+            currentURL = s[i].content;
+            loadContent(currentURL);
+          }
+        }
+        if(!hasScheduledContent && currentURL != defaultURL){
+          currentURL = defaultURL;
+          loadContent(currentURL);
+        }
+      }
+    }
+  }
 
   chrome.storage.local.get(null,function(data){
-     var restarting = false;
 
      if(data.local){
-
        $(document).keydown(function(e) {
          if(e.which == 65 && e.ctrlKey)
            $('#login').openModal();
@@ -28,9 +67,7 @@ $(function(){
         }else{
           Materialize.toast('Invalid login.', 4000);
         }
-
        });
-
      }
 
      if(data.restart && parseInt(data.restart)){
@@ -46,87 +83,20 @@ $(function(){
      }
 
      if(data.remoteschedule && data.remotescheduleurl){
-       $.getJSON(data.remotescheduleurl, function( schedule ) {
-         console.log( "schedule loaded" , schedule);
-       });
+       scheduleURL = data.remotescheduleurl;
+       updateSchedule();
+       setInterval(updateSchedule,UPDATE_SCHEDULE_DELAY);
+       setInterval(checkSchedule,CHECK_SCHEDULE_DELAY);
      }
 
-     var reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
+     reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
 
      active();
 
      $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
 
-     function active(){
-
-       if(reset){
-         if(activeTimeout) clearTimeout(activeTimeout);
-         activeTimeout = setTimeout(function(){
-           $("#browser").remove();
-           loadContent(data.url);
-         },reset*60*1000);
-       }
-
-     }
-
-     loadContent(data.url);
-
-     function loadContent(url){
-       $('<webview id="browser"/>')
-        .css({
-          width:'100%',
-          height:'100%',
-          position:'absolute',
-          top:0,
-          left:0,
-          right:0,
-          bottom:0
-        })
-        .attr('partition','persistant:kiosk')
-        .on('exit',onEnded)
-        .on('unresponsive',onEnded)
-        .on('loadabort',function(e){if(e.isTopLevel) onEnded(e); })
-        .on('consolemessage',function(e){
-          if(e.originalEvent.message == 'kiosk:active') active();
-        })
-        .on('permissionrequest',function(e){
-          if(e.originalEvent.permission === 'media') {
-            e.preventDefault();
-            chrome.permissions.contains({
-              permissions: ['audioCapture','videoCapture']
-            }, function(result) {
-              if (result) {
-                // The app has the permissions.
-                e.originalEvent.request.allow();
-              } else {
-                // The app doesn't have the permissions.
-                // request it
-                $('#mediaPermission .ok').click(function(){
-                  chrome.permissions.request({
-                    permissions: ['audioCapture','videoCapture']
-                  },function(granted){
-                    if(granted) e.originalEvent.request.allow();
-                  });
-                });
-                $('#mediaPermission').openModal();
-              }
-            });
-          }
-        })
-        .attr('src',url)
-        .prependTo('body');
-     }
-
-     function onEnded(event){
-       if(!restarting){
-         restarting = true;
-         $("#browser").remove();
-         setTimeout(function(){
-           loadContent(data.url);
-           restarting = false;
-         },RESTART_DELAY);
-      }
-     }
+     currentURL = defaultURL = data.url;
+     loadContent(currentURL);
 
   });
 
@@ -135,6 +105,73 @@ $(function(){
       $("#browser").attr('src',data.url);
     }
   });
+
+  function active(){
+    if(reset){
+      if(activeTimeout) clearTimeout(activeTimeout);
+      activeTimeout = setTimeout(function(){
+        $("#browser").remove();
+        loadContent(currentURL);
+      },reset*60*1000);
+    }
+  }
+
+  function loadContent(url){
+    $('<webview id="browser"/>')
+     .css({
+       width:'100%',
+       height:'100%',
+       position:'absolute',
+       top:0,
+       left:0,
+       right:0,
+       bottom:0
+     })
+     .attr('partition','persistant:kiosk')
+     .on('exit',onEnded)
+     .on('unresponsive',onEnded)
+     .on('loadabort',function(e){if(e.isTopLevel) onEnded(e); })
+     .on('consolemessage',function(e){
+       if(e.originalEvent.message == 'kiosk:active') active();
+     })
+     .on('permissionrequest',function(e){
+       if(e.originalEvent.permission === 'media') {
+         e.preventDefault();
+         chrome.permissions.contains({
+           permissions: ['audioCapture','videoCapture']
+         }, function(result) {
+           if (result) {
+             // The app has the permissions.
+             e.originalEvent.request.allow();
+           } else {
+             // The app doesn't have the permissions.
+             // request it
+             $('#mediaPermission .ok').click(function(){
+               chrome.permissions.request({
+                 permissions: ['audioCapture','videoCapture']
+               },function(granted){
+                 if(granted) e.originalEvent.request.allow();
+               });
+             });
+             $('#mediaPermission').openModal();
+           }
+         });
+       }
+     })
+     .attr('src',url)
+     .prependTo('body');
+  }
+
+  function onEnded(event){
+    if(!restarting){
+      restarting = true;
+      $("#browser").remove();
+      setTimeout(function(){
+        loadContent(data.url);
+        restarting = false;
+      },RESTART_DELAY);
+   }
+  }
 
   function openWindow(path){
     chrome.system.display.getInfo(function(d){

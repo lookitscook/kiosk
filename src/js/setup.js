@@ -14,11 +14,11 @@ $(function(){
   if(data.url) $('#url').val(data.url).siblings('label').addClass('active');
   if(data.local) {
     $("#local").prop("checked",true);
-    $('.local, .admin').removeClass('disabled');
+    $('.local, .settings-detail').removeClass('disabled');
   }
   if(data.remote) {
     $("#remote").prop("checked",true);
-    $('.remote, .admin').removeClass('disabled');
+    $('.remote, .settings-detail').removeClass('disabled');
   }
   if(data.username) $("#username").val(data.username).siblings('label').addClass('active');
   if(data.password) {
@@ -29,6 +29,13 @@ $(function(){
     $('#host').children("[value='"+data.host+"']").prop('selected',true);
   }
   if(data.port) $("#port").val(data.port);
+
+  if(data.remoteschedule){
+    $("#remote-schedule").prop("checked",true);
+    $('.remote-schedule-detail').removeClass('disabled');
+  }
+  if(data.remotescheduleurl)
+    $("#remote-schedule-url").val(data.remotescheduleurl).siblings('label').addClass('active');
 
   if(data.reset && parseFloat(data.reset)){
     var reset = parseFloat(data.reset);
@@ -71,19 +78,27 @@ $(function(){
   $("#local").on('change',function(){
     if($("#local").is(':checked')){
       $('.local').hide().removeClass('disabled').slideDown();
-      if(!$("#remote").is(':checked')) $('.admin').hide().removeClass('disabled').slideDown();
+      if(!$("#remote").is(':checked')) $('.settings-detail').hide().removeClass('disabled').slideDown();
     }else{
       $('.local').slideUp();
-      if(!$("#remote").is(':checked')) $('.admin').slideUp();
+      if(!$("#remote").is(':checked')) $('.settings-detail').slideUp();
     }
   });
   $("#remote").on('change',function(){
     if($("#remote").is(':checked')){
       $('.remote').hide().removeClass('disabled').slideDown();
-      if(!$("#local").is(':checked')) $('.admin').hide().removeClass('disabled').slideDown();
+      if(!$("#local").is(':checked')) $('.settings-detail').hide().removeClass('disabled').slideDown();
     }else{
       $('.remote').slideUp();
-      if(!$("#local").is(':checked')) $('.admin').slideUp();
+      if(!$("#local").is(':checked')) $('.settings-detail').slideUp();
+    }
+  });
+
+  $("#remote-schedule").on('change',function(){
+    if($("#remote-schedule").is(':checked')){
+      $('.remote-schedule-detail').hide().removeClass('disabled').slideDown();
+    }else{
+      $('.remote-schedule-detail').slideUp();
     }
   });
 
@@ -104,6 +119,8 @@ $(function(){
     var username = $("#username").val();
     var password = $("#password").val();
     var passwordConfirm = $("#confirm_password").val();
+    var remoteschedule = $("#remote-schedule").is(':checked');
+    var remotescheduleurl = $("#remote-schedule-url").val();
     if(reset){
       var reset = parseFloat($('#resetinterval').val());
       if(!reset) reset = 0;
@@ -115,7 +132,7 @@ $(function(){
     if(url && (url.indexOf("http://") >= 0 || url.indexOf("https://") >= 0 )){
       //url is valid
     }else{
-      error.push("URL must be valid.");
+      error.push("Content URL must be valid.");
     }
     if((remote || local)){
       if(!username){
@@ -133,6 +150,13 @@ $(function(){
         if(!host){
           error.push("Host is required.");
         }
+      }
+    }
+    if(remoteschedule){
+      if(remotescheduleurl && (remotescheduleurl.indexOf("http://") >= 0 || remotescheduleurl.indexOf("https://") >= 0 )){
+        //url is valid
+      }else{
+        error.push("Schedule URL must be valid.");
       }
     }
     if(error.length){
@@ -153,17 +177,18 @@ $(function(){
         chrome.storage.local.set({'username':username});
         chrome.storage.local.set({'password':password});
       }
-      if(reset){
-        chrome.storage.local.set({'reset':reset});
-      }else{
-        chrome.storage.local.remove('reset');
-      }
+      if(reset) chrome.storage.local.set({'reset':reset});
+      else chrome.storage.local.remove('reset');
       if(restart){
         restart = parseInt($('#hour').val())+parseInt($('#houroffset').val());
         chrome.storage.local.set({'restart':restart});
       }else{
         chrome.storage.local.remove('restart');
       }
+      if(remoteschedule) chrome.storage.local.set({'remoteschedule':remoteschedule});
+      else chrome.storage.local.remove('remoteschedule');
+      if(remotescheduleurl) chrome.storage.local.set({'remotescheduleurl':remotescheduleurl});
+      else chrome.storage.local.remove('remotescheduleurl');
       chrome.storage.local.set({'url':url});
       chrome.runtime.reload();
     }

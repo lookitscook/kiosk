@@ -9,6 +9,7 @@
     <script language="javascript" type="text/javascript" src="../www/js/jquery.min.js"></script>
     <script language="javascript" type="text/javascript" src="../www/js/materialize.min.js"></script>
     <script language="javascript" type="text/javascript" src="../js/setup.js"></script></head>
+    <style type="text/css">body,html{overflow:scroll}</style>
   </head>
   <body>
     <nav role="navigation">
@@ -26,11 +27,63 @@
         <div class="row">
           <div class="input-field col s12">
             <input id="url" type="text">
-            <label for="url">URL (must start with http:// or https://)</label>
+            <label for="url">Default Content URL (must start with http:// or https://)</label>
           </div>
         </div>
 
         <div class="row">
+          <div class="col s12">
+            <h4>Administration</h4>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col s3">
+            <input type="checkbox" id="local" checked/>
+            <label for="local" class="active">Local Administration</label>
+            <div class="row local">
+              <div class="col s12"><p>Press <strong>CTRL + A</strong> to activate after setup.</p></div>
+            </div>
+          </div>
+          <div class="col s3">
+            <input type="checkbox" id="remote" />
+            <label for="remote">Remote Administration</label>
+          </div>
+        </div>
+        <div class="row settings-detail">
+          <div class="input-field col s12">
+            <input id="username" type="text" value="admin">
+            <label for="username" class="active">Username</label>
+          </div>
+          <div class="input-field col s6">
+            <input id="password" type="password">
+            <label for="password">Password</label>
+          </div>
+          <div class="input-field col s6">
+            <input id="confirm_password" type="password">
+            <label for="confirm_password">Confirm Password</label>
+          </div>
+        </div>
+        <div class="row disabled remote">
+          <div class="col s11">
+            <label for="host">Host</label>
+             <select id="host" class="browser-default">
+              <option value="127.0.0.1">lo - 127.0.0.1</option>
+            </select>
+          </div>
+          <div class="col s1">
+            <label for="port">Port</label>
+            <input id="port" type="text" value="80">
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col s12">
+            <h4>Scheduling</h4>
+          </div>
+        </div>
+
+      <div class="row">
           <div class="col s3">
             <input type="checkbox" id="reset" />
             <label for="reset">Inactivity Reset</label>
@@ -42,7 +95,6 @@
                 <label for="reset">minutes</label>
               </div>
             </div>
-
           </div>
           <div class="col s3">
             <input type="checkbox" id="restart" />
@@ -73,45 +125,17 @@
             </div>
           </div>
           <div class="col s3">
-            <input type="checkbox" id="local" checked/>
-            <label for="local" class="active">Local Administration</label>
-            <div class="row local">
-              <div class="col s12"><p>Press <strong>CTRL + A</strong> to activate after setup.</p></div>
-            </div>
-          </div>
-          <div class="col s3">
-            <input type="checkbox" id="remote" />
-            <label for="remote">Remote Administration</label>
+            <input type="checkbox" id="remote-schedule" />
+            <label for="remote-schedule">Remote Schedule Server</label>
           </div>
         </div>
-        <div class="row admin">
+        <div class="row remote-schedule-detail disabled">
           <div class="input-field col s12">
-            <input id="username" type="text" value="admin">
-            <label for="username" class="active">Username</label>
+            <input id="remote-schedule-url" type="text">
+            <label for="remote-schedule-url" class="active">Schedule URL (must start with http:// or https://)</label>
           </div>
         </div>
-        <div class="row admin">
-          <div class="input-field col s6">
-            <input id="password" type="password">
-            <label for="password">Password</label>
-          </div>
-          <div class="input-field col s6">
-            <input id="confirm_password" type="password">
-            <label for="confirm_password">Confirm Password</label>
-          </div>
-        </div>
-        <div class="row disabled remote">
-          <div class="col s11">
-            <label for="host">Host</label>
-             <select id="host" class="browser-default">
-              <option value="127.0.0.1">lo - 127.0.0.1</option>
-            </select>
-          </div>
-          <div class="col s1">
-            <label for="port">Port</label>
-            <input id="port" type="text" value="80">
-          </div>
-        </div>
+
         <div class="row">
           <div class="col s12">
             <p><a class="btn-large waves-effect" id="save">Save</a></p>

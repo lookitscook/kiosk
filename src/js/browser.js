@@ -45,6 +45,12 @@ $(function(){
         },60*1000);
      }
 
+     if(data.remoteschedule && data.remotescheduleurl){
+       $.getJSON(data.remotescheduleurl, function( schedule ) {
+         console.log( "schedule loaded" , schedule);
+       });
+     }
+
      var reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
 
      active();

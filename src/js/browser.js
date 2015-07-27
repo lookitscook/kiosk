@@ -41,11 +41,13 @@ $(function(){
           hasScheduledContent = true;
           if(s[i].content != currentURL){
             currentURL = s[i].content;
+            $("#browser").remove();
             loadContent(currentURL);
           }
         }
         if(!hasScheduledContent && currentURL != defaultURL){
           currentURL = defaultURL;
+          $("#browser").remove();
           loadContent(currentURL);
         }
       }

@@ -10,6 +10,11 @@ $(function(){
   var activeTimeout;
   var restart;
   var schedule,scheduleURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout;
+  var hidecursor = false;
+  var disablecontextmenu = false;
+  var disabledrag = false;
+  var disabletouchhighlight = false;
+  var disableselection = false;
 
   function updateSchedule(){
     $.getJSON(scheduleURL, function(s) {
@@ -46,14 +51,14 @@ $(function(){
           if(s[i].content != currentURL){
             currentURL = s[i].content;
             $("#browser").remove();
-            loadContent(currentURL);
+            loadContent();
           }
         }
       }
       if(!hasScheduledContent && currentURL != defaultURL){
         currentURL = defaultURL;
         $("#browser").remove();
-        loadContent(currentURL);
+        loadContent();
       }
     }
   }
@@ -100,6 +105,12 @@ $(function(){
        setInterval(checkSchedule,CHECK_SCHEDULE_DELAY);
      }
 
+     hidecursor = data.hidecursor ? true : false;
+     disablecontextmenu = data.disablecontextmenu ? true : false;
+     disabledrag = data.disabledrag ? true : false;
+     disabletouchhighlight = data.disabletouchhighlight ? true : false;
+     disableselection = data.disableselection ? true : false;
+
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
 
      active();
@@ -107,7 +118,7 @@ $(function(){
      $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
 
      currentURL = defaultURL = data.url;
-     loadContent(currentURL);
+     loadContent();
 
   });
 
@@ -122,12 +133,12 @@ $(function(){
       if(activeTimeout) clearTimeout(activeTimeout);
       activeTimeout = setTimeout(function(){
         $("#browser").remove();
-        loadContent(currentURL);
+        loadContent();
       },reset*60*1000);
     }
   }
 
-  function loadContent(url){
+  function loadContent(){
     $('<webview id="browser"/>')
      .css({
        width:'100%',
@@ -169,8 +180,22 @@ $(function(){
          });
        }
      })
-     .attr('src',url)
+     .on('contentload',function(e){
+       var browser = e.target;
+       if(hidecursor)
+         browser.insertCSS({code:"*{cursor:none;}"});
+       if(disablecontextmenu)
+         browser.executeScript({code:"window.oncontextmenu = function(){return false};"});
+       if(disabledrag)
+         browser.executeScript({code:"window.ondragstart = function(){return false};"});
+       if(disabletouchhighlight)
+         browser.insertCSS({code:"*{-webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-touch-callout: none;}"});
+       if(disableselection)
+         browser.insertCSS({code:"*{-webkit-user-select: none; user-select: none;}"});
+     })
+     .attr('src',currentURL)
      .prependTo('body');
+
   }
 
   function onEnded(event){
@@ -178,7 +203,7 @@ $(function(){
       restarting = true;
       $("#browser").remove();
       setTimeout(function(){
-        loadContent(data.url);
+        loadContent();
         restarting = false;
       },RESTART_DELAY);
    }

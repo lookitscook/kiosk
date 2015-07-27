@@ -58,6 +58,11 @@ $(function(){
     $("#hour option:contains('"+restart+":00')").prop('selected',true);
     $("#hour").siblings('label').addClass('active');
   }
+  if(data.hidecursor) $("#hidecursor").prop("checked",true);
+  if(data.disablecontextmenu) $("#disablecontextmenu").prop("checked",true);
+  if(data.disabledrag) $("#disabledrag").prop("checked",true);
+  if(data.disabletouchhighlight) $("#disabletouchhighlight").prop("checked",true);
+  if(data.disableselection) $("#disableselection").prop("checked",true);
 
   $('select').material_select();
 
@@ -115,6 +120,11 @@ $(function(){
     var restart = $("#restart").is(':checked');
     var port = parseInt($('#port').val());
     var reset = $("#reset").is(':checked');
+    var hidecursor = $("#hidecursor").is(':checked');
+    var disablecontextmenu = $("#disablecontextmenu").is(':checked');
+    var disabledrag = $("#disabledrag").is(':checked');
+    var disabletouchhighlight = $("#disabletouchhighlight").is(':checked');
+    var disableselection = $("#disableselection").is(':checked');
     port = port < 0 ? 0 : port;
     var username = $("#username").val();
     var password = $("#password").val();
@@ -189,6 +199,16 @@ $(function(){
       else chrome.storage.local.remove('remoteschedule');
       if(remotescheduleurl) chrome.storage.local.set({'remotescheduleurl':remotescheduleurl});
       else chrome.storage.local.remove('remotescheduleurl');
+      if(hidecursor) chrome.storage.local.set({'hidecursor':hidecursor});
+      else chrome.storage.local.remove('hidecursor');
+      if(disablecontextmenu) chrome.storage.local.set({'disablecontextmenu':disablecontextmenu});
+      else chrome.storage.local.remove('disablecontextmenu');
+      if(disabledrag) chrome.storage.local.set({'disabledrag':disabledrag});
+      else chrome.storage.local.remove('disabledrag');
+      if(disabletouchhighlight) chrome.storage.local.set({'disabletouchhighlight':disabletouchhighlight});
+      else chrome.storage.local.remove('disabletouchhighlight');
+      if(disableselection) chrome.storage.local.set({'disableselection':disableselection});
+      else chrome.storage.local.remove('disableselection');
       chrome.storage.local.set({'url':url});
       chrome.runtime.reload();
     }

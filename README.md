@@ -6,10 +6,34 @@ Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen ki
 
 ##Features
 
-###System Adjustments
+###System 
 - Launches a specified URL full-screen at all times.
 - Device power-saving (sleep mode) disabled
 - Can be locked into-single app kiosk on managed Chrome devices.
+
+###Interaction
+
+- Option to hide cursor
+- Option to disable context menu
+- Option to disable image dragging
+- Option to disable touch highlighting
+- Option to disable text selection
+
+Caveat: these interaction adjustments will only be applied once your content is fully loaded. If you have a multi-page application, the cursor, etc. may be enabled on each page load until the content is fully loaded. Recommended solution is to develop content as single-page (AJAX) application and/or use the following CSS:
+```
+*{
+  cursor:none;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+```
+and javascript:
+```
+window.oncontextmenu = function(){return false};
+window.ondragstart = function(){return false};
+```
 
 ###Local Administration
 
@@ -64,6 +88,11 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
 
 -v5.4.0
     - Added remote schedule server support
+    - Added option to hide cursor
+    - Added option to disable context menu
+    - Added option to disable image dragging
+    - Added option to disable touch highlighting
+    - Added option to disable text selection
 
 - v5.3.4
     - Fixed bug with restart scheduling

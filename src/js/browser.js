@@ -13,6 +13,10 @@ $(function(){
 
   function updateSchedule(){
     $.getJSON(scheduleURL, function(s) {
+      if(s && s.schedule && s.schedule.Value && s.schedule.Value.length){
+        //support schedule.Value as structure or array containing structure
+        s.schedule.Value = s.schedule.Value[0];
+      }
       if(s && s.schedule && s.schedule.Value && s.schedule.Value.items && s.schedule.Value.items.length){
         var s = s.schedule.Value.items;
         for(var i = 0; i < s.length; i++){
@@ -45,11 +49,11 @@ $(function(){
             loadContent(currentURL);
           }
         }
-        if(!hasScheduledContent && currentURL != defaultURL){
-          currentURL = defaultURL;
-          $("#browser").remove();
-          loadContent(currentURL);
-        }
+      }
+      if(!hasScheduledContent && currentURL != defaultURL){
+        currentURL = defaultURL;
+        $("#browser").remove();
+        loadContent(currentURL);
       }
     }
   }

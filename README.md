@@ -6,7 +6,7 @@ Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen ki
 
 ##Features
 
-###System 
+###System
 - Launches a specified URL full-screen at all times.
 - Device power-saving (sleep mode) disabled
 - Can be locked into-single app kiosk on managed Chrome devices.
@@ -83,10 +83,11 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
 
 - [Remote management is inaccessible on ChromeOS.](https://github.com/zebradog/kiosk/issues/14)
 - [Content URLs must be public. (http:// or https://)](https://github.com/zebradog/kiosk/issues/9)
+- [OSX menu bar will show on hover.](https://github.com/zebradog/kiosk/issues/41)
 
 ##Changelog
 
--v5.4.0
+- v5.4.0
     - Added remote schedule server support
     - Added option to hide cursor
     - Added option to disable context menu

@@ -4,6 +4,53 @@
 
 Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen kiosk in Google Chrome or Chrome OS, also disables device sleep mode while app is running.
 
+##Features
+
+###System Adjustments
+- Launches a specified URL full-screen at all times.
+- Device power-saving (sleep mode) disabled
+- Can be locked into-single app kiosk on managed Chrome devices.
+
+###Local Administration
+
+Setup can be accessed via keystroke (CTRL+A) and administer-configured username/password.
+
+###Remote Administration
+
+On desktop operating systems basic configuration as well as application restart options are available remotely. See "Known Limitations" for details on ChromeOS support.
+
+###Inactivity Reset
+
+Allow content to be reset after a administrator-specified period of inactivity.
+
+###Daily restart
+
+Application can be completely restarted at an administrator-specified time once per day.
+
+###Remote Schedule Server
+
+Accepts a URL to a JSON feed for a content schedule. If no item is currently scheduled, the default content (specified by the Content URL on Kiosk setup page) is used. Default content will be overridden by scheduled items. Schedule URL is polled every 15 minutes. Schedule should be formatted according to (a simplified version of) the format provided by [Chrome Sign Builder](https://chrome.google.com/webstore/detail/chrome-sign-builder/odjaaghiehpobimgdjjfofmablbaleem?hl=en) (exported schedules from Chrome Sign Builder are currently supported without support for screen position, repetition or display settings):
+```
+{
+  "schedule": {
+    "Value":  {
+      "items": [
+        {
+          "content": "http://www.zebradog.com",
+          "end": "Tue Jul 14 2015 12:30:00 GMT-0500",
+          "start": "Tue Jul 14 2015 09:30:00 GMT-0500",
+        },
+        {
+          "content": "http://www.google.com",
+          "end": "Tue Jul 15 2015 12:30:00 GMT-0500",
+          "start": "Tue Jul 16 2015 09:30:00 GMT-0500",
+        }
+      ]
+    }
+  }
+}
+```
+
 ##Support
 
 This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/zebradog/kiosk/issues Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@zebradog.com for a quote.
@@ -14,6 +61,9 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
 - [Content URLs must be public. (http:// or https://)](https://github.com/zebradog/kiosk/issues/9)
 
 ##Changelog
+
+-v5.4.0
+    - Added remote schedule server support
 
 - v5.3.4
     - Fixed bug with restart scheduling

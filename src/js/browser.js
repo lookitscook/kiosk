@@ -16,9 +16,14 @@ $(function(){
       if(s && s.schedule && s.schedule.Value && s.schedule.Value.items && s.schedule.Value.items.length){
         var s = s.schedule.Value.items;
         for(var i = 0; i < s.length; i++){
-          s[i].start = new Date(Date.parse(s[i].start));
-          s[i].end = new Date(Date.parse(s[i].end));
-          //s[i].duration is in seconds
+          if(s[i].content && s[i].start && s[i].end){
+            s[i].start = new Date(Date.parse(s[i].start));
+            s[i].end = new Date(Date.parse(s[i].end));
+            s[i].duration = (s[i].end - s[i].start) / 1000; //duration is in seconds
+          }else{
+            //item did not include start, end, or content: invalid
+            s = s.splice(i--, 1);
+          }
         }
         schedule = s;
         checkSchedule();

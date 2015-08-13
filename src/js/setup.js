@@ -66,6 +66,26 @@ $(function(){
 
   $('select').material_select();
 
+  $("#servelocal").on('change',function(){
+    if($("#servelocal").is(':checked')){
+      $('.servelocal').hide().removeClass('disabled').slideDown();
+      if(!$("#servelocaldirectory").attr('value')) selectLocalDirectory();
+    }else{
+      $('.servelocal').slideUp();
+    }
+  });
+  $('#changelocaldirectory').on('click',function(){
+    selectLocalDirectory();
+  });
+  function selectLocalDirectory(){
+    chrome.fileSystem.chooseEntry({
+      type: "openDirectory"
+    },function(entry,fileEntries){
+      console.log("Directory selected",entry,fileEntries);
+      $("#servelocaldirectory").attr('value',entry.name);
+    });
+  }
+
   $("#reset").on('change',function(){
     if($("#reset").is(':checked')){
       $('.reset').hide().removeClass('disabled').slideDown();

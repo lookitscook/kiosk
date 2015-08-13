@@ -22,18 +22,39 @@
       </div>
     </nav>
     <div class="container">
-      <h1>Setup</h1>
+        <br><br>
+        <h4>Content</h4>
 
         <div class="row">
-          <div class="input-field col s12">
+          <div class="input-field col s8">
             <input id="url" type="text">
             <label for="url">Default Content URL (must start with http:// or https://)</label>
+          </div>
+          <div class="input-field col s4">
+            <input type="checkbox" id="servelocal" />
+            <label for="servelocal">Serve Local Content</label>
+          </div>
+        </div>
+        <div class="row disabled servelocal">
+          <div class="col s5">
+            <label for="servelocalhost">Host</label>
+             <select id="servelocalhost" class="browser-default">
+              <option value="127.0.0.1">lo - 127.0.0.1</option>
+            </select>
+          </div>
+          <div class="col s1">
+            <label for="servelocalport">Port</label>
+            <input id="servelocalport" type="text" value="8080">
+          </div>
+          <div class="col s5">
+            <label for="servelocaldirectory">Directory (<a id="changelocaldirectory" href="#">change</a>)</label>
+            <input class="file-path validate" disabled id="servelocaldirectory" type="text" />
           </div>
         </div>
 
         <div class="row">
           <div class="col s12">
-            <h4>General</h4>
+            <h4>Interaction</h4>
           </div>
         </div>
 

@@ -8,12 +8,32 @@ function init() {
   //don't let computer sleep
   chrome.power.requestKeepAwake("display");
 
-  chrome.storage.local.get(['url','host','port','username','password'],function(d){
-    data = d;
+  chrome.storage.local.get(null,function(data){
     if(('url' in data)){
       //setup has been completed
-      if(data['host'] && data['port']){
-        startWebserver(data['host'],data['port'],'www');
+      if(data.servelocaldirectory && data.servelocalhost && data.servelocalport){
+        //serve files from local directory
+        //TODO: handle restoreEntry error
+        /*
+        currently throws an 'Unknown id error'
+        possibly related https://code.google.com/p/chromium/issues/detail?id=350080
+        seems to indicate need to open the directory in the background page
+        (versus on setup page as currently implemented)
+        or add additional permission to manifest
+        https://developer.chrome.com/apps/fileSystem#method-restoreEntry
+        */
+        console.log('Serve local files from ',data.servelocaldirectory);
+        chrome.fileSystem.restoreEntry(data.servelocaldirectory,function(entry){
+          var host = data.servelocalhost;
+          var port = data.servelocalport;
+          console.log(host,port,entry);
+          //TODO: Start web server with local directry entry
+          //startWebserver(host,port,entry)
+        });
+      }
+      if(data.host && data.port){
+        //make setup page available remotely via HTTP
+        startWebserver(data.host,data.port,'www');
       }
       openWindow("windows/browser.html");
     }else{

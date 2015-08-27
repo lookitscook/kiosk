@@ -63,6 +63,20 @@ $(function(){
   if(data.disabledrag) $("#disabledrag").prop("checked",true);
   if(data.disabletouchhighlight) $("#disabletouchhighlight").prop("checked",true);
   if(data.disableselection) $("#disableselection").prop("checked",true);
+  if(data.servelocaldirectory){
+    var servelocaldirectoryname = data.servelocaldirectory.split(':');
+    servelocaldirectoryname = (servelocaldirectoryname.length == 2) ? servelocaldirectoryname[1] : null;
+    if(servelocaldirectoryname){
+      $("#servelocal").prop("checked",true);
+      $('.servelocal').removeClass('disabled');
+      $("#servelocaldirectory").data('directory',data.servelocaldirectory);
+      $("#servelocaldirectory").attr('value',servelocaldirectoryname);
+    }
+  }
+  if(data.servelocalhost){
+    $('#servelocalhost').children("[value='"+data.servelocalhost+"']").prop('selected',true);
+  }
+  if(data.servelocalport) $("#servelocalport").val(data.servelocalport);
 
   $('select').material_select();
 
@@ -81,8 +95,15 @@ $(function(){
     chrome.fileSystem.chooseEntry({
       type: "openDirectory"
     },function(entry,fileEntries){
-      console.log("Directory selected",entry,fileEntries);
-      $("#servelocaldirectory").attr('value',entry.name);
+      var id = chrome.fileSystem.retainEntry(entry);
+      chrome.fileSystem.isRestorable(id,function(isRestorable){
+        if(isRestorable){
+          $("#servelocaldirectory").data('directory',id);
+          $("#servelocaldirectory").attr('value',entry.name);
+        }else{
+          Materialize.toast("Permission denied to restore directory '"+entry.name+"'.", 4000);
+        }
+      });
     });
   }
 
@@ -151,6 +172,12 @@ $(function(){
     var passwordConfirm = $("#confirm_password").val();
     var remoteschedule = $("#remote-schedule").is(':checked');
     var remotescheduleurl = $("#remote-schedule-url").val();
+    var servelocal = $("#servelocal").is(':checked');
+    var servelocaldirectory = $('#servelocaldirectory').data('directory');
+    var servelocalhost = $('#servelocalhost').val();
+    var servelocalport = parseInt($('#servelocalport').val());
+    servelocalport = servelocalport < 0 ? 0 : servelocalport;
+
     if(reset){
       var reset = parseFloat($('#resetinterval').val());
       if(!reset) reset = 0;
@@ -188,6 +215,11 @@ $(function(){
       }else{
         error.push("Schedule URL must be valid.");
       }
+    }
+    if(servelocal){
+        if(!servelocaldirectory) error.push("Directory is required for serving local files.");
+        if(!servelocalhost) error.push("Host is required for serving local files.");
+        if(!servelocalport) error.push("Port is required for serving local files.");
     }
     if(error.length){
       for(var i = 0; i < error.length; i++){
@@ -229,6 +261,15 @@ $(function(){
       else chrome.storage.local.remove('disabletouchhighlight');
       if(disableselection) chrome.storage.local.set({'disableselection':disableselection});
       else chrome.storage.local.remove('disableselection');
+      if(servelocal){
+        chrome.storage.local.set({'servelocaldirectory':servelocaldirectory});
+        chrome.storage.local.set({'servelocalhost':servelocalhost});
+        chrome.storage.local.set({'servelocalport':servelocalport});
+      }else{
+        chrome.storage.local.remove('servelocaldirectory');
+        chrome.storage.local.remove('servelocalhost');
+        chrome.storage.local.remove('servelocalport');
+      }
       chrome.storage.local.set({'url':url});
       chrome.runtime.reload();
     }

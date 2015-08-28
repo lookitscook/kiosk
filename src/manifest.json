@@ -31,7 +31,7 @@
     "webview",
     "alwaysOnTopWindows",
     "storage",
-    {"fileSystem": ["directory"]}
+    {"fileSystem": ["directory","retainEntries"]}
   ],
   "optional_permissions": [ "audioCapture", "videoCapture" ]
 }

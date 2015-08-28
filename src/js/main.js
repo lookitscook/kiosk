@@ -14,14 +14,6 @@ function init() {
       if(data.servelocaldirectory && data.servelocalhost && data.servelocalport){
         //serve files from local directory
         //TODO: handle restoreEntry error
-        /*
-        currently throws an 'Unknown id error'
-        possibly related https://code.google.com/p/chromium/issues/detail?id=350080
-        seems to indicate need to open the directory in the background page
-        (versus on setup page as currently implemented)
-        or add additional permission to manifest
-        https://developer.chrome.com/apps/fileSystem#method-restoreEntry
-        */
         console.log('Serve local files from ',data.servelocaldirectory);
         chrome.fileSystem.restoreEntry(data.servelocaldirectory,function(entry){
           var host = data.servelocalhost;

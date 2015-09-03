@@ -75,9 +75,15 @@ Accepts a URL to a JSON feed for a content schedule. If no item is currently sch
 }
 ```
 
-###Note:
+####Note:
 
 Remote schedule server must have [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) headers set or the [Allow-Control-Allow-Origin:*](https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi?hl=en-US) Chrome extension can be installed to allow access. JSONP is not an option since scripts from arbitrary domains cannot be executed inside Chrome extensions.
+
+###Auto-start
+
+On ChromeOS devices: Using managed devices and setting Kiosk application to start in Kiosk mode is the recommended solution.
+On Windows and OSX: From chrome://apps/ right click on "Kiosk" and "Create shortcut" then copy this shortcut into the startup folder (Windows) or add to login items (OSX).
+Linux: Likely similar to Windows and OSX, untested.
 
 ##Support
 

@@ -1,3 +1,5 @@
+var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
+
 $(function(){
   chrome.storage.local.get(null,function(data){
     chrome.system.network.getNetworkInterfaces(function(interfaces) {
@@ -36,6 +38,10 @@ $(function(){
   }
   if(data.remotescheduleurl)
     $("#remote-schedule-url").val(data.remotescheduleurl).siblings('label').addClass('active');
+
+  if(data.schedulepollinterval){
+   $('#schedule-poll-interval').val(data.schedulepollinterval);
+  }
 
   if(data.reset && parseFloat(data.reset)){
     var reset = parseFloat(data.reset);
@@ -131,6 +137,8 @@ $(function(){
     var passwordConfirm = $("#confirm_password").val();
     var remoteschedule = $("#remote-schedule").is(':checked');
     var remotescheduleurl = $("#remote-schedule-url").val();
+    var schedulepollinterval = parseFloat($('#schedule-poll-interval').val()) ? parseFloat($('#schedule-poll-interval').val()) : DEFAULT_SCHEDULE_POLL_INTERVAL;
+
     if(reset){
       var reset = parseFloat($('#resetinterval').val());
       if(!reset) reset = 0;
@@ -165,9 +173,17 @@ $(function(){
     if(remoteschedule){
       if(remotescheduleurl && (remotescheduleurl.indexOf("http://") >= 0 || remotescheduleurl.indexOf("https://") >= 0 )){
         //url is valid
+        if(schedulepollinterval <= 0 ){
+          schedulepollinterval = false;
+          error.push("Schedule Poll Interval must be greater then 0.");
+        }
       }else{
+        schedulepollinterval = false;
         error.push("Schedule URL must be valid.");
       }
+    }
+    else{
+      schedulepollinterval = false;
     }
     if(error.length){
       for(var i = 0; i < error.length; i++){
@@ -199,6 +215,8 @@ $(function(){
       else chrome.storage.local.remove('remoteschedule');
       if(remotescheduleurl) chrome.storage.local.set({'remotescheduleurl':remotescheduleurl});
       else chrome.storage.local.remove('remotescheduleurl');
+      if(schedulepollinterval) chrome.storage.local.set({'schedulepollinterval':schedulepollinterval});
+      else chrome.storage.local.remove('schedulepollinterval');
       if(hidecursor) chrome.storage.local.set({'hidecursor':hidecursor});
       else chrome.storage.local.remove('hidecursor');
       if(disablecontextmenu) chrome.storage.local.set({'disablecontextmenu':disablecontextmenu});

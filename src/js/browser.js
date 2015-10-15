@@ -1,7 +1,6 @@
 $(function(){
 
   var RESTART_DELAY = 1000;
-  var UPDATE_SCHEDULE_DELAY = 15 * 60 * 1000; //check for updated schedule every 15 minutes
   var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
 
   var restarting = false;
@@ -9,7 +8,7 @@ $(function(){
   var win = window;
   var activeTimeout;
   var restart;
-  var schedule,scheduleURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout;
+  var schedule,scheduleURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
   var hidecursor = false;
   var disablecontextmenu = false;
   var disabledrag = false;
@@ -42,26 +41,39 @@ $(function(){
 
   function checkSchedule(){
     var s = schedule;
+    var scheduledContent = [];
     if(s && s.length){
       var now = Date.now();
       var hasScheduledContent = false;
       for(var i = 0; i < s.length; i++){
         if(now >= s[i].start && now < s[i].end){
           hasScheduledContent = true;
-          if(s[i].content != currentURL){
-            currentURL = s[i].content;
-            $("#browser").remove();
-            loadContent();
-          }
-        }
+          scheduledContent.push(s[i]);
       }
-      if(!hasScheduledContent && currentURL != defaultURL){
+    }
+
+    if(hasScheduledContent){
+       //find the latest start time
+       scheduledContent.sort(function(a,b){
+         if(a.start == b.start ) return a;
+         return b.start - a.start;
+       });
+
+       //first in the list has the latest start time
+       //only on a change do we want to load
+       if(scheduledContent[0].content != currentURL){
+          currentURL = scheduledContent[0].content;
+          $("#browser").remove();
+          loadContent();
+       }
+    }
+    else if(!hasScheduledContent && currentURL != defaultURL){
         currentURL = defaultURL;
         $("#browser").remove();
         loadContent();
-      }
     }
-  }
+   }
+ }
 
   chrome.storage.local.get(null,function(data){
 
@@ -99,9 +111,10 @@ $(function(){
      }
 
      if(data.remoteschedule && data.remotescheduleurl){
+       schedulepollinterval = data.schedulepollinterval;
        scheduleURL = data.remotescheduleurl;
        updateSchedule();
-       setInterval(updateSchedule,UPDATE_SCHEDULE_DELAY);
+       setInterval(updateSchedule,schedulepollinterval * 60 * 1000);
        setInterval(checkSchedule,CHECK_SCHEDULE_DELAY);
      }
 

@@ -76,7 +76,6 @@ $(function(){
  }
 
   chrome.storage.local.get(null,function(data){
-
      if(data.local){
        $(document).keydown(function(e) {
          if(e.which == 65 && e.ctrlKey)
@@ -126,8 +125,6 @@ $(function(){
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
 
-     active();
-
      $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
 
      currentURL = defaultURL = data.url;
@@ -152,6 +149,7 @@ $(function(){
   }
 
   function loadContent(){
+     active(); //we should reset the active on load content as well
     $('<webview id="browser"/>')
      .css({
        width:'100%',

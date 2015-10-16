@@ -97,6 +97,10 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
 
 ##Changelog
 
+- v5.5.0
+  - Fixed bug with switching scheduled content
+  - Added ability to set schedule polling interval
+
 - v5.4.0
     - Added remote schedule server support
     - Added option to hide cursor

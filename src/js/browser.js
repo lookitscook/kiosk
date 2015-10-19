@@ -2,6 +2,7 @@ $(function(){
 
   var RESTART_DELAY = 1000;
   var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
+  var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
 
   var restarting = false;
   var reset = false;
@@ -110,7 +111,7 @@ $(function(){
      }
 
      if(data.remoteschedule && data.remotescheduleurl){
-       schedulepollinterval = data.schedulepollinterval;
+       schedulepollinterval = data.schedulepollinterval ? data.schedulepollinterval : DEFAULT_SCHEDULE_POLL_INTERVAL;
        scheduleURL = data.remotescheduleurl;
        updateSchedule();
        setInterval(updateSchedule,schedulepollinterval * 60 * 1000);

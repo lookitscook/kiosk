@@ -161,7 +161,7 @@ $(function(){
        right:0,
        bottom:0
      })
-     .attr('partition','persistant:kiosk')
+     .attr('partition','persist:kiosk')
      .on('exit',onEnded)
      .on('unresponsive',onEnded)
      .on('loadabort',function(e){if(e.isTopLevel) onEnded(e); })

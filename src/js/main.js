@@ -8,23 +8,42 @@ function init() {
   //don't let computer sleep
   chrome.power.requestKeepAwake("display");
 
-  chrome.storage.local.get(['url','host','port','username','password'],function(d){
-    data = d;
-    if(('url' in data)){
-      //setup has been completed
-      if(data['host'] && data['port']){
-        startWebserver(data['host'],data['port'],'www');
-      }
-      openWindow("windows/browser.html");
-    }else{
-      //need to run setup
-      openWindow("windows/setup.html");
+  // Check for configuration override with Appazur Kiosk Launcher extension:
+  var kioskLauncherId = "gafgnggdglmjplpklcfhcgfaeehecepg";
+  chrome.runtime.sendMessage(kioskLauncherId, { getUrl: true },
+	  function(response) {
+        if(response) {
+        	console.log('URL configuration override by Kiosk Launcher:', response.url);
+    	    chrome.storage.local.set({'url': response.url 
+		    		|| 'data:text/plain,Bad response from extension.'}, function() {
+		    	start();
+		    });
+	    }
+	    else {
+	    	start();
+	    }
     }
-  });
+  );
 
   chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
     if(request == "demo") openWindow("windows/demo.html");
   });
+
+  function start() {
+	  chrome.storage.local.get(['url','host','port','username','password'],function(d){
+		    data = d;
+		    if(('url' in data)){
+		      //setup has been completed
+		      if(data['host'] && data['port']){
+		        startWebserver(data['host'],data['port'],'www');
+		      }
+		      openWindow("windows/browser.html");
+		    }else{
+		      //need to run setup
+		      openWindow("windows/setup.html");
+		    }
+	  });
+  }
 
   function openWindow(path){
     if(win) win.close();

@@ -11,17 +11,25 @@ function init() {
   // Check for configuration override with Appazur Kiosk Launcher extension:
   var kioskLauncherId = "gafgnggdglmjplpklcfhcgfaeehecepg";
   chrome.runtime.sendMessage(kioskLauncherId, { getUrl: true },
-	  function(response) {
-        if(response) {
-        	console.log('URL configuration override by Kiosk Launcher:', response.url);
-    	    chrome.storage.local.set({'url': response.url 
-		    		|| 'data:text/plain,Bad response from extension.'}, function() {
-		    	start();
-		    });
-	    }
-	    else {
-	    	start();
-	    }
+    function(response) {
+	  if(response) {
+		  console.log('Kiosk Launcher detected.');
+		  // wait a sec to ensure that Launcher has had time to get URL
+		  setTimeout(function () {
+			  chrome.runtime.sendMessage(kioskLauncherId, { getUrl: true }, function(response) {
+				  if(response && response.url) {
+					  console.log('URL configuration override from Kiosk Launcher:', response.url);
+					  chrome.storage.local.set({'url': response.url}, function() {
+						  start();
+					  });
+				  }
+			  });
+		  }, 1000);
+	  }
+	  else {
+		  console.log('Kiosk Launcher not installed.');
+		  start();
+	  }
     }
   );
 

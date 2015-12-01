@@ -15,6 +15,7 @@ $(function(){
   var disabledrag = false;
   var disabletouchhighlight = false;
   var disableselection = false;
+  var resetcache = false;
 
   function updateSchedule(){
     $.getJSON(scheduleURL, function(s) {
@@ -123,6 +124,7 @@ $(function(){
      disabledrag = data.disabledrag ? true : false;
      disabletouchhighlight = data.disabletouchhighlight ? true : false;
      disableselection = data.disableselection ? true : false;
+     resetcache = data.resetcache ? true : false;
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
 
@@ -150,8 +152,8 @@ $(function(){
   }
 
   function loadContent(){
-     active(); //we should reset the active on load content as well
-    $('<webview id="browser"/>')
+    active(); //we should reset the active on load content as well
+    var webview = $('<webview id="browser"/>')
      .css({
        width:'100%',
        height:'100%',
@@ -207,7 +209,22 @@ $(function(){
      })
      .attr('src',currentURL)
      .prependTo('body');
-
+     if(resetcache) {
+       chrome.storage.local.remove('resetcache');
+       resetcache = false;
+       var clearDataType = {
+         appcache: true,
+         cache: true, //remove entire cache
+         cookies: true,
+         fileSystems: true,
+         indexedDB: true,
+         localStorage: true,
+         webSQL: true,
+       };
+       webview[0].clearData({since: 0}, clearDataType, function() {
+         chrome.runtime.reload();
+       });
+     }
   }
 
   function onEnded(event){

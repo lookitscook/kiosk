@@ -138,6 +138,7 @@ $(function(){
     var remoteschedule = $("#remote-schedule").is(':checked');
     var remotescheduleurl = $("#remote-schedule-url").val();
     var schedulepollinterval = parseFloat($('#schedule-poll-interval').val()) ? parseFloat($('#schedule-poll-interval').val()) : DEFAULT_SCHEDULE_POLL_INTERVAL;
+    var resetcache = $('#reset-cache').is(':checked');
 
     if(reset){
       var reset = parseFloat($('#resetinterval').val());
@@ -227,6 +228,8 @@ $(function(){
       else chrome.storage.local.remove('disabletouchhighlight');
       if(disableselection) chrome.storage.local.set({'disableselection':disableselection});
       else chrome.storage.local.remove('disableselection');
+      if(resetcache) chrome.storage.local.set({'resetcache': resetcache});
+      else chrome.storage.local.remove('resetcache');
       chrome.storage.local.set({'url':url});
       chrome.runtime.reload();
     }

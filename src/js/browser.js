@@ -15,6 +15,7 @@ $(function(){
   var disabledrag = false;
   var disabletouchhighlight = false;
   var disableselection = false;
+  var useragent = '';
 
   function updateSchedule(){
     $.getJSON(scheduleURL, function(s) {
@@ -129,6 +130,7 @@ $(function(){
      $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
 
      currentURL = defaultURL = data.url;
+     useragent = data.useragent;
      loadContent();
 
   });
@@ -204,6 +206,10 @@ $(function(){
          browser.insertCSS({code:"*{-webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-touch-callout: none;}"});
        if(disableselection)
          browser.insertCSS({code:"*{-webkit-user-select: none; user-select: none;}"});
+     })
+     .on('loadcommit',function(e){
+        var browser = e.target;
+	if(useragent != '') browser.setUserAgentOverride(useragent);
      })
      .attr('src',currentURL)
      .prependTo('body');

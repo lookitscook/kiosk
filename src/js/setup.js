@@ -69,6 +69,7 @@ $(function(){
   if(data.disabledrag) $("#disabledrag").prop("checked",true);
   if(data.disabletouchhighlight) $("#disabletouchhighlight").prop("checked",true);
   if(data.disableselection) $("#disableselection").prop("checked",true);
+  if(data.useragent) $('#useragent').val(data.useragent).siblings('label').addClass('active');
 
   $('select').material_select();
 
@@ -131,6 +132,7 @@ $(function(){
     var disabledrag = $("#disabledrag").is(':checked');
     var disabletouchhighlight = $("#disabletouchhighlight").is(':checked');
     var disableselection = $("#disableselection").is(':checked');
+    var useragent = $('#useragent').val();
     port = port < 0 ? 0 : port;
     var username = $("#username").val();
     var password = $("#password").val();
@@ -228,6 +230,7 @@ $(function(){
       if(disableselection) chrome.storage.local.set({'disableselection':disableselection});
       else chrome.storage.local.remove('disableselection');
       chrome.storage.local.set({'url':url});
+      chrome.storage.local.set({'useragent':useragent});
       chrome.runtime.reload();
     }
   });

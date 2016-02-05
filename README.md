@@ -85,9 +85,13 @@ On ChromeOS devices: Using managed devices and setting Kiosk application to star
 On Windows and OSX: From chrome://apps/ right click on "Kiosk" and "Create shortcut" then copy this shortcut into the startup folder (Windows) or add to login items (OSX).
 Linux: Likely similar to Windows and OSX, untested.
 
-##Support
+##Support & Feature Requests
 
-This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/zebradog/kiosk/issues Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@zebradog.com for a quote.
+This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/zebradog/kiosk/issues 
+
+Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@zebradog.com for a quote. Alternatively, add a bounty to the issue via https://www.bountysource.com and either we or a third party developer can prioritize the update. 
+
+Pull requests are welcome.
 
 ##Known Limitations
 

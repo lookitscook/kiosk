@@ -89,7 +89,7 @@ Linux: Likely similar to Windows and OSX, untested.
 
 This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/zebradog/kiosk/issues 
 
-Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@zebradog.com for a quote. Alternatively, add a bounty to the issue via https://www.bountysource.com and either we or a third party developer can prioritize the update. 
+Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@zebradog.com for a quote. Alternatively, if the issue does not yet have a milestone assigned to it, add a bounty via https://www.bountysource.com and either we or a third party developer can prioritize the update. 
 
 Pull requests are welcome.
 

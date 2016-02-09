@@ -31,6 +31,8 @@
     "webview",
     "alwaysOnTopWindows",
     "storage",
+    "app.window.alwaysOnTop",
+    "app.window.fullscreen",
     {"fileSystem": ["directory"]}
   ],
   "optional_permissions": [ "audioCapture", "videoCapture" ]

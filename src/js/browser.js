@@ -190,6 +190,8 @@ $(function(){
              $('#mediaPermission').openModal();
            }
          });
+       }else if(e.originalEvent.permission === 'fullscreen') {
+          e.originalEvent.request.allow();
        }
      })
      .on('contentload',function(e){

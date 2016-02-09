@@ -61,7 +61,7 @@ $(function(){
     $("#restart").prop("checked",true);
     $('.restart').removeClass('disabled');
     $('#hour option').removeAttr('selected');
-    $("#hour option:contains('"+restart+":00')").prop('selected',true);
+    $("#hour option[value="+restart+"]").prop('selected',true);
     $("#hour").siblings('label').addClass('active');
   }
   if(data.hidecursor) $("#hidecursor").prop("checked",true);

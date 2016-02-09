@@ -16,6 +16,9 @@ $(function(){
   var disabletouchhighlight = false;
   var disableselection = false;
 
+  //prevent existing fullscreen on escape key press
+  window.onkeydown = window.onkeyup = function(e) { if (e.keyCode == 27) { e.preventDefault(); } };
+
   function updateSchedule(){
     $.getJSON(scheduleURL, function(s) {
       if(s && s.schedule && s.schedule.Value && s.schedule.Value.length){

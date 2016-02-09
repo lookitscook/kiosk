@@ -107,6 +107,7 @@ Pull requests are welcome.
   - Bug fix: 1:00 or 2:00 AM/PM restart time now loads correctly.
   - Change default remote management port to 8080 since 80 is blocked on ChromeOS.
   - Allow videos in content to go full screen.
+  - Prevent exiting fullscreen by pressing escape
 
 - v5.5.1
   - Fixed bug: users on 5.4.0 with scheduling enabled experience rapid polling upon upgrade to 5.5.0. 

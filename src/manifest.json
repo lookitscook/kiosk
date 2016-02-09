@@ -33,6 +33,7 @@
     "storage",
     "app.window.alwaysOnTop",
     "app.window.fullscreen",
+    "app.window.fullscreen.overrideEsc",
     {"fileSystem": ["directory"]}
   ],
   "optional_permissions": [ "audioCapture", "videoCapture" ]

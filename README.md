@@ -100,6 +100,12 @@ Pull requests are welcome.
 - [OSX menu bar will show on hover.](https://github.com/zebradog/kiosk/issues/41)
 
 ##Changelog
+
+- v5.5.2
+  - Bug fix: Correctly focus form-fields on load.
+  - Bug fix: Save cookies, etc. across sessions
+  - Change default remote management port to 8080 since 80 is blocked on ChromeOS. 
+
 - v5.5.1
   - Fixed bug: users on 5.4.0 with scheduling enabled experience rapid polling upon upgrade to 5.5.0. 
   

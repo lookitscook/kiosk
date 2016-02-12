@@ -6,6 +6,7 @@
     <link rel="icon" href="../www/favicon.ico" type="image/x-icon">
     <link type="text/css" rel="stylesheet" href="../www/css/materialize.min.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="../www/css/shared.css"  media="screen,projection"/>
+	<link type="text/css" rel="stylesheet" href="../www/css/display.css"  media="screen,projection"/>
     <script language="javascript" type="text/javascript" src="../www/js/jquery.min.js"></script>
     <script language="javascript" type="text/javascript" src="../www/js/materialize.min.js"></script>
     <script language="javascript" type="text/javascript" src="../js/setup.js"></script></head>
@@ -59,6 +60,19 @@
             <label for="disableselection">Disable Text Selection</label>
           </div>
         </div>
+		
+		<div class="row">
+          <div class="col s12">
+            <h4>Display</h4>
+          </div>
+        </div>
+
+        <div class="row"  style="display:block; position:relative; height:100px">
+          <div class="col s12">		
+			<div  id="display-setting-layer">
+			</div>
+          </div>
+        </div>	
 
         <div class="row">
           <div class="col s12">
@@ -66,6 +80,7 @@
           </div>
         </div>
 
+	
         <div class="row">
           <div class="col s3">
             <input type="checkbox" id="local" checked/>

@@ -1,5 +1,6 @@
 chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);
+var display = null;
 
 function init() {
   var win, basePath, socketInfo, data;
@@ -8,8 +9,19 @@ function init() {
   //don't let computer sleep
   chrome.power.requestKeepAwake("display");
 
-  chrome.storage.local.get(['url','host','port','username','password'],function(d){
+  chrome.storage.local.get(['url','host','port','username','password','display'],function(d){
     data = d;
+	if (data['display']) {
+	   display = data['display'];
+	} else {
+	   chrome.system.display.getInfo(function(disp){
+	     disp.forEach(function(element,index,array) {
+	       if (element.isPrimary) {
+	         display = element;
+	       }
+	     });
+	   });
+	}
     if(('url' in data)){
       //setup has been completed
       if(data['host'] && data['port']){
@@ -26,27 +38,35 @@ function init() {
     if(request == "demo") openWindow("windows/demo.html");
   });
 
-  function openWindow(path){
+   function openWindow(path){
+  	var  bounds;
     if(win) win.close();
-    chrome.system.display.getInfo(function(d){
+    if (display) {
+    	bounds = {
+           left:display.bounds.left,
+           top:display.bounds.top,
+           width:display.bounds.width,
+           height:display.bounds.height
+        };
+    } else {
+    	bounds = {
+    		left:0,
+    		top:0
+    	};
+    }
+    
       chrome.app.window.create(path, {
-        'frame': 'none',
-        'id': 'browser',
-        'state': 'fullscreen',
-        'bounds':{
-           'left':0,
-           'top':0,
-           'width':d[0].bounds.width,
-           'height':d[0].bounds.height
-        }
+        frame: 'none',
+        outerBounds:bounds,
       },function(w){
         win = w;
+		win.outerBounds.left = display.bounds.left;
         win.fullscreen();
         setTimeout(function(){
+		  win.outerBounds.left = display.bounds.left;
           win.fullscreen();
         },1000);
       });
-    });
   }
 
   //directory must be a subdirectory of the package

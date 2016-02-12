@@ -1,0 +1,40 @@
+.display-entry {
+  position: absolute;
+  display: inline-block;
+  border: 1px solid grey;
+  border-radius: 3px;
+  font-size: 1rem;
+  color: #9e9e9e;
+  -webkit-border-radius: 3px;
+  box-shadow: inset 0px 0px 0px 2px #808080;
+  -webkit-box-shadow: inset 0px 0px 0px 2px #808080;
+  background: white;
+  cursor: pointer;
+  z-index: 1;
+}
+.display-entry.selected {
+  z-index: 2;
+  background: #eeeeee;
+  border-color: #808080;
+  box-shadow: inset 0px 0px 0px 4px #808080;
+  -webkit-box-shadow: inset 0px 0px 0px 4px #808080;
+  cursor: default;
+}
+.display-entry.selected:hover {
+  background: #eeeeee;
+  border-color: #808080;
+  box-shadow: inset 0px 0px 0px 4px #808080;
+  -webkit-box-shadow: inset 0px 0px 0px 4px #808080;
+}
+.display-entry:hover {
+  z-index: 3;
+  background: #b4e2f6;
+  border-color: #28a2d5;
+  box-shadow: inset 0px 0px 0px 4px #28a2d5;
+  -webkit-box-shadow: inset 0px 0px 0px 4px #28a2d5;
+}
+.display-entry .display-meta {
+  position: relative;
+  top: 10px;
+  left: 10px;
+}

@@ -31,7 +31,6 @@
     "webview",
     "alwaysOnTopWindows",
     "storage",
-    "window.alwaysOnTop",
     "app.window.fullscreen",
     "app.window.fullscreen.overrideEsc",
     {"fileSystem": ["directory","retainEntries"]}

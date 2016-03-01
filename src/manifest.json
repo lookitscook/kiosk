@@ -15,7 +15,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/js/jquery.min.js","js/main.js","js/background-remove-iframe.js"],
+      "scripts": ["www/js/jquery.min.js","js/main.js"],
       "persistent": false
     }
   },
@@ -34,9 +34,6 @@
     "app.window.alwaysOnTop",
     "app.window.fullscreen",
     "app.window.fullscreen.overrideEsc",
-    "webRequest",
-    "webRequestBlocking",
-    "*://*/*",
     {"fileSystem": ["directory"]}
   ],
   "optional_permissions": [ "audioCapture", "videoCapture" ]

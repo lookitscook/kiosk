@@ -75,9 +75,23 @@ Accepts a URL to a JSON feed for a content schedule. If no item is currently sch
 }
 ```
 
-##Support
+####Note:
 
-This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/zebradog/kiosk/issues Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@zebradog.com for a quote.
+Remote schedule server must have [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) headers set or the [Allow-Control-Allow-Origin:*](https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi?hl=en-US) Chrome extension can be installed to allow access. JSONP is not an option since scripts from arbitrary domains cannot be executed inside Chrome extensions.
+
+###Auto-start
+
+On ChromeOS devices: Using managed devices and setting Kiosk application to start in Kiosk mode is the recommended solution.
+On Windows and OSX: From chrome://apps/ right click on "Kiosk" and "Create shortcut" then copy this shortcut into the startup folder (Windows) or add to login items (OSX).
+Linux: Likely similar to Windows and OSX, untested.
+
+##Support & Feature Requests
+
+This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/zebradog/kiosk/issues 
+
+Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@zebradog.com for a quote. Alternatively, if the issue does not yet have a milestone assigned to it, add a bounty via https://www.bountysource.com and either we or a third party developer can prioritize the update. 
+
+Pull requests are welcome.
 
 ##Known Limitations
 
@@ -86,6 +100,21 @@ This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided w
 - [OSX menu bar will show on hover.](https://github.com/zebradog/kiosk/issues/41)
 
 ##Changelog
+
+- v5.5.2
+  - Bug fix: Correctly focus form-fields on load.
+  - Bug fix: Save cookies, etc. across sessions.
+  - Bug fix: 1:00 or 2:00 AM/PM restart time now loads correctly.
+  - Change default remote management port to 8080 since 80 is blocked on ChromeOS.
+  - Allow videos in content to go full screen.
+  - Prevent exiting fullscreen by pressing escape
+
+- v5.5.1
+  - Fixed bug: users on 5.4.0 with scheduling enabled experience rapid polling upon upgrade to 5.5.0. 
+  
+- v5.5.0
+  - Fixed bug with switching scheduled content
+  - Added ability to set schedule polling interval
 
 - v5.4.0
     - Added remote schedule server support

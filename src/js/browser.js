@@ -1,20 +1,23 @@
 $(function(){
 
   var RESTART_DELAY = 1000;
-  var UPDATE_SCHEDULE_DELAY = 15 * 60 * 1000; //check for updated schedule every 15 minutes
   var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
+  var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
 
   var restarting = false;
   var reset = false;
   var win = window;
   var activeTimeout;
   var restart;
-  var schedule,scheduleURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout;
+  var schedule,scheduleURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
   var hidecursor = false;
   var disablecontextmenu = false;
   var disabledrag = false;
   var disabletouchhighlight = false;
   var disableselection = false;
+
+  //prevent existing fullscreen on escape key press
+  window.onkeydown = window.onkeyup = function(e) { if (e.keyCode == 27) { e.preventDefault(); } };
 
   function updateSchedule(){
     $.getJSON(scheduleURL, function(s) {
@@ -42,29 +45,41 @@ $(function(){
 
   function checkSchedule(){
     var s = schedule;
+    var scheduledContent = [];
     if(s && s.length){
       var now = Date.now();
       var hasScheduledContent = false;
       for(var i = 0; i < s.length; i++){
         if(now >= s[i].start && now < s[i].end){
           hasScheduledContent = true;
-          if(s[i].content != currentURL){
-            currentURL = s[i].content;
-            $("#browser").remove();
-            loadContent();
-          }
-        }
+          scheduledContent.push(s[i]);
       }
-      if(!hasScheduledContent && currentURL != defaultURL){
+    }
+
+    if(hasScheduledContent){
+       //find the latest start time
+       scheduledContent.sort(function(a,b){
+         if(a.start == b.start ) return a;
+         return b.start - a.start;
+       });
+
+       //first in the list has the latest start time
+       //only on a change do we want to load
+       if(scheduledContent[0].content != currentURL){
+          currentURL = scheduledContent[0].content;
+          $("#browser").remove();
+          loadContent();
+       }
+    }
+    else if(!hasScheduledContent && currentURL != defaultURL){
         currentURL = defaultURL;
         $("#browser").remove();
         loadContent();
-      }
     }
-  }
+   }
+ }
 
   chrome.storage.local.get(null,function(data){
-
      if(data.local){
        $(document).keydown(function(e) {
          if(e.which == 65 && e.ctrlKey)
@@ -99,9 +114,10 @@ $(function(){
      }
 
      if(data.remoteschedule && data.remotescheduleurl){
+       schedulepollinterval = data.schedulepollinterval ? data.schedulepollinterval : DEFAULT_SCHEDULE_POLL_INTERVAL;
        scheduleURL = data.remotescheduleurl;
        updateSchedule();
-       setInterval(updateSchedule,UPDATE_SCHEDULE_DELAY);
+       setInterval(updateSchedule,schedulepollinterval * 60 * 1000);
        setInterval(checkSchedule,CHECK_SCHEDULE_DELAY);
      }
 
@@ -112,8 +128,6 @@ $(function(){
      disableselection = data.disableselection ? true : false;
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
-
-     active();
 
      $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
 
@@ -139,6 +153,7 @@ $(function(){
   }
 
   function loadContent(){
+     active(); //we should reset the active on load content as well
     $('<webview id="browser"/>')
      .css({
        width:'100%',
@@ -149,7 +164,7 @@ $(function(){
        right:0,
        bottom:0
      })
-     .attr('partition','persistant:kiosk')
+     .attr('partition','persist:kiosk')
      .on('exit',onEnded)
      .on('unresponsive',onEnded)
      .on('loadabort',function(e){if(e.isTopLevel) onEnded(e); })
@@ -178,6 +193,8 @@ $(function(){
              $('#mediaPermission').openModal();
            }
          });
+       }else if(e.originalEvent.permission === 'fullscreen') {
+          e.originalEvent.request.allow();
        }
      })
      .on('contentload',function(e){
@@ -192,6 +209,7 @@ $(function(){
          browser.insertCSS({code:"*{-webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-touch-callout: none;}"});
        if(disableselection)
          browser.insertCSS({code:"*{-webkit-user-select: none; user-select: none;}"});
+       browser.focus();
      })
      .attr('src',currentURL)
      .prependTo('body');

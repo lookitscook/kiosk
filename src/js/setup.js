@@ -181,6 +181,7 @@ $(function(){
     var remoteschedule = $("#remote-schedule").is(':checked');
     var remotescheduleurl = $("#remote-schedule-url").val();
     var schedulepollinterval = parseFloat($('#schedule-poll-interval').val()) ? parseFloat($('#schedule-poll-interval').val()) : DEFAULT_SCHEDULE_POLL_INTERVAL;
+    var resetcache = $('#reset-cache').is(':checked');
 
     var servelocal = $("#servelocal").is(':checked');
     var servelocaldirectory = $('#servelocaldirectory').data('directory');
@@ -290,6 +291,8 @@ $(function(){
         chrome.storage.local.remove('servelocalhost');
         chrome.storage.local.remove('servelocalport');
       }
+      if(resetcache) chrome.storage.local.set({'resetcache': resetcache});
+      else chrome.storage.local.remove('resetcache');
       chrome.storage.local.set({'url':url});
       chrome.storage.local.set({'useragent':useragent});
       chrome.runtime.reload();

@@ -15,7 +15,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/js/jquery.min.js","js/main.js"],
+      "scripts": ["www/js/jquery.min.js","js/wsc-chrome.min.js","js/admin.js","js/main.js"],
       "persistent": false
     }
   },

@@ -83,6 +83,7 @@ $(function(){
     $('#servelocalhost').children("[value='"+data.servelocalhost+"']").prop('selected',true);
   }
   if(data.servelocalport) $("#servelocalport").val(data.servelocalport);
+  if(data.useragent) $('#useragent').val(data.useragent).siblings('label').addClass('active');
 
   $('select').material_select();
 
@@ -172,6 +173,7 @@ $(function(){
     var disabledrag = $("#disabledrag").is(':checked');
     var disabletouchhighlight = $("#disabletouchhighlight").is(':checked');
     var disableselection = $("#disableselection").is(':checked');
+    var useragent = $('#useragent').val();
     port = port < 0 ? 0 : port;
     var username = $("#username").val();
     var password = $("#password").val();
@@ -289,6 +291,7 @@ $(function(){
         chrome.storage.local.remove('servelocalport');
       }
       chrome.storage.local.set({'url':url});
+      chrome.storage.local.set({'useragent':useragent});
       chrome.runtime.reload();
     }
   });

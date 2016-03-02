@@ -15,6 +15,7 @@ $(function(){
   var disabledrag = false;
   var disabletouchhighlight = false;
   var disableselection = false;
+  var useragent = '';
 
   //prevent existing fullscreen on escape key press
   window.onkeydown = window.onkeyup = function(e) { if (e.keyCode == 27) { e.preventDefault(); } };
@@ -132,6 +133,7 @@ $(function(){
      $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
 
      currentURL = defaultURL = data.url;
+     useragent = data.useragent;
      loadContent();
 
   });
@@ -210,6 +212,10 @@ $(function(){
        if(disableselection)
          browser.insertCSS({code:"*{-webkit-user-select: none; user-select: none;}"});
        browser.focus();
+     })
+     .on('loadcommit',function(e){
+        var browser = e.target;
+	if(useragent != '') browser.setUserAgentOverride(useragent);
      })
      .attr('src',currentURL)
      .prependTo('body');

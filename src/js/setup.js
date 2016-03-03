@@ -295,7 +295,7 @@ $(function(){
       else chrome.storage.local.remove('resetcache');
       chrome.storage.local.set({'url':url});
       chrome.storage.local.set({'useragent':useragent});
-      chrome.runtime.reload();
+      chrome.runtime.sendMessage('reload');
     }
   });
 

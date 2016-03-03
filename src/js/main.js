@@ -1,9 +1,9 @@
 chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);
 
+var directoryServer, adminServer;
+
 function init() {
-  var directoryServer;
-  var adminServer;
 
   var win, basePath, socketInfo, data;
   var filesMap = {};
@@ -16,13 +16,9 @@ function init() {
       //setup has been completed
       if(data.servelocaldirectory && data.servelocalhost && data.servelocalport){
         //serve files from local directory
-        //TODO: handle restoreEntry error
-        console.log('Serve local files from ',data.servelocaldirectory);
         chrome.fileSystem.restoreEntry(data.servelocaldirectory,function(entry){
           var host = data.servelocalhost;
           var port = data.servelocalport;
-          console.log(host,port,entry);
-          //TODO: Start web server with local directry entry
           startWebserverDirectoryEntry(host,port,entry)
         });
       }
@@ -38,7 +34,27 @@ function init() {
   });
 
   chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
-    if(request == "demo") openWindow("windows/demo.html");
+    if(request == "demo")
+     openWindow("windows/demo.html");
+    else if(request == "reload"){
+      chrome.runtime.getPlatformInfo(function(p){
+        console.log('reload',p.os,'dir',directoryServer);
+        if(p.os == "cros"){
+          //we're on ChromeOS, so `reload()` will always work
+          chrome.runtime.reload();
+        }else{
+          //we're OSX/Win/*nix so `reload()` may not work if Chrome is not
+          // running the background. Simply close all windows and reset.
+          if(directoryServer) directoryServer.stop();
+          if(adminServer) adminServer.stop();
+          var w = chrome.app.window.getAll();
+          for(var i = 0; i < w.length; i++){
+            w[i].close();
+          }
+          init();
+        }
+      });
+    }
   });
 
   function openWindow(path){

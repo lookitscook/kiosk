@@ -30,7 +30,7 @@ _.extend(AdminDataHandler.prototype, {
 
       if(restart) setTimeout( function() {
         // allow writing out response first.
-        chrome.runtime.reload();
+        chrome.runtime.sendMessage('reload');
       }, 1000 )
                               
       

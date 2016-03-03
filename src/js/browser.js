@@ -111,7 +111,10 @@ $(function(){
        if(now.isAfter(restart)) restart.add(1,'d'); //if we're past the time today, do it tomorrow
        setInterval(function(){
           var now = moment();
-          if(now.isAfter(restart)) chrome.runtime.reload();
+          if(now.isAfter(restart)) {
+            chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
+            chrome.runtime.sendMessage('reload'); //all other systems
+          }
         },60*1000);
      }
 
@@ -233,7 +236,8 @@ $(function(){
          webSQL: true,
        };
        webview[0].clearData({since: 0}, clearDataType, function() {
-         chrome.runtime.reload();
+         $("#browser").remove();
+         loadContent();
        });
      }
   }

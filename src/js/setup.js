@@ -159,9 +159,9 @@ $(function(){
 
   function setLocalContentURL(){
     if($("#servelocal").is(':checked')){
-      $('#url').val('http://127.0.0.1:'+$('#servelocalport').val()+'/');
+      $('#url').val('http://127.0.0.1:'+$('#servelocalport').val()+'/').siblings('label').addClass('active');
     }else{
-      $('#url').val('');
+      $('#url').val('').siblings('label').removeClass('active');
     }
   }
 

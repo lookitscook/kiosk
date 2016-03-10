@@ -101,6 +101,12 @@ Pull requests are welcome.
 
 ##Changelog
 
+- v5.6.0
+  - Allow files to be served from local directory
+  - Add option to clear cache on save
+  - Add option to set custom user agent
+  - Bug fix: Reload will now work correctly on all systems.
+
 - v5.5.2
   - Bug fix: Correctly focus form-fields on load.
   - Bug fix: Save cookies, etc. across sessions.

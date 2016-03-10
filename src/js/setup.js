@@ -155,6 +155,16 @@ $(function(){
     }
   });
 
+  $("#servelocal,#servelocalport").on('change',setLocalContentURL);
+
+  function setLocalContentURL(){
+    if($("#servelocal").is(':checked')){
+      $('#url').val('http://127.0.0.1:'+$('#servelocalport').val()+'/');
+    }else{
+      $('#url').val('');
+    }
+  }
+
   $('#url').focus();
 
   $('#save').click(function(e){
@@ -214,6 +224,8 @@ $(function(){
       if(remote){
         if(!port){
           error.push("Port is required.");
+        }else if(port < 1024){
+           error.push("Remote admin. port must be above 1024");
         }
         if(!host){
           error.push("Host is required.");
@@ -239,6 +251,7 @@ $(function(){
         if(!servelocaldirectory) error.push("Directory is required for serving local files.");
         if(!servelocalhost) error.push("Host is required for serving local files.");
         if(!servelocalport) error.push("Port is required for serving local files.");
+        else if(servelocalport < 1024) error.push("Local port must be above 1024");
     }
     if(error.length){
       for(var i = 0; i < error.length; i++){

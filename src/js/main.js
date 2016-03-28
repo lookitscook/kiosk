@@ -38,7 +38,6 @@ function init() {
      openWindow("windows/demo.html");
     else if(request == "reload"){
       chrome.runtime.getPlatformInfo(function(p){
-        console.log('reload',p.os,'dir',directoryServer);
         if(p.os == "cros"){
           //we're on ChromeOS, so `reload()` will always work
           chrome.runtime.reload();
@@ -88,7 +87,7 @@ function init() {
                                              })
     directoryServer.start()
   }
-  
+
   //directory must be a subdirectory of the package
   function startWebserver(host,port,directory,settings){
     chrome.runtime.getPackageDirectoryEntry(function(packageDirectory){

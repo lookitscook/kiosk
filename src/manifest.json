@@ -2,7 +2,7 @@
   "name": "Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.6.0",
+  "version": "5.7.0",
   "author": {
     "name": "ZEBRADOG",
     "email": "support@zebradog.com"
@@ -15,7 +15,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/js/jquery.min.js","js/wsc-chrome.min.js","js/admin.js","js/main.js"],
+      "scripts": ["www/js/jquery.min.js","js/lib/wsc-chrome.js","js/admin.js","js/main.js"],
       "persistent": false
     }
   },

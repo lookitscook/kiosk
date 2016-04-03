@@ -43,6 +43,10 @@ $(function(){
    $('#schedule-poll-interval').val(data.schedulepollinterval);
   }
 
+  if(data.sleepmode){
+   $('#sleep-mode').children("[value='"+data.sleepmode+"']").prop('selected',true);
+  }
+
   if(data.reset && parseFloat(data.reset)){
     var reset = parseFloat(data.reset);
     $("#reset").prop("checked",true);
@@ -191,6 +195,7 @@ $(function(){
     var remoteschedule = $("#remote-schedule").is(':checked');
     var remotescheduleurl = $("#remote-schedule-url").val();
     var schedulepollinterval = parseFloat($('#schedule-poll-interval').val()) ? parseFloat($('#schedule-poll-interval').val()) : DEFAULT_SCHEDULE_POLL_INTERVAL;
+    var sleepmode = $("#sleep-mode").val();
     var resetcache = $('#reset-cache').is(':checked');
 
     var servelocal = $("#servelocal").is(':checked');
@@ -308,6 +313,7 @@ $(function(){
       else chrome.storage.local.remove('resetcache');
       chrome.storage.local.set({'url':url});
       chrome.storage.local.set({'useragent':useragent});
+      chrome.storage.local.set({'sleepmode':sleepmode});
       chrome.runtime.sendMessage('reload');
     }
   });

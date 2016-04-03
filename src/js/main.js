@@ -8,12 +8,23 @@ function init() {
   var win, basePath, socketInfo, data;
   var filesMap = {};
 
-  //don't let computer sleep
-  chrome.power.requestKeepAwake("display");
-
   chrome.storage.local.get(null,function(data){
     if(('url' in data)){
       //setup has been completed
+
+      // Sleepmode may not have been selected by user in setup because it
+      // is a new config param, so assume the previous hard-coded value as
+      // default. 
+      if (!data.sleepmode) {
+        chrome.storage.local.set({'sleepmode': 'display'});
+        data.sleepmode = 'display';
+      }
+      if (data.sleepmode == 'none') {
+        chrome.power.releaseKeepAwake();
+      } else {
+        chrome.power.requestKeepAwake(data.sleepmode);
+      }
+
       if(data.servelocaldirectory && data.servelocalhost && data.servelocalport){
         //serve files from local directory
         chrome.fileSystem.restoreEntry(data.servelocaldirectory,function(entry){

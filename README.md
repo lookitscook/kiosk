@@ -101,6 +101,9 @@ Pull requests are welcome.
 
 ##Changelog
 
+- v5.7.0
+    - Sleep/screensaver mode configurable
+
 - v5.6.0
   - Allow files to be served from local directory
   - Add option to clear cache on save

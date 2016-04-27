@@ -122,10 +122,10 @@ Pull requests are welcome.
   - Prevent exiting fullscreen by pressing escape
 
 - v5.5.1
-  - Fixed bug: users on 5.4.0 with scheduling enabled experience rapid polling upon upgrade to 5.5.0. 
-  
+  - Bug fix: users on 5.4.0 with scheduling enabled experience rapid polling upon upgrade to 5.5.0.
+
 - v5.5.0
-  - Fixed bug with switching scheduled content
+  - Bug fix: switching scheduled content
   - Added ability to set schedule polling interval
 
 - v5.4.0
@@ -137,10 +137,10 @@ Pull requests are welcome.
     - Added option to disable text selection
 
 - v5.3.4
-    - Fixed bug with restart scheduling
+    - Bug fix: restart scheduling
 
 - v.5.3.3
-    - Fixed bug with reset/restart combo.
+    - Bug fix: reset/restart combo.
 
 - v.5.3.2
     - Optional webcam/mic access added.
@@ -166,7 +166,7 @@ Pull requests are welcome.
 	- automatically attempt to reconnect to content if connection broken
 
 - v5.1.1
-	- fixed 1/5 screen fullscreen bug on Windows 8
+	- Bug fix: 1/5 screen fullscreen on Windows 8
 
 - v5.1.0
 	- started using proper semver

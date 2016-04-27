@@ -17,6 +17,7 @@ $(function(){
   var disableselection = false;
   var useragent = '';
   var resetcache = false;
+  var partition = null;
 
   //prevent existing fullscreen on escape key press
   window.onkeydown = window.onkeyup = function(e) { if (e.keyCode == 27) { e.preventDefault(); } };
@@ -132,6 +133,7 @@ $(function(){
      disabletouchhighlight = data.disabletouchhighlight ? true : false;
      disableselection = data.disableselection ? true : false;
      resetcache = data.resetcache ? true : false;
+     partition = data.partition;
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
 
@@ -161,6 +163,11 @@ $(function(){
 
   function loadContent(){
     active(); //we should reset the active on load content as well
+    if(resetcache) partition = null;
+    if(!partition){
+      partition = "persist:kiosk"+(Date.now());
+      chrome.storage.local.set({'partition':partition});
+    }
     var webview = $('<webview id="browser"/>')
      .css({
        width:'100%',
@@ -171,7 +178,7 @@ $(function(){
        right:0,
        bottom:0
      })
-     .attr('partition','persist:kiosk')
+     .attr('partition',partition)
      .on('exit',onEnded)
      .on('unresponsive',onEnded)
      .on('loadabort',function(e){if(e.isTopLevel) onEnded(e); })

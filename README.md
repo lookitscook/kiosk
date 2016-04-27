@@ -101,6 +101,9 @@ Pull requests are welcome.
 
 ##Changelog
 
+- v5.7.1
+  - Bug fix: clear cache now fully clears cache
+
 - v5.7.0
     - Sleep/screensaver mode configurable
 

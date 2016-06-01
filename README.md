@@ -101,6 +101,10 @@ Pull requests are welcome.
 
 ##Changelog
 
+- v5.7.2
+  - Allow simplified version of schedule JSON
+  - Bug fix: load schedule JSON cross-domain
+
 - v5.7.1
   - Bug fix: clear cache now fully clears cache
 

@@ -2,7 +2,7 @@
   "name": "Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.7.1",
+  "version": "5.7.2",
   "author": {
     "name": "ZEBRADOG",
     "email": "support@zebradog.com"

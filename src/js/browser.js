@@ -1,8 +1,8 @@
 $(function(){
 
   var RESTART_DELAY = 1000;
-  var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
-  var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
+  var CHECK_SCHEDULE_DELAY = 5 * 1000; //check content against schedule every 5 seconds
+  var DEFAULT_SCHEDULE_POLL_INTERVAL = 1; //minutes
 
   var restarting = false;
   var reset = false;

@@ -24,6 +24,16 @@ $(function(){
 
   function updateSchedule(){
     $.getJSON(scheduleURL, function(s) {
+      if(s && s.length && !s.schedule) {
+        var temp = s;
+        s = {
+          'schedule':{
+            'Value':{
+              'items':temp
+            }
+          }
+        }
+      }
       if(s && s.schedule && s.schedule.Value && s.schedule.Value.length){
         //support schedule.Value as structure or array containing structure
         s.schedule.Value = s.schedule.Value[0];
@@ -118,7 +128,6 @@ $(function(){
           }
         },60*1000);
      }
-
      if(data.remoteschedule && data.remotescheduleurl){
        schedulepollinterval = data.schedulepollinterval ? data.schedulepollinterval : DEFAULT_SCHEDULE_POLL_INTERVAL;
        scheduleURL = data.remotescheduleurl;

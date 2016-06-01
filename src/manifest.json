@@ -25,6 +25,7 @@
     }
   },
   "permissions": [
+    "<all_urls>",
     "system.display",
     "system.network",
     "power",
@@ -36,4 +37,5 @@
     {"fileSystem": ["directory","retainEntries"]}
   ],
   "optional_permissions": [ "audioCapture", "videoCapture" ]
+
 }

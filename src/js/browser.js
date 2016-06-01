@@ -130,7 +130,7 @@ $(function(){
      }
      if(data.remoteschedule && data.remotescheduleurl){
        schedulepollinterval = data.schedulepollinterval ? data.schedulepollinterval : DEFAULT_SCHEDULE_POLL_INTERVAL;
-       scheduleURL = data.remotescheduleurl;
+       scheduleURL = data.remotescheduleurl.indexOf('?') >= 0 ? data.remotescheduleurl+'&kiosk_t='+Date.now() : data.remotescheduleurl+'?kiosk_t='+Date.now();
        updateSchedule();
        setInterval(updateSchedule,schedulepollinterval * 60 * 1000);
        setInterval(checkSchedule,CHECK_SCHEDULE_DELAY);

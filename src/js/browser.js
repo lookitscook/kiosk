@@ -15,12 +15,25 @@ $(function(){
   var disabledrag = false;
   var disabletouchhighlight = false;
   var disableselection = false;
+  var useragent = '';
+  var resetcache = false;
+  var partition = null;
 
   //prevent existing fullscreen on escape key press
   window.onkeydown = window.onkeyup = function(e) { if (e.keyCode == 27) { e.preventDefault(); } };
 
   function updateSchedule(){
     $.getJSON(scheduleURL, function(s) {
+      if(s && s.length && !s.schedule) {
+        var temp = s;
+        s = {
+          'schedule':{
+            'Value':{
+              'items':temp
+            }
+          }
+        }
+      }
       if(s && s.schedule && s.schedule.Value && s.schedule.Value.length){
         //support schedule.Value as structure or array containing structure
         s.schedule.Value = s.schedule.Value[0];
@@ -109,13 +122,15 @@ $(function(){
        if(now.isAfter(restart)) restart.add(1,'d'); //if we're past the time today, do it tomorrow
        setInterval(function(){
           var now = moment();
-          if(now.isAfter(restart)) chrome.runtime.reload();
+          if(now.isAfter(restart)) {
+            chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
+            chrome.runtime.sendMessage('reload'); //all other systems
+          }
         },60*1000);
      }
-
      if(data.remoteschedule && data.remotescheduleurl){
        schedulepollinterval = data.schedulepollinterval ? data.schedulepollinterval : DEFAULT_SCHEDULE_POLL_INTERVAL;
-       scheduleURL = data.remotescheduleurl;
+       scheduleURL = data.remotescheduleurl.indexOf('?') >= 0 ? data.remotescheduleurl+'&kiosk_t='+Date.now() : data.remotescheduleurl+'?kiosk_t='+Date.now();
        updateSchedule();
        setInterval(updateSchedule,schedulepollinterval * 60 * 1000);
        setInterval(checkSchedule,CHECK_SCHEDULE_DELAY);
@@ -126,12 +141,15 @@ $(function(){
      disabledrag = data.disabledrag ? true : false;
      disabletouchhighlight = data.disabletouchhighlight ? true : false;
      disableselection = data.disableselection ? true : false;
+     resetcache = data.resetcache ? true : false;
+     partition = data.partition;
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
 
      $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
 
      currentURL = defaultURL = data.url;
+     useragent = data.useragent;
      loadContent();
 
   });
@@ -153,8 +171,13 @@ $(function(){
   }
 
   function loadContent(){
-     active(); //we should reset the active on load content as well
-    $('<webview id="browser"/>')
+    active(); //we should reset the active on load content as well
+    if(resetcache) partition = null;
+    if(!partition){
+      partition = "persist:kiosk"+(Date.now());
+      chrome.storage.local.set({'partition':partition});
+    }
+    var webview = $('<webview id="browser"/>')
      .css({
        width:'100%',
        height:'100%',
@@ -164,7 +187,7 @@ $(function(){
        right:0,
        bottom:0
      })
-     .attr('partition','persist:kiosk')
+     .attr('partition',partition)
      .on('exit',onEnded)
      .on('unresponsive',onEnded)
      .on('loadabort',function(e){if(e.isTopLevel) onEnded(e); })
@@ -211,9 +234,28 @@ $(function(){
          browser.insertCSS({code:"*{-webkit-user-select: none; user-select: none;}"});
        browser.focus();
      })
+     .on('loadcommit',function(e){
+	      if(useragent) e.target.setUserAgentOverride(useragent);
+     })
      .attr('src',currentURL)
      .prependTo('body');
-
+     if(resetcache) {
+       chrome.storage.local.remove('resetcache');
+       resetcache = false;
+       var clearDataType = {
+         appcache: true,
+         cache: true, //remove entire cache
+         cookies: true,
+         fileSystems: true,
+         indexedDB: true,
+         localStorage: true,
+         webSQL: true,
+       };
+       webview[0].clearData({since: 0}, clearDataType, function() {
+         $("#browser").remove();
+         loadContent();
+       });
+     }
   }
 
   function onEnded(event){

@@ -53,7 +53,7 @@ Application can be completely restarted at an administrator-specified time once 
 
 ###Remote Schedule Server
 
-Accepts a URL to a JSON feed for a content schedule. If no item is currently scheduled, the default content (specified by the Content URL on Kiosk setup page) is used. Default content will be overridden by scheduled items. Schedule URL is polled every 15 minutes. Schedule should be formatted according to (a simplified version of) the format provided by [Chrome Sign Builder](https://chrome.google.com/webstore/detail/chrome-sign-builder/odjaaghiehpobimgdjjfofmablbaleem?hl=en) (exported schedules from Chrome Sign Builder are currently supported without support for screen position, repetition or display settings):
+Accepts a URL to a JSON feed for a content schedule. If no item is currently scheduled, the default content (specified by the Content URL on Kiosk setup page) is used. Default content will be overridden by scheduled items. Schedule URL is polled at configurable interval. `kiosk_t` parameter is appended to the URL with a value of the current timestamp to prevent caching of the schedule. Schedule should be formatted according to (a simplified version of) the format provided by [Chrome Sign Builder](https://chrome.google.com/webstore/detail/chrome-sign-builder/odjaaghiehpobimgdjjfofmablbaleem?hl=en) (exported schedules from Chrome Sign Builder are currently supported without support for screen position, repetition or display settings):
 ```
 {
   "schedule": {
@@ -101,6 +101,23 @@ Pull requests are welcome.
 
 ##Changelog
 
+- v5.7.2
+  - Allow simplified version of schedule JSON
+  - Bug fix: load schedule JSON cross-domain
+  - Bug fix: append time to schedule JSON to prevent caching
+
+- v5.7.1
+  - Bug fix: clear cache now fully clears cache
+
+- v5.7.0
+    - Sleep/screensaver mode configurable
+
+- v5.6.0
+  - Allow files to be served from local directory
+  - Add option to clear cache on save
+  - Add option to set custom user agent
+  - Bug fix: Reload will now work correctly on all systems.
+
 - v5.5.2
   - Bug fix: Correctly focus form-fields on load.
   - Bug fix: Save cookies, etc. across sessions.
@@ -110,10 +127,10 @@ Pull requests are welcome.
   - Prevent exiting fullscreen by pressing escape
 
 - v5.5.1
-  - Fixed bug: users on 5.4.0 with scheduling enabled experience rapid polling upon upgrade to 5.5.0. 
-  
+  - Bug fix: users on 5.4.0 with scheduling enabled experience rapid polling upon upgrade to 5.5.0.
+
 - v5.5.0
-  - Fixed bug with switching scheduled content
+  - Bug fix: switching scheduled content
   - Added ability to set schedule polling interval
 
 - v5.4.0
@@ -125,10 +142,10 @@ Pull requests are welcome.
     - Added option to disable text selection
 
 - v5.3.4
-    - Fixed bug with restart scheduling
+    - Bug fix: restart scheduling
 
 - v.5.3.3
-    - Fixed bug with reset/restart combo.
+    - Bug fix: reset/restart combo.
 
 - v.5.3.2
     - Optional webcam/mic access added.
@@ -154,7 +171,7 @@ Pull requests are welcome.
 	- automatically attempt to reconnect to content if connection broken
 
 - v5.1.1
-	- fixed 1/5 screen fullscreen bug on Windows 8
+	- Bug fix: 1/5 screen fullscreen on Windows 8
 
 - v5.1.0
 	- started using proper semver

@@ -8,13 +8,32 @@ function init() {
   var win, basePath, socketInfo, data;
   var filesMap = {};
 
+  /*
+  LOG PERMISSION WARNINGS
+  use to test manifest permissions changes
+  DO NOT publish if new warnings are triggered. Prompt on existing
+  installations would likely be a major issue.
+
+  Current permission warnings are:
+  -"Exchange data with any device on the local network or internet",
+  -"Read folders that you open in the application"
+
+  Should be commented out in production application.
+  */
+  /*chrome.management.getPermissionWarningsByManifest(
+    JSON.stringify(chrome.runtime.getManifest()),
+    function(warning){
+      console.log("PERMISSION WARNIINGS",warning);
+    }
+  );*/
+
   chrome.storage.local.get(null,function(data){
     if(('url' in data)){
       //setup has been completed
 
       // Sleepmode may not have been selected by user in setup because it
       // is a new config param, so assume the previous hard-coded value as
-      // default. 
+      // default.
       if (!data.sleepmode) {
         chrome.storage.local.set({'sleepmode': 'display'});
         data.sleepmode = 'display';

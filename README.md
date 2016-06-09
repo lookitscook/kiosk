@@ -53,7 +53,7 @@ Application can be completely restarted at an administrator-specified time once 
 
 ###Remote Schedule Server
 
-Accepts a URL to a JSON feed for a content schedule. If no item is currently scheduled, the default content (specified by the Content URL on Kiosk setup page) is used. Default content will be overridden by scheduled items. Schedule URL is polled every 15 minutes. Schedule should be formatted according to (a simplified version of) the format provided by [Chrome Sign Builder](https://chrome.google.com/webstore/detail/chrome-sign-builder/odjaaghiehpobimgdjjfofmablbaleem?hl=en) (exported schedules from Chrome Sign Builder are currently supported without support for screen position, repetition or display settings):
+Accepts a URL to a JSON feed for a content schedule. If no item is currently scheduled, the default content (specified by the Content URL on Kiosk setup page) is used. Default content will be overridden by scheduled items. Schedule URL is polled at configurable interval. `kiosk_t` parameter is appended to the URL with a value of the current timestamp to prevent caching of the schedule. Schedule should be formatted according to (a simplified version of) the format provided by [Chrome Sign Builder](https://chrome.google.com/webstore/detail/chrome-sign-builder/odjaaghiehpobimgdjjfofmablbaleem?hl=en) (exported schedules from Chrome Sign Builder are currently supported without support for screen position, repetition or display settings):
 ```
 {
   "schedule": {
@@ -100,6 +100,11 @@ Pull requests are welcome.
 - [OSX menu bar will show on hover.](https://github.com/zebradog/kiosk/issues/41)
 
 ##Changelog
+
+- v5.7.2
+  - Allow simplified version of schedule JSON
+  - Bug fix: load schedule JSON cross-domain
+  - Bug fix: append time to schedule JSON to prevent caching
 
 - v5.7.1
   - Bug fix: clear cache now fully clears cache

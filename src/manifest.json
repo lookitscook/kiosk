@@ -2,7 +2,7 @@
   "name": "Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.7.1",
+  "version": "5.7.2",
   "author": {
     "name": "ZEBRADOG",
     "email": "support@zebradog.com"
@@ -25,6 +25,7 @@
     }
   },
   "permissions": [
+    "<all_urls>",
     "system.display",
     "system.network",
     "power",
@@ -36,4 +37,5 @@
     {"fileSystem": ["directory","retainEntries"]}
   ],
   "optional_permissions": [ "audioCapture", "videoCapture" ]
+
 }

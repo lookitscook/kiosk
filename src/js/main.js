@@ -101,10 +101,12 @@ function init() {
         }
       },function(w){
         win = w;
-        win.fullscreen();
-        setTimeout(function(){
+        if(win){
           win.fullscreen();
-        },1000);
+          setTimeout(function(){
+            if(win) win.fullscreen();
+          },1000);
+        }
       });
     });
   }

@@ -294,10 +294,12 @@ $(function(){
       },function(w){
         chrome.app.window.current().close();
         win = w;
-        win.fullscreen();
-        setTimeout(function(){
+        if(win){
           win.fullscreen();
-        },1000);
+          setTimeout(function(){
+            if(win) win.fullscreen();
+          },1000);
+        }
       });
     });
   }

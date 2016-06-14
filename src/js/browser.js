@@ -240,7 +240,6 @@ $(function(){
 	      if(useragent) e.target.setUserAgentOverride(useragent);
         if(reset){
           ACTIVE_EVENTS.split(' ').forEach(function(type,i){
-            console.log(type);
             $webview[0].executeScript({
               code: "document.addEventListener('"+type+"',function(){console.log('kiosk:active')},false)"
             });

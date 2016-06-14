@@ -3,6 +3,7 @@ $(function(){
   var RESTART_DELAY = 1000;
   var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
   var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
+  var ACTIVE_EVENTS = "click mousedown mouseup mousemove touch touchstart touchend keypress keydown";
 
   var restarting = false;
   var reset = false;
@@ -146,7 +147,7 @@ $(function(){
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
 
-     $('*').on('click mousedown mouseup mousemove touch touchstart touchend keypress keydown',active);
+     if(reset) $('*').on(ACTIVE_EVENTS,active);
 
      currentURL = defaultURL = data.url;
      useragent = data.useragent;
@@ -177,7 +178,8 @@ $(function(){
       partition = "persist:kiosk"+(Date.now());
       chrome.storage.local.set({'partition':partition});
     }
-    var webview = $('<webview id="browser"/>')
+    var $webview = $('<webview id="browser"/>');
+    $webview
      .css({
        width:'100%',
        height:'100%',
@@ -236,6 +238,14 @@ $(function(){
      })
      .on('loadcommit',function(e){
 	      if(useragent) e.target.setUserAgentOverride(useragent);
+        if(reset){
+          ACTIVE_EVENTS.split(' ').forEach(function(type,i){
+            console.log(type);
+            $webview[0].executeScript({
+              code: "document.addEventListener('"+type+"',function(){console.log('kiosk:active')},false)"
+            });
+          });
+        }
      })
      .attr('src',currentURL)
      .prependTo('body');
@@ -251,7 +261,7 @@ $(function(){
          localStorage: true,
          webSQL: true,
        };
-       webview[0].clearData({since: 0}, clearDataType, function() {
+       $webview[0].clearData({since: 0}, clearDataType, function() {
          $("#browser").remove();
          loadContent();
        });

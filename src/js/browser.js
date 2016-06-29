@@ -9,7 +9,7 @@ $(function(){
   var win = window;
   var activeTimeout;
   var restart;
-  var schedule,scheduleURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
+  var schedule,scheduleURL,defaultURL,currentURL,currentZoom,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
   var hidecursor = false;
   var disablecontextmenu = false;
   var disabledrag = false;
@@ -81,6 +81,7 @@ $(function(){
        //only on a change do we want to load
        if(scheduledContent[0].content != currentURL){
           currentURL = scheduledContent[0].content;
+          currentZoom = scheduledContent[0].zoom / 100.0;
           $("#browser").remove();
           loadContent();
        }
@@ -233,6 +234,7 @@ $(function(){
          browser.insertCSS({code:"*{-webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-touch-callout: none;}"});
        if(disableselection)
          browser.insertCSS({code:"*{-webkit-user-select: none; user-select: none;}"});
+       browser.setZoom(currentZoom);
        browser.focus();
      })
      .on('loadcommit',function(e){

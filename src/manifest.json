@@ -34,7 +34,6 @@
     "storage",
     "app.window.fullscreen",
     "app.window.fullscreen.overrideEsc",
-    "fontSettings",
     {"fileSystem": ["directory","retainEntries"]}
   ],
   "optional_permissions": [ "audioCapture", "videoCapture" ]

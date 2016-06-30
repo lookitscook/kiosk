@@ -60,7 +60,7 @@ Accepts a URL to a JSON feed for a content schedule. If no item is currently sch
     "Value":  {
       "items": [
         {
-          "content": "http://www.zebradog.com",
+          "content": "http://www.github.com",
           "end": "Tue Jul 14 2015 12:30:00 GMT-0500",
           "start": "Tue Jul 14 2015 09:30:00 GMT-0500",
         },
@@ -87,17 +87,17 @@ Linux: Likely similar to Windows and OSX, untested.
 
 ##Support & Feature Requests
 
-This product is maintained by [ZEBRADOG](http://www.zebradog.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/zebradog/kiosk/issues
+This product is maintained by [Matt Cook](mailto:matt@lookitscook.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/matt-cook/kiosk/issues
 
-Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@zebradog.com for a quote. Alternatively, if the issue does not yet have a milestone assigned to it, add a bounty via https://www.bountysource.com and either we or a third party developer can prioritize the update.
+Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to matt@lookitscook.com for a quote. Alternatively, if the issue does not yet have a milestone assigned to it, add a bounty via https://www.bountysource.com and either we or a third party developer can prioritize the update.
 
 Pull requests are welcome.
 
 ##Known Limitations
 
-- [Remote management is inaccessible on ChromeOS.](https://github.com/zebradog/kiosk/issues/14)
-- [Content URLs must be public. (http:// or https://)](https://github.com/zebradog/kiosk/issues/9)
-- [OSX menu bar will show on hover.](https://github.com/zebradog/kiosk/issues/41)
+- [Remote management is inaccessible on ChromeOS.](https://github.com/matt-cook/kiosk/issues/14)
+- [Content URLs must be public. (http:// or https://)](https://github.com/matt-cook/kiosk/issues/9)
+- [OSX menu bar will show on hover.](https://github.com/matt-cook/kiosk/issues/41)
 
 ##Changelog
 

@@ -246,6 +246,32 @@ $(function(){
        }).appendTo('body');
        e.originalEvent.window.attach($newWebview[0]);
      })
+     .on('dialog',function(e){
+      var $modal;
+      if(e.originalEvent.messageType == "alert"){
+        $modal = $('#dialogAlert');
+      }/*else if(e.originalEvent.messageType == "confirm"){ //Confirmation and Prompts currently non-functional
+          $modal = $('#dialogConfirm');
+      }else if(e.originalEvent.messageType == "prompt"){
+          $modal = $('#dialogPrompt');
+          $modal.find('.input-field > input').attr('placeholder',e.originalEvent.defaultPromptText);
+      }*/
+      if($modal){
+        //e.preventDefault();
+        $modal.find('.text').text(e.originalEvent.messageText);
+        $modal.openModal();
+        $modal.find('a.ok').click(function(){
+          $modal.closeModal();
+          e.originalEvent.dialog.ok($modal.find('#promptValue').val());
+          return;
+        });
+        $modal.find('a.cancel').click(function(){
+          $modal.closeModal();
+          e.originalEvent.dialog.cancel();
+          return;
+        });
+      }
+    });
   }
 
   function loadContent(contentURL){

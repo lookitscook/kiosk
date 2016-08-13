@@ -101,6 +101,12 @@ Pull requests are welcome.
 
 ##Changelog
 
+-v5.8.0
+  - Allow new windows
+  - Added support for prompt dialogs
+  - Remove demo link
+  - Remove ZEBRADOG references
+
 - v5.7.3
   - Bug fix: inactivity reset correctly detects input on touch screens
   - Bug fix: prevent content reload from throwing error

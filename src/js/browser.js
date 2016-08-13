@@ -171,16 +171,8 @@ $(function(){
     }
   }
 
-  function loadContent(){
-    active(); //we should reset the active on load content as well
-    if(resetcache) partition = null;
-    if(!partition){
-      partition = "persist:kiosk"+(Date.now());
-      chrome.storage.local.set({'partition':partition});
-    }
-    var $webview = $('<webview id="browser"/>');
-    $webview
-     .css({
+  function initWebview($webview){
+     $webview.css({
        width:'100%',
        height:'100%',
        position:'absolute',
@@ -246,8 +238,29 @@ $(function(){
           });
         }
      })
-     .attr('src',currentURL)
-     .prependTo('body');
+     .on('newwindow',function(e){
+       var $newWebview = $('<webview/>');
+       initWebview($newWebview);
+       $newWebview.on('close',function(e){
+         $(e.target).remove();
+       }).appendTo('body');
+       e.originalEvent.window.attach($newWebview[0]);
+     })
+  }
+
+  function loadContent(contentURL){
+    var url = contentURL ? contentURL : currentURL;
+    active(); //we should reset the active on load content as well
+    if(resetcache) partition = null;
+    if(!partition){
+      partition = "persist:kiosk"+(Date.now());
+      chrome.storage.local.set({'partition':partition});
+    }
+    var $webview = $('<webview id="browser"/>');
+    initWebview($webview);
+    $webview
+     .attr('src',url)
+     .appendTo('body');
      if(resetcache) {
        chrome.storage.local.remove('resetcache');
        resetcache = false;

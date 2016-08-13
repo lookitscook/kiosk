@@ -318,12 +318,6 @@ $(function(){
     }
   });
 
-  $('#demo').click(function(e){
-    e.preventDefault();
-    chrome.runtime.sendMessage('demo');
-  });
-
-
     });
   });
 });

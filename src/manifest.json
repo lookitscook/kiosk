@@ -4,8 +4,8 @@
   "manifest_version": 2,
   "version": "5.7.3",
   "author": {
-    "name": "ZEBRADOG",
-    "email": "support@zebradog.com"
+    "name": "Matt Cook",
+    "email": "matt@lookitscook.com"
   },
   "kiosk_enabled": true,
   "offline_enabled": true,

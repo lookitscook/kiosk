@@ -64,9 +64,7 @@ function init() {
   });
 
   chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
-    if(request == "demo")
-     openWindow("windows/demo.html");
-    else if(request == "reload"){
+    if(request == "reload"){
       chrome.runtime.getPlatformInfo(function(p){
         if(p.os == "cros"){
           //we're on ChromeOS, so `reload()` will always work

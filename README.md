@@ -101,6 +101,9 @@ Pull requests are welcome.
 
 ##Changelog
 
+-v5.8.1
+  - Allow new windows & prompt dialogs behind setting.   
+
 -v5.8.0
   - Allow new windows
   - Added support for prompt dialogs

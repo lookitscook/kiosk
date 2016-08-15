@@ -13,6 +13,9 @@ $(function(){
     document.getElementById("host").appendChild(opt);
   }
 
+  if(data.newwindow) {
+    $("#newwindow").prop("checked",true);
+  }
   if(data.url) $('#url').val(data.url).siblings('label').addClass('active');
   if(data.local) {
     $("#local").prop("checked",true);
@@ -187,6 +190,7 @@ $(function(){
     var disabledrag = $("#disabledrag").is(':checked');
     var disabletouchhighlight = $("#disabletouchhighlight").is(':checked');
     var disableselection = $("#disableselection").is(':checked');
+    var newwindow =  $("#newwindow").is(':checked');
     var useragent = $('#useragent').val();
     port = port < 0 ? 0 : port;
     var username = $("#username").val();
@@ -300,6 +304,8 @@ $(function(){
       else chrome.storage.local.remove('disabletouchhighlight');
       if(disableselection) chrome.storage.local.set({'disableselection':disableselection});
       else chrome.storage.local.remove('disableselection');
+      if(newwindow) chrome.storage.local.set({'newwindow':newwindow});
+      else chrome.storage.local.remove('newwindow');
       if(servelocal){
         chrome.storage.local.set({'servelocaldirectory':servelocaldirectory});
         chrome.storage.local.set({'servelocalhost':servelocalhost});

@@ -27,3 +27,11 @@ strong{
   margin:2.0em 0 0 -1.0em;
   font-size:1.0em;
 }
+#newWindow{
+  bottom:10%;
+  left:10%;
+  right:10%;
+  width:80%;
+  height:80%;
+  overflow:hidden;
+}

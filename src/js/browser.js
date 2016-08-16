@@ -241,12 +241,19 @@ $(function(){
      });
      if(allownewwindow){
        $webview.on('newwindow',function(e){
+        $('#newWindow webview').remove();
          var $newWebview = $('<webview/>');
          initWebview($newWebview);
          $newWebview.on('close',function(e){
-           $(e.target).remove();
-         }).appendTo('body');
+           $('#newWindow').closeModal();
+           $('#newWindow webview').remove();
+         });
          e.originalEvent.window.attach($newWebview[0]);
+         $('#newWindow').append($newWebview).openModal({
+           complete:function(){
+             $('#newWindow webview').remove();
+           }
+         });
        })
        .on('dialog',function(e){
         var $modal;

@@ -101,6 +101,9 @@ Pull requests are welcome.
 
 ##Changelog
 
+-v5.8.2
+  - Open new windows in modal to allow closing
+
 -v5.8.1
   - Allow new windows & prompt dialogs behind setting.   
 

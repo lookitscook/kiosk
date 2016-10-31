@@ -53,7 +53,7 @@ Application can be completely restarted at an administrator-specified time once 
 
 ###Scheduled Sleep
 
-Device power-saving can be scheduled for some period of the day.  Allows display to sleep on inactivity while power-saving is active.
+Device power-saving can be scheduled for some period of the day.  Allows display to sleep on inactivity.
 
 ###Remote Schedule Server
 

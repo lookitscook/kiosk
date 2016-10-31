@@ -71,7 +71,6 @@ $(function(){
     $("#hour option[value="+restart+"]").prop('selected',true);
     $("#hour").siblings('label').addClass('active');
   }
-  // Added for scheduled sleep
   if(data.sleep && parseInt(data.sleep)){
     var sleep = parseInt(data.sleep);
     $('#sleepOffset > option').removeAttr('selected');
@@ -102,7 +101,6 @@ $(function(){
     $("#wakeHour option[value="+wake+"]").prop('selected',true);
     $("#wakeHour").siblings('label').addClass('active');
   }
-  // End addition for scheduled sleep
   if(data.hidecursor) $("#hidecursor").prop("checked",true);
   if(data.disablecontextmenu) $("#disablecontextmenu").prop("checked",true);
   if(data.disabledrag) $("#disabledrag").prop("checked",true);
@@ -331,7 +329,6 @@ $(function(){
       }else{
         chrome.storage.local.remove('restart');
       }
-      // Added for scheduled sleep
       if(sleep) {
           sleep = parseInt($('#sleepHour').val())+parseInt($('#sleepOffset').val());
           wake = parseInt($('#wakeHour').val())+parseInt($('#wakeOffset').val());
@@ -340,7 +337,6 @@ $(function(){
           chrome.storage.local.remove('sleep')
           chrome.storage.local.remove('wake')
       }
-      // Added for scheduled sleep
       if(remoteschedule) chrome.storage.local.set({'remoteschedule':remoteschedule});
       else chrome.storage.local.remove('remoteschedule');
       if(remotescheduleurl) chrome.storage.local.set({'remotescheduleurl':remotescheduleurl});

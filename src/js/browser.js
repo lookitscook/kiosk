@@ -10,6 +10,8 @@ $(function(){
   var win = window;
   var activeTimeout;
   var restart;
+  var sleep; // Added for sleep schedule
+  var wake;  // Added for sleep schedule
   var schedule,scheduleURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
   var hidecursor = false;
   var disablecontextmenu = false;
@@ -129,6 +131,33 @@ $(function(){
           }
         },60*1000);
      }
+     
+     // Start Scheduled Sleep
+    if(data.sleep && data.wake && parseInt(data.sleep) && parseInt(data.wake)) {
+        var sleepHour = parseInt(data.sleep) - 1;
+        var wakeHour = parseInt(data.wake) - 1;
+        if (wakeHour < sleepHour) {
+            wakeHour += 24;
+        }
+        var now = moment();
+        sleep = moment();
+        wake = moment();
+        sleep.hour(sleepHour).set({'minute':0, 'second':0, 'millisecond':0});
+        wake.hour(wakeHour).set({'minute':0, 'second':0, 'millisecond':0});
+        setInterval(function() {
+            var now = moment();
+            if(now.isAfter(sleep)) {
+                chrome.power.requestKeepAwake('system');
+                sleep.add(1,'d');
+            }
+            if(now.isAfter(wake)) {
+                chrome.power.requestKeepAwake('display');
+                wake.add(1,'d');
+            }
+        },60*1000);
+    }
+    // End Scheduled Sleep
+     
      if(data.remoteschedule && data.remotescheduleurl){
        schedulepollinterval = data.schedulepollinterval ? data.schedulepollinterval : DEFAULT_SCHEDULE_POLL_INTERVAL;
        scheduleURL = data.remotescheduleurl.indexOf('?') >= 0 ? data.remotescheduleurl+'&kiosk_t='+Date.now() : data.remotescheduleurl+'?kiosk_t='+Date.now();

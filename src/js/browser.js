@@ -133,8 +133,8 @@ $(function(){
      }
 
     if(data.sleep && data.wake && parseInt(data.sleep) && parseInt(data.wake)) {
-        var sleepHour = parseInt(data.sleep) - 1;
-        var wakeHour = parseInt(data.wake) - 1;
+        var sleepHour = parseInt(data.sleep);
+        var wakeHour = parseInt(data.wake);
         if (wakeHour < sleepHour) {
             wakeHour += 24;
         }

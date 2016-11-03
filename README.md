@@ -51,6 +51,10 @@ Allow content to be reset after a administrator-specified period of inactivity.
 
 Application can be completely restarted at an administrator-specified time once per day.
 
+###Scheduled Sleep
+
+Device power-saving can be scheduled for some period of the day.  Allows display to sleep on inactivity.
+
 ###Remote Schedule Server
 
 Accepts a URL to a JSON feed for a content schedule. If no item is currently scheduled, the default content (specified by the Content URL on Kiosk setup page) is used. Default content will be overridden by scheduled items. Schedule URL is polled at configurable interval. `kiosk_t` parameter is appended to the URL with a value of the current timestamp to prevent caching of the schedule. Schedule should be formatted according to (a simplified version of) the format provided by [Chrome Sign Builder](https://chrome.google.com/webstore/detail/chrome-sign-builder/odjaaghiehpobimgdjjfofmablbaleem?hl=en) (exported schedules from Chrome Sign Builder are currently supported without support for screen position, repetition or display settings):

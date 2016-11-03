@@ -71,6 +71,36 @@ $(function(){
     $("#hour option[value="+restart+"]").prop('selected',true);
     $("#hour").siblings('label').addClass('active');
   }
+  if(data.sleep && parseInt(data.sleep)){
+    var sleep = parseInt(data.sleep);
+    $('#sleepOffset > option').removeAttr('selected');
+    if(sleep > 12) {
+      sleep = sleep - 12;
+      $("#sleepOffset option:contains('PM')").prop('selected',true);
+    }else{
+      $("#sleepOffset option:contains('AM')").prop('selected',true);
+    }
+    $("#sleep").prop("checked",true);
+    $('.sleep').removeClass('disabled');
+    $('#sleepHour option').removeAttr('selected');
+    $("#sleepHour option[value="+sleep+"]").prop('selected',true);
+    $("#sleepHour").siblings('label').addClass('active');
+  }
+  if(data.wake && parseInt(data.wake)){
+    var wake = parseInt(data.wake);
+    $('#wakeOffset > option').removeAttr('selected');
+    if(wake > 12) {
+      wake = wake - 12;
+      $("#wakeOffset option:contains('PM')").prop('selected',true);
+    }else{
+      $("#wakeOffset option:contains('AM')").prop('selected',true);
+    }
+    $("#sleep").prop("checked",true);
+    $('.sleep').removeClass('disabled');
+    $('#wakeHour option').removeAttr('selected');
+    $("#wakeHour option[value="+wake+"]").prop('selected',true);
+    $("#wakeHour").siblings('label').addClass('active');
+  }
   if(data.hidecursor) $("#hidecursor").prop("checked",true);
   if(data.disablecontextmenu) $("#disablecontextmenu").prop("checked",true);
   if(data.disabledrag) $("#disabledrag").prop("checked",true);
@@ -135,6 +165,15 @@ $(function(){
       $('.restart').slideUp();
     }
   });
+  // Added for sleep schedule
+  $("#sleep").on('change',function(){
+    if($("#sleep").is(':checked')){
+      $('.sleep').hide().removeClass('disabled').slideDown();
+    }else{
+      $('.sleep').slideUp();
+    }
+  });
+  // End Additions for sleep schedule
   $("#local").on('change',function(){
     if($("#local").is(':checked')){
       $('.local').hide().removeClass('disabled').slideDown();
@@ -183,6 +222,7 @@ $(function(){
     var local = $("#local").is(':checked');
     var reset = $("#reset").is(':checked');
     var restart = $("#restart").is(':checked');
+    var sleep = $("#sleep").is(':checked');
     var port = parseInt($('#port').val());
     var reset = $("#reset").is(':checked');
     var hidecursor = $("#hidecursor").is(':checked');
@@ -216,6 +256,7 @@ $(function(){
         error.push("Reset interval is required.");
       }
     }
+    
     if(url && (url.indexOf("http://") >= 0 || url.indexOf("https://") >= 0 )){
       //url is valid
     }else{
@@ -287,6 +328,14 @@ $(function(){
         chrome.storage.local.set({'restart':restart});
       }else{
         chrome.storage.local.remove('restart');
+      }
+      if(sleep) {
+          sleep = parseInt($('#sleepHour').val())+parseInt($('#sleepOffset').val());
+          wake = parseInt($('#wakeHour').val())+parseInt($('#wakeOffset').val());
+          chrome.storage.local.set({'sleep':sleep,'wake':wake});
+      }else{
+          chrome.storage.local.remove('sleep')
+          chrome.storage.local.remove('wake')
       }
       if(remoteschedule) chrome.storage.local.set({'remoteschedule':remoteschedule});
       else chrome.storage.local.remove('remoteschedule');

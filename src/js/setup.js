@@ -16,7 +16,31 @@ $(function(){
   if(data.newwindow) {
     $("#newwindow").prop("checked",true);
   }
-  if(data.url) $('#url').val(data.url).siblings('label').addClass('active');
+
+  $('#url').material_chip({
+    placeholder: '+URL',
+    secondaryPlaceholder: 'Content URL'
+  });
+  $('#url').on('chip.add',function(e,chip){
+    var err = validateURL(chip.tag);
+    if(err){
+      Materialize.toast(err, 4000);
+    }
+  });
+  if(data.url) {
+    var urlTags = [];
+    if(data.url.length){
+      //possibly multiple content items
+      for(var i = 0; i < data.url.length; i++){
+        urlTags.push({ tag: data.url[i] });
+      }
+    }else{
+      //only a single content item, legacy support
+      urlTags.push({ tag: data.url });
+    }
+    $('#url').material_chip({ data: urlTags });
+  }
+
   if(data.local) {
     $("#local").prop("checked",true);
     $('.local, .settings-detail').removeClass('disabled');
@@ -172,12 +196,10 @@ $(function(){
     }
   }
 
-  $('#url').focus();
-
   $('#save').click(function(e){
     e.preventDefault();
     var error = [];
-    var url = $('#url').val();
+    var url = $('#url').material_chip('data');
     var host = $('#host').val();
     var remote = $("#remote").is(':checked');
     var local = $("#local").is(':checked');
@@ -216,10 +238,22 @@ $(function(){
         error.push("Reset interval is required.");
       }
     }
-    if(url && (url.indexOf("http://") >= 0 || url.indexOf("https://") >= 0 )){
-      //url is valid
+    if(url && url.length){
+      var err;
+      var contentURL = [];
+      for(var i = 0; i < url.length; i++){
+        err = validateURL(url[i].tag);
+        if(err){
+          error.push(err);
+          break;
+        }
+        contentURL.push(url[i].tag);
+      }
+      if(!err){
+        url = contentURL;
+      }
     }else{
-      error.push("Content URL must be valid.");
+      error.push("Content URL is required.");
     }
     if((remote || local)){
       if(!username){
@@ -326,4 +360,9 @@ $(function(){
 
     });
   });
+
+  function validateURL(url){
+    return url.indexOf("http://") >= 0 || url.indexOf("https://") >= 0 ? null : 'Invalid content URL';
+  };
+
 });

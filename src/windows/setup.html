@@ -4,6 +4,7 @@
     <title>Kiosk: Setup</title>
     <link rel="shortcut icon" href="../www/favicon.ico" type="image/x-icon">
     <link rel="icon" href="../www/favicon.ico" type="image/x-icon">
+    <link type="text/css" rel="stylesheet" href="../www/css/material-icons/material-icons.css" media="screen,projection">
     <link type="text/css" rel="stylesheet" href="../www/css/materialize.min.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="../www/css/shared.css"  media="screen,projection"/>
     <script language="javascript" type="text/javascript" src="../www/js/jquery.min.js"></script>
@@ -25,9 +26,13 @@
         <h4>Content</h4>
 
         <div class="row">
-          <div class="input-field col s8">
-            <input id="url" type="text">
-            <label for="url">Default Content URL (must start with http:// or https://)</label>
+          <div class="col s8">
+            <p class="caption">
+              To add content, just enter the url and press enter.
+              If more than one URL is specified they will be opened in tabs.
+              <strong>URL must start with http:// or https://</strong>
+            </p>
+            <div id="url" class="chips chips-initial"></div>
           </div>
           <div class="input-field col s4">
             <input type="checkbox" id="servelocal" />

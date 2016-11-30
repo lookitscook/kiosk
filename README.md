@@ -101,6 +101,10 @@ Pull requests are welcome.
 
 ##Changelog
 
+-v5.9.0
+ - Add support for tabs/multiple content URL
+ - Update to Materialize 0.97.8
+
 -v5.8.2
   - Open new windows in modal to allow closing
 

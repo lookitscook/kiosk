@@ -20,6 +20,13 @@ $(function(){
   var resetcache = false;
   var partition = null;
 
+  $('.modal').not('#newWindow').modal();
+  $('#newWindow').modal({
+     complete: function() {
+        $('#newWindow webview').remove();
+     }
+  });
+
   //prevent existing fullscreen on escape key press
   window.onkeydown = window.onkeyup = function(e) { if (e.keyCode == 27) { e.preventDefault(); } };
 
@@ -96,8 +103,9 @@ $(function(){
   chrome.storage.local.get(null,function(data){
      if(data.local){
        $(document).keydown(function(e) {
-         if(e.which == 65 && e.ctrlKey)
-           $('#login').openModal();
+         if(e.which == 65 && e.ctrlKey){
+           $('#login').modal('open');
+         }
        });
 
        $('#submit').click(function(e){
@@ -105,7 +113,7 @@ $(function(){
          var username = $('#username').val();
          var password = $("#password").val();
          if(username == data.username && password == data.password){
-           $('#login').closeModal();
+           $('#login').modal('close');
            $('#username').val('');
            $("#password").val('');
            openWindow("windows/setup.html");
@@ -150,7 +158,7 @@ $(function(){
 
      if(reset) $('*').on(ACTIVE_EVENTS,active);
 
-     currentURL = defaultURL = data.url;
+     currentURL = defaultURL = data.url[0];
      useragent = data.useragent;
      loadContent();
 
@@ -208,7 +216,7 @@ $(function(){
                  if(granted) e.originalEvent.request.allow();
                });
              });
-             $('#mediaPermission').openModal();
+             $('#mediaPermission').modal('open');
            }
          });
        }else if(e.originalEvent.permission === 'fullscreen') {
@@ -245,15 +253,11 @@ $(function(){
          var $newWebview = $('<webview/>');
          initWebview($newWebview);
          $newWebview.on('close',function(e){
-           $('#newWindow').closeModal();
+           $('#newWindow').modal('close');
            $('#newWindow webview').remove();
          });
          e.originalEvent.window.attach($newWebview[0]);
-         $('#newWindow').append($newWebview).openModal({
-           complete:function(){
-             $('#newWindow webview').remove();
-           }
-         });
+         $('#newWindow').append($newWebview).modal('open');
        })
        .on('dialog',function(e){
         var $modal;
@@ -268,14 +272,14 @@ $(function(){
         if($modal){
           //e.preventDefault();
           $modal.find('.text').text(e.originalEvent.messageText);
-          $modal.openModal();
+          $modal.modal('open');
           $modal.find('a.ok').click(function(){
-            $modal.closeModal();
+            $modal.modal('close');
             e.originalEvent.dialog.ok($modal.find('#promptValue').val());
             return;
           });
           $modal.find('a.cancel').click(function(){
-            $modal.closeModal();
+            $modal.modal('close');
             e.originalEvent.dialog.cancel();
             return;
           });

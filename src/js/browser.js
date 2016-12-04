@@ -169,9 +169,12 @@ $(function(){
   });
 
   chrome.runtime.onMessage.addListener(function(data){
-    if(data.url && !hasURL(data.url)){
-      currentURL = data.url.length ? data.url : [data.url];
-      loadContent();
+    if(data.url){
+      var url = data.url.split(',');
+      if(!hasURL(url)){
+        currentURL = url;
+        loadContent();
+      }
     }
   });
 

@@ -13,6 +13,9 @@ _.extend(AdminDataHandler.prototype, {
       for(var key in newData){
         var value = newData[key]
         if(data.hasOwnProperty(key)){
+          if(key == 'url' && !Array.isArray(value)){
+            value = value.split(',');
+          }
           data[key] = value;
           saveData[key] = value;
           if(key == "url"){

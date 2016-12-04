@@ -369,7 +369,7 @@ $(function(){
   function addURL(url, i, colClass){
     var id = "browser"+i;
     var $tab = $('<li class="tab col '+colClass+' '+id+'"><a href="#'+id+'">'+url+'</a></li>').appendTo('#tabs .tabs');
-    var $webviewContainer = $('<div id="'+id+'" class="browser col s12"/>');
+    var $webviewContainer = $('<div id="'+id+'" class="browser"/>');
     $webviewContainer.appendTo('#content');
     var $webview = $('<webview />');
     initWebview($webview);

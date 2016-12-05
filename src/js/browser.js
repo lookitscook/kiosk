@@ -106,7 +106,7 @@ $(function(){
          }
        });
 
-       $('#submit').click(function(e){
+       function submitLoginForm(e) {
          e.preventDefault();
          var username = $('#username').val();
          var password = $("#password").val();
@@ -118,7 +118,15 @@ $(function(){
         }else{
           Materialize.toast('Invalid login.', 4000);
         }
+       }
+
+       $('#password').on('keydown', function(e) {
+         if (e.which == 13 || e.key == 'Enter') {
+           submitLoginForm(e);
+         }
        });
+
+       $('#submit').click(submitLoginForm);
      }
 
      if(data.restart && parseInt(data.restart)){

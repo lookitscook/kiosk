@@ -28,8 +28,16 @@ $(function(){
     }
   });
 
+  // UX: Simulate an enter keypress whenever the Chips input loses focus
   $('#url').on('blur', ':input', function() {
-    if (this.value && this.value.length) {
+    if(this.value && this.value.length) {
+      var err = validateURL(this.value);
+
+      if(err) {
+        Materialize.toast(err, 4000);
+        return false;
+      }
+
       var e = jQuery.Event('keydown');
       e.which = 13;
 

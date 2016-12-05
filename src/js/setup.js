@@ -38,10 +38,9 @@ $(function(){
         return false;
       }
 
-      var e = jQuery.Event('keydown');
-      e.which = 13;
-
-      $(this).trigger(e);
+      $(this).trigger($.Event('keydown', {
+        which: 13
+      }));
     }
   });
 

@@ -120,19 +120,21 @@ $(function(){
         }
        }
 
+       // UX: Pressing enter within the username field will focus the password field
        $('#username').on('keydown', function(e) {
          if(e.which == 13 || e.key == 'Enter') {
            $('#password').focus();
          }
        });
 
+       // UX: Pressing enter within the password field will submit the login form
        $('#password').on('keydown', function(e) {
          if(e.which == 13 || e.key == 'Enter') {
            submitLoginForm(e);
          }
        });
 
-       $('#submit').click(submitLoginForm);
+       $('#submit').on('click', submitLoginForm);
      }
 
      if(data.restart && parseInt(data.restart)){

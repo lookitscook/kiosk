@@ -155,7 +155,7 @@ $(function(){
 
      if(reset) $('*').on(ACTIVE_EVENTS,active);
 
-     currentURL = defaultURL = data.url.length ? data.url : [data.url];
+     currentURL = defaultURL = Array.isArray(data.url) ? data.url : [data.url];
      useragent = data.useragent;
      loadContent();
 
@@ -179,7 +179,7 @@ $(function(){
   });
 
   function hasURL(url){
-    if(url.length){
+    if(Array.isArray(url)){
       for(var i = 0; i < url.length; i++){
         if(!currentURL.includes(url[i])){
           return false;
@@ -321,9 +321,11 @@ $(function(){
 
   function loadContent(){
     active(); //we should reset the active on load content as well
+    if(!currentURL) return;
+    if(!Array.isArray(currentURL)) currentURL = [currentURL];
     $('#content .browser').remove();
     $('#tabs .tab').remove();
-    if(currentURL.length && currentURL.length > 1){
+    if(Array.isArray(currentURL) && currentURL.length > 1){
       $('body').addClass('tabbed');
     }else{
       $('body').removeClass('tabbed');

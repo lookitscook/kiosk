@@ -238,7 +238,7 @@ $(function(){
         error.push("Reset interval is required.");
       }
     }
-    if(url && url.length){
+    if(url && Array.isArray(url)){
       var err;
       var contentURL = [];
       for(var i = 0; i < url.length; i++){

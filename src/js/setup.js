@@ -27,6 +27,14 @@ $(function(){
       Materialize.toast(err, 4000);
     }
   });
+
+  $('#url').on('blur', ':input', function() {
+    var e = jQuery.Event('keydown');
+    e.which = 13;
+
+    $(this).trigger(e);
+  });
+
   if(data.url) {
     var urlTags = [];
     if(Array.isArray(data.url)){

@@ -101,6 +101,12 @@ Pull requests are welcome.
 - [OSX menu bar will show on hover.](https://github.com/matt-cook/kiosk/issues/41)
 
 ##Changelog
+-v5.9.3
+  - Fix bug with legacy content loading 
+-v5.9.2
+	- Fixed bug causing letterboxing on some displays
+-v5.9.1
+  - Scroll bar bug fix
 
 -v5.9.0
  - Add support for tabs/multiple content URL

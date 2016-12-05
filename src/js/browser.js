@@ -87,12 +87,11 @@ $(function(){
       var hasScheduledContent = false;
       for(var i = 0; i < s.length; i++){
         if(now >= s[i].start && now < s[i].end){
-          hasScheduledContent = true;
           scheduledContent.push(s[i]);
       }
     }
 
-    if(hasScheduledContent){
+    if(scheduledContent.length){
        //find the latest start time
        scheduledContent.sort(function(a,b){
          if(a.start == b.start ) return a;
@@ -101,15 +100,13 @@ $(function(){
 
        //first in the list has the latest start time
        //only on a change do we want to load
-       if(scheduledContent[0].content != currentURL){
-          currentURL = scheduledContent[0].content;
-          $("#browser").remove();
+       if(scheduledContent[0].content && !hasURL(scheduledContent[0].content)){
+          currentURL = scheduledContent[0].content.length ? scheduledContent[0].content : [scheduledContent[0].content];
           loadContent();
        }
     }
-    else if(!hasScheduledContent && currentURL != defaultURL){
+    else if(currentURL != defaultURL){
         currentURL = defaultURL;
-        $("#browser").remove();
         loadContent();
     }
    }
@@ -173,7 +170,7 @@ $(function(){
 
      if(reset) $('*').on(ACTIVE_EVENTS,active);
 
-    urls = data.url;
+    urls = Array.isArray(data.url) ? data.url : [data.url];
     useragent = data.useragent;
     defaultURL = urls[urlrotateindex];
 
@@ -183,21 +180,41 @@ $(function(){
     }
     currentURL = defaultURL;
     loadContent();
+  });
 
-
+  window.addEventListener('message', function(e){
+    var data = e.data;
+    if(data.title && data.id){
+      $('#tabs .tab.'+data.id+' a').text(data.title);
+    }
   });
 
   chrome.runtime.onMessage.addListener(function(data){
-    if(data.url && data.url != $("#browser").attr('src')){
-      $("#browser").attr('src',data.url);
+    if(data.url){
+      var url = data.url.split(',');
+      if(!hasURL(url)){
+        currentURL = url;
+        loadContent();
+      }
     }
   });
+
+  function hasURL(url){
+    if(Array.isArray(url)){
+      for(var i = 0; i < url.length; i++){
+        if(!currentURL.includes(url[i])){
+          return false;
+        }
+      }
+      return true;
+    }
+    return currentURL.includes(url);
+  }
 
   function active(){
     if(reset){
       if(activeTimeout) clearTimeout(activeTimeout);
       activeTimeout = setTimeout(function(){
-        $("#browser").remove();
         loadContent();
       },reset*60*1000);
     }
@@ -248,6 +265,18 @@ $(function(){
      })
      .on('contentload',function(e){
        var browser = e.target;
+       browser.executeScript({
+         code:
+            "window.addEventListener('message', function(e){"
+          + "  if(e.data.command == 'kioskGetTitle'){"
+          + "    e.source.postMessage({ title: document.title, id: e.data.id }, e.origin);"
+          + "  }"
+          + "});"
+       });
+       browser.contentWindow.postMessage({
+        command: 'kioskGetTitle',
+        id: $webview.parent().attr('id')
+       }, '*');
        if(hidecursor)
          browser.insertCSS({code:"*{cursor:none;}"});
        if(disablecontextmenu)
@@ -311,19 +340,66 @@ $(function(){
     }
   }
 
-  function loadContent(contentURL){
-    var url = contentURL ? contentURL : currentURL;
+  function loadContent(){
     active(); //we should reset the active on load content as well
+    if(!currentURL) return;
+    if(!Array.isArray(currentURL)) currentURL = [currentURL];
+    $('#content .browser').remove();
+    $('#tabs .tab').remove();
+    if(Array.isArray(currentURL) && currentURL.length > 1){
+      $('body').addClass('tabbed');
+    }else{
+      $('body').removeClass('tabbed');
+    }
     if(resetcache) partition = null;
     if(!partition){
       partition = "persist:kiosk"+(Date.now());
       chrome.storage.local.set({'partition':partition});
     }
-    var $webview = $('<webview id="browser"/>');
+    var colClass = 's1';
+    switch(currentURL.length){
+      case 1:
+        colClass = 's12';
+        break;
+      case 2:
+        colClass = 's6';
+        break;
+      case 3:
+        colClass = 's4';
+        break;
+      case 4:
+        colClass = 's3';
+        break;
+      case 5:
+        colClass = 's2';
+        break;
+      case 6:
+        colClass = 's2';
+        break;
+    }
+    for(var i = 0; i < currentURL.length; i++){
+      addURL(currentURL[i],i,colClass);
+    }
+    var $tabs = $('ul.tabs');
+    if(currentURL.length > 12){
+      $tabs.addClass('scroll');
+    }else{
+      $tabs.removeClass('scroll');
+    }
+    $tabs.tabs();
+  }
+
+  function addURL(url, i, colClass){
+    var id = "browser"+i;
+    var $tab = $('<li class="tab col '+colClass+' '+id+'"><a href="#'+id+'">'+url+'</a></li>').appendTo('#tabs .tabs');
+    var $webviewContainer = $('<div id="'+id+'" class="browser"/>');
+    $webviewContainer.appendTo('#content');
+    var $webview = $('<webview />');
     initWebview($webview);
     $webview
+     .data('id',id)
      .attr('src',url)
-     .appendTo('body');
+     .appendTo($webviewContainer);
      if(resetcache) {
        chrome.storage.local.remove('resetcache');
        resetcache = false;
@@ -336,17 +412,14 @@ $(function(){
          localStorage: true,
          webSQL: true,
        };
-       $webview[0].clearData({since: 0}, clearDataType, function() {
-         $("#browser").remove();
-         loadContent();
-       });
+       $webview[0].clearData({since: 0}, clearDataType, loadContent);
      }
   }
 
   function onEnded(event){
     if(!restarting){
       restarting = true;
-      $("#browser").remove();
+      $("#browserContainer").remove();
       setTimeout(function(){
         loadContent();
         restarting = false;

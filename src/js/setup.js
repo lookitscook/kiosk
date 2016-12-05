@@ -29,7 +29,7 @@ $(function(){
   });
   if(data.url) {
     var urlTags = [];
-    if(data.url.length){
+    if(Array.isArray(data.url)){
       //possibly multiple content items
       for(var i = 0; i < data.url.length; i++){
         urlTags.push({ tag: data.url[i] });
@@ -257,7 +257,7 @@ $(function(){
         error.push("Reset interval is required.");
       }
     }
-    if(url && url.length){
+    if(url && Array.isArray(url)){
       var err;
       var contentURL = [];
       for(var i = 0; i < url.length; i++){

@@ -120,8 +120,14 @@ $(function(){
         }
        }
 
+       $('#username').on('keydown', function(e) {
+         if(e.which == 13 || e.key == 'Enter') {
+           $('#password').focus();
+         }
+       });
+
        $('#password').on('keydown', function(e) {
-         if (e.which == 13 || e.key == 'Enter') {
+         if(e.which == 13 || e.key == 'Enter') {
            submitLoginForm(e);
          }
        });

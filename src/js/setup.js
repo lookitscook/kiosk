@@ -29,10 +29,12 @@ $(function(){
   });
 
   $('#url').on('blur', ':input', function() {
-    var e = jQuery.Event('keydown');
-    e.which = 13;
+    if (this.value && this.value.length) {
+      var e = jQuery.Event('keydown');
+      e.which = 13;
 
-    $(this).trigger(e);
+      $(this).trigger(e);
+    }
   });
 
   if(data.url) {

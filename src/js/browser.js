@@ -102,6 +102,7 @@ $(function(){
        $(document).keydown(function(e) {
          if(e.which == 65 && e.ctrlKey){
            $('#login').modal('open');
+           $('#username').focus();
          }
        });
 

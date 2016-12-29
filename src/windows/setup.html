@@ -29,7 +29,7 @@
           <div class="col s8">
             <p class="caption">
               To add content, just enter the url and press enter.
-              If more than one URL is specified they will be opened in tabs.
+              If more than one URL is specified they can either be opened in tabs or rotated at defined rate.
               <strong>URL must start with http:// or https://</strong>
             </p>
             <div id="url" class="chips chips-initial"></div>
@@ -53,6 +53,19 @@
           <div class="col s5">
             <label for="servelocaldirectory">Directory (<a id="changelocaldirectory" href="#">change</a>)</label>
             <input class="file-path validate" disabled id="servelocaldirectory" type="text" />
+          </div>
+        </div>
+        <div class="row disabled multiple-url-mode">
+          <div class="col s5">
+            <label for="multiple-url-mode">Multiple URL Mode</label>
+             <select id="multiple-url-mode">
+               <option value="tabs">Tabs</option>
+               <option value="rotate">Rotate</option>
+            </select>
+          </div>
+          <div class="col disabled s2 rotate-rate">
+            <label for="rotate-rate">Rotate Rate (seconds)</label>
+            <input id="rotate-rate" type="text" value="30">
           </div>
         </div>
 

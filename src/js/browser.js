@@ -3,6 +3,7 @@ $(function(){
   var RESTART_DELAY = 1000;
   var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
   var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
+  var DEFAULT_ROTATE_RATE = 30; //seconds
   var ACTIVE_EVENTS = "click mousedown mouseup mousemove touch touchstart touchend keypress keydown";
 
   var restarting = false;
@@ -10,7 +11,9 @@ $(function(){
   var win = window;
   var activeTimeout;
   var restart;
-  var schedule,scheduleURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
+  var urlrotateindex = 0;
+  var rotaterate;
+  var schedule,scheduleURL,contentURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
   var hidecursor = false;
   var disablecontextmenu = false;
   var disabledrag = false;
@@ -29,6 +32,19 @@ $(function(){
 
   //prevent existing fullscreen on escape key press
   window.onkeydown = window.onkeyup = function(e) { if (e.keyCode == 27) { e.preventDefault(); } };
+
+  function rotateURL(){
+    if(contentURL.length > 1){
+      if (urlrotateindex < (contentURL.length-1)){
+        urlrotateindex++;
+      } else {
+        urlrotateindex = 0;
+      }
+      currentURL = contentURL[urlrotateindex];
+      $("#browser").remove();
+      loadContent();
+    }
+  }
 
   function updateSchedule(){
     $.getJSON(scheduleURL, function(s) {
@@ -172,8 +188,14 @@ $(function(){
 
      if(reset) $('*').on(ACTIVE_EVENTS,active);
 
-     currentURL = defaultURL = Array.isArray(data.url) ? data.url : [data.url];
+     defaultURL = contentURL = Array.isArray(data.url) ? data.url : [data.url];
      useragent = data.useragent;
+     if(data.multipleurlmode == 'rotate'){
+        defaultURL = contentURL[urlrotateindex];
+        rotaterate = data.rotaterate ? data.rotaterate : DEFAULT_ROTATE_RATE;
+        setInterval(rotateURL,rotaterate * 1000);
+     }
+     currentURL = defaultURL;
      loadContent();
 
   });
@@ -189,7 +211,7 @@ $(function(){
     if(data.url){
       var url = data.url.split(',');
       if(!hasURL(url)){
-        currentURL = url;
+        contentURL = currentURL = url;
         loadContent();
       }
     }

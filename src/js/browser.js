@@ -102,10 +102,11 @@ $(function(){
        $(document).keydown(function(e) {
          if(e.which == 65 && e.ctrlKey){
            $('#login').modal('open');
+           $('#username').focus();
          }
        });
 
-       $('#submit').click(function(e){
+       function submitLoginForm(e) {
          e.preventDefault();
          var username = $('#username').val();
          var password = $("#password").val();
@@ -117,7 +118,23 @@ $(function(){
         }else{
           Materialize.toast('Invalid login.', 4000);
         }
+       }
+
+       // UX: Pressing enter within the username field will focus the password field
+       $('#username').on('keydown', function(e) {
+         if(e.which == 13 || e.key == 'Enter') {
+           $('#password').focus();
+         }
        });
+
+       // UX: Pressing enter within the password field will submit the login form
+       $('#password').on('keydown', function(e) {
+         if(e.which == 13 || e.key == 'Enter') {
+           submitLoginForm(e);
+         }
+       });
+
+       $('#submit').on('click', submitLoginForm);
      }
 
      if(data.restart && parseInt(data.restart)){

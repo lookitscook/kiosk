@@ -27,6 +27,23 @@ $(function(){
       Materialize.toast(err, 4000);
     }
   });
+
+  // UX: Simulate an enter keypress whenever the Chips input loses focus
+  $('#url').on('blur', ':input', function() {
+    if(this.value && this.value.length) {
+      var err = validateURL(this.value);
+
+      if(err) {
+        Materialize.toast(err, 4000);
+        return false;
+      }
+
+      $(this).trigger($.Event('keydown', {
+        which: 13
+      }));
+    }
+  });
+
   if(data.url) {
     var urlTags = [];
     if(Array.isArray(data.url)){

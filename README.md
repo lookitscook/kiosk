@@ -100,10 +100,17 @@ Pull requests are welcome.
 - [OSX menu bar will show on hover.](https://github.com/matt-cook/kiosk/issues/41)
 
 ##Changelog
+
+-v5.9.4
+  - Fix UI bug requiring enter to be pressed after adding content URL (or a white screen was shown).
+  - UI form improvements
+
 -v5.9.3
-  - Fix bug with legacy content loading 
+  - Fix bug with legacy content loading
+
 -v5.9.2
 	- Fixed bug causing letterboxing on some displays
+
 -v5.9.1
   - Scroll bar bug fix
 

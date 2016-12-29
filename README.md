@@ -8,6 +8,7 @@ Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen ki
 
 ###System
 - Launches a specified URL full-screen at all times.
+- Optional ability to rotate between URLs at a configurable rate
 - Device power-saving (sleep mode) disabled
 - Can be locked into-single app kiosk on managed Chrome devices.
 

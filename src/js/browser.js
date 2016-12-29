@@ -3,6 +3,7 @@ $(function(){
   var RESTART_DELAY = 1000;
   var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
   var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
+  var DEFAULT_ROTATE_RATE = 30; //seconds
   var ACTIVE_EVENTS = "click mousedown mouseup mousemove touch touchstart touchend keypress keydown";
 
   var restarting = false;
@@ -10,6 +11,9 @@ $(function(){
   var win = window;
   var activeTimeout;
   var restart;
+  var urls;
+  var urlrotateindex = 0;
+  var rotaterate;
   var schedule,scheduleURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
   var hidecursor = false;
   var disablecontextmenu = false;
@@ -29,6 +33,17 @@ $(function(){
 
   //prevent existing fullscreen on escape key press
   window.onkeydown = window.onkeyup = function(e) { if (e.keyCode == 27) { e.preventDefault(); } };
+
+  function rotateURL(){
+    if (urlrotateindex < (urls.length-1)){
+      urlrotateindex++;
+    } else {
+      urlrotateindex = 0;
+    }
+    currentURL = urls[urlrotateindex];
+    $("#browser").remove();
+    loadContent();
+  }
 
   function updateSchedule(){
     $.getJSON(scheduleURL, function(s) {
@@ -172,10 +187,16 @@ $(function(){
 
      if(reset) $('*').on(ACTIVE_EVENTS,active);
 
-     currentURL = defaultURL = Array.isArray(data.url) ? data.url : [data.url];
-     useragent = data.useragent;
-     loadContent();
+    urls = Array.isArray(data.url) ? data.url : [data.url];
+    useragent = data.useragent;
+    defaultURL = urls[urlrotateindex];
 
+    if(data.multipleurlmode == 'rotate'){
+      rotaterate = data.rotaterate ? data.rotaterate : DEFAULT_ROTATE_RATE;
+      setInterval(rotateURL,rotaterate * 1000);
+    }
+    currentURL = defaultURL;
+    loadContent();
   });
 
   window.addEventListener('message', function(e){

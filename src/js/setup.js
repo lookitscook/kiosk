@@ -57,6 +57,15 @@ $(function(){
     }
     $('#url').material_chip({ data: urlTags });
   }
+  if(data.rotaterate){
+    $("#rotate-rate").val(data.rotaterate);
+  }
+  if(data.multipleurlmode) {
+    $("#multiple-url-mode").val(data.multipleurlmode);
+    if(data.multipleurlmode == 'rotate'){
+      $('.rotate-rate').removeClass('disabled');
+    }
+  }
 
   if(data.local) {
     $("#local").prop("checked",true);
@@ -213,10 +222,20 @@ $(function(){
     }
   }
 
+  $("#multiple-url-mode").on('change',function(){
+    if($("#multiple-url-mode").val() == 'rotate'){
+      $('.rotate-rate').hide().removeClass('disabled').slideDown();
+    }else{
+      $('.rotate-rate').slideUp();
+    }
+  });
+
   $('#save').click(function(e){
     e.preventDefault();
     var error = [];
     var url = $('#url').material_chip('data');
+    var multipleurlmode = $("#multiple-url-mode").val();
+    var rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
     var host = $('#host').val();
     var remote = $("#remote").is(':checked');
     var local = $("#local").is(':checked');
@@ -291,6 +310,14 @@ $(function(){
           error.push("Host is required.");
         }
       }
+    }
+    if(multipleurlmode == 'rotate'){
+      if(rotaterate <= 0 ){
+        rotaterate = false;
+        error.push("The Multiple URL Rotate Rate must be greater then 0.");
+      }
+    }else {
+      rotaterate = false;
     }
     if(remoteschedule){
       if(remotescheduleurl && (remotescheduleurl.indexOf("http://") >= 0 || remotescheduleurl.indexOf("https://") >= 0 )){
@@ -369,6 +396,9 @@ $(function(){
       if(resetcache) chrome.storage.local.set({'resetcache': resetcache});
       else chrome.storage.local.remove('resetcache');
       chrome.storage.local.set({'url':url});
+      chrome.storage.local.set({'multipleurlmode':multipleurlmode});
+      if(rotaterate) chrome.storage.local.set({'rotaterate': rotaterate});
+      else chrome.storage.local.remove('rotaterate');
       chrome.storage.local.set({'useragent':useragent});
       chrome.storage.local.set({'sleepmode':sleepmode});
       chrome.runtime.sendMessage('reload');

@@ -102,25 +102,25 @@ Pull requests are welcome.
 
 ##Changelog
 
--v5.9.4
+- v5.10.0
   - Fix UI bug requiring enter to be pressed after adding content URL (or a white screen was shown).
   - UI form improvements
   - Add option to rotate through content
 
--v5.9.3
+- v5.9.3
   - Fix bug with legacy content loading
 
--v5.9.2
+- v5.9.2
 	- Fixed bug causing letterboxing on some displays
 
--v5.9.1
+- v5.9.1
   - Scroll bar bug fix
 
--v5.9.0
+- v5.9.0
  - Add support for tabs/multiple content URL
  - Update to Materialize 0.97.8
 
--v5.8.2
+- v5.8.2
   - Open new windows in modal to allow closing
 
 -v5.8.1

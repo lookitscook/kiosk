@@ -6797,9 +6797,6 @@ WSC.Buffer = Buffer
             handler.request = request
             handler.write("Unhandled request. Did you select a folder to serve?", 404)
             handler.finish()
-            setTimeout(function(){
-              chrome.runtime.sendMessage('reload');
-            }, 15000);
         }
     }
 

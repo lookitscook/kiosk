@@ -102,7 +102,7 @@ Pull requests are welcome.
 
 ##Changelog
 
--v5.10.1
+- v5.10.1
   - Auto-restart after 15 seconds if local file directory doesn't exist. For example, on some systems the app can start prior to external drives mounting after restart. This restart is canceled by pressing CTRL+A.
 
 - v5.10.0
@@ -126,10 +126,10 @@ Pull requests are welcome.
 - v5.8.2
   - Open new windows in modal to allow closing
 
--v5.8.1
+- v5.8.1
   - Allow new windows & prompt dialogs behind setting.   
 
--v5.8.0
+- v5.8.0
   - Allow new windows
   - Added support for prompt dialogs
   - Remove demo link

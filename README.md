@@ -102,6 +102,9 @@ Pull requests are welcome.
 
 ##Changelog
 
+-v5.10.1
+  - Auto-restart after 15 seconds if local file directory doesn't exist. For example, on some systems the app can start prior to external drives mounting after restart. This restart is canceled by pressing CTRL+A.
+
 - v5.10.0
   - Fix UI bug requiring enter to be pressed after adding content URL (or a white screen was shown).
   - UI form improvements

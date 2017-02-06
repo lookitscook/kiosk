@@ -1,7 +1,7 @@
 chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);
 
-var directoryServer, adminServer;
+var directoryServer, adminServer, restartTimeout;
 
 function init() {
 
@@ -47,9 +47,18 @@ function init() {
       if(data.servelocaldirectory && data.servelocalhost && data.servelocalport){
         //serve files from local directory
         chrome.fileSystem.restoreEntry(data.servelocaldirectory,function(entry){
+          //if we can't get the directory (removed drive possibly)
+          //wait 15 seconds and reload the app
+          if(!entry){
+            restartTimeout = setTimeout(function(){
+              chrome.runtime.sendMessage('reload');
+            }, 15*1000);
+            return
+          }
+
           var host = data.servelocalhost;
           var port = data.servelocalport;
-          startWebserverDirectoryEntry(host,port,entry)
+          startWebserverDirectoryEntry(host,port,entry);
         });
       }
       if(data.host && data.port){
@@ -135,5 +144,11 @@ function init() {
         adminServer.start()
       });
     });
+  }
+}
+
+function stopAutoRestart(){
+  if(restartTimeout) {
+    clearTimeout(restartTimeout);
   }
 }

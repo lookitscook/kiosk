@@ -157,6 +157,7 @@ $(function(){
   }
   if(data.servelocalport) $("#servelocalport").val(data.servelocalport);
   if(data.useragent) $('#useragent').val(data.useragent).siblings('label').addClass('active');
+  if(data.authorization) $('#authorization').val(data.authorization).siblings('label').addClass('active');
 
   $('select').material_select();
 
@@ -266,6 +267,7 @@ $(function(){
     var disableselection = $("#disableselection").is(':checked');
     var newwindow =  $("#newwindow").is(':checked');
     var useragent = $('#useragent').val();
+    var authorization = $('#authorization').val();
     port = port < 0 ? 0 : port;
     var username = $("#username").val();
     var password = $("#password").val();
@@ -416,6 +418,7 @@ $(function(){
       if(rotaterate) chrome.storage.local.set({'rotaterate': rotaterate});
       else chrome.storage.local.remove('rotaterate');
       chrome.storage.local.set({'useragent':useragent});
+      chrome.storage.local.set({'authorization':authorization});
       chrome.storage.local.set({'sleepmode':sleepmode});
       chrome.runtime.sendMessage('reload');
     }

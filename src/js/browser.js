@@ -20,6 +20,7 @@ $(function(){
   var disabletouchhighlight = false;
   var disableselection = false;
   var useragent = '';
+  var authorization = '';
   var resetcache = false;
   var partition = null;
 
@@ -193,6 +194,7 @@ $(function(){
 
      defaultURL = contentURL = Array.isArray(data.url) ? data.url : [data.url];
      useragent = data.useragent;
+     authorization = data.authorization;
      if(data.multipleurlmode == 'rotate'){
         defaultURL = contentURL[urlrotateindex];
         rotaterate = data.rotaterate ? data.rotaterate : DEFAULT_ROTATE_RATE;
@@ -320,6 +322,15 @@ $(function(){
           });
         }
      });
+     $webview[0].request.onBeforeSendHeaders.addListener(
+        function(details) {
+          if (authorization) {
+            details.requestHeaders.push({name: 'Authorization', value: authorization})
+          }
+          return {requestHeaders: details.requestHeaders};
+        },
+        {urls: ["<all_urls>"]},
+        ["blocking", "requestHeaders"]);
      if(allownewwindow){
        $webview.on('newwindow',function(e){
         $('#newWindow webview').remove();

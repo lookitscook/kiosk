@@ -22,6 +22,7 @@ $(function(){
   var useragent = '';
   var resetcache = false;
   var partition = null;
+  var clearcookies = false;
 
   $('.modal').not('#newWindow').modal();
   $('#newWindow').modal({
@@ -188,6 +189,7 @@ $(function(){
      allownewwindow = data.newwindow ? true : false
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
+     clearcookies = data.clearcookiesreset ? true : false;
 
      if(reset) $('*').on(ACTIVE_EVENTS,active);
 
@@ -372,7 +374,7 @@ $(function(){
     }else{
       $('body').removeClass('tabbed');
     }
-    if(resetcache) partition = null;
+    if(resetcache || clearcookies) partition = null;
     if(!partition){
       partition = "persist:kiosk"+(Date.now());
       chrome.storage.local.set({'partition':partition});
@@ -421,9 +423,11 @@ $(function(){
      .data('id',id)
      .attr('src',url)
      .appendTo($webviewContainer);
-     if(resetcache) {
-       chrome.storage.local.remove('resetcache');
-       resetcache = false;
+     if(resetcache || clearcookies) {
+       if (resetcache) {
+         chrome.storage.local.remove('resetcache');
+         resetcache = false;
+       }
        var clearDataType = {
          appcache: true,
          cache: true, //remove entire cache
@@ -433,7 +437,7 @@ $(function(){
          localStorage: true,
          webSQL: true,
        };
-       $webview[0].clearData({since: 0}, clearDataType, loadContent);
+       $webview[0].clearData({since: 0}, clearDataType, resetcache ? loadContent : null);
      }
   }
 

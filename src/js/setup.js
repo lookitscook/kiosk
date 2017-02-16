@@ -122,6 +122,7 @@ $(function(){
     $('.reset').removeClass('disabled');
     $("#resetinterval").val(data.reset).siblings('label').addClass('active');
   }
+  if (data.clearcookiesreset) $("#clear-cookies-reset").prop("checked",true);
   if(data.restart && parseInt(data.restart)){
     var restart = parseInt(data.restart);
     $('#houroffset > option').removeAttr('selected');
@@ -258,6 +259,7 @@ $(function(){
     var restart = $("#restart").is(':checked');
     var port = parseInt($('#port').val());
     var reset = $("#reset").is(':checked');
+    var resetcookies = $('#clear-cookies-reset').is(':checked');
     var hidecursor = $("#hidecursor").is(':checked');
     var disablecontextmenu = $("#disablecontextmenu").is(':checked');
     var disabledrag = $("#disabledrag").is(':checked');
@@ -375,6 +377,8 @@ $(function(){
       }
       if(reset) chrome.storage.local.set({'reset':reset});
       else chrome.storage.local.remove('reset');
+      if (resetcookies) chrome.storage.local.set({'clearcookiesreset':resetcookies});
+      else chrome.storage.local.remove('clearcookiesreset');
       if(restart){
         restart = parseInt($('#hour').val())+parseInt($('#houroffset').val());
         chrome.storage.local.set({'restart':restart});

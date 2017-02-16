@@ -155,7 +155,24 @@ $(function(){
 
        $('#submit').on('click', submitLoginForm);
      }
-
+     $(document).keydown(function(e) {
+        if (e.which == 118){
+          chrome.runtime.getBackgroundPage(function(backgroundPage) {
+            backgroundPage.stopAutoRestart();
+            $('#dialogConfirm').modal('open');
+            $('#dialogConfirm .text').text('Do you want to reload Kiosk?');
+            $('#dialogConfirm .ok').on('click', function(e) {
+              $('#dialogConfirm').modal('close');
+              chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
+              chrome.runtime.sendMessage('reload'); //all other systems
+            });
+            $('#dialogConfirm .cancel').on('click', function(e) {
+              e.preventDefault();
+              $('#dialogConfirm').modal('close');
+            });
+        });
+       }
+     });
      if(data.restart && parseInt(data.restart)){
        var hour = parseInt(data.restart) - 1;
        var now = moment();

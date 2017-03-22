@@ -156,7 +156,7 @@ $(function(){
        $('#submit').on('click', submitLoginForm);
      }
      $(document).keydown(function(e) {
-        if (e.which == 118){
+        if ((e.which == 168) || (e.which == 82 && e.ctrlKey)) {
           chrome.runtime.getBackgroundPage(function(backgroundPage) {
             backgroundPage.stopAutoRestart();
             $('#dialogConfirm').modal('open');

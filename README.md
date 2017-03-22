@@ -1,18 +1,18 @@
 <a target="_blank" href="https://chrome.google.com/webstore/detail/kiosk/afhcomalholahplbjhnmahkoekoijban">![Try it now in CWS](https://raw.github.com/GoogleChrome/chrome-app-samples/master/tryitnowbutton.png "Click here to install this application from the Chrome Web Store")</a>
 
-#Chrome Kiosk
+# Chrome Kiosk
 
 Basic kiosk packaged application. Allows any URL to be loaded as a fullscreen kiosk in Google Chrome or Chrome OS, also disables device sleep mode while app is running.
 
-##Features
+## Features
 
-###System
+### System
 - Launches a specified URL full-screen at all times.
 - Optional ability to rotate between URLs at a configurable rate
 - Device power-saving (sleep mode) disabled
 - Can be locked into-single app kiosk on managed Chrome devices.
 
-###Interaction
+### Interaction
 
 - Option to hide cursor
 - Option to disable context menu
@@ -36,23 +36,23 @@ window.oncontextmenu = function(){return false};
 window.ondragstart = function(){return false};
 ```
 
-###Local Administration
+### Local Administration
 
 Setup can be accessed via keystroke (CTRL+A) and administer-configured username/password.
 
-###Remote Administration
+### Remote Administration
 
 On desktop operating systems basic configuration as well as application restart options are available remotely. See "Known Limitations" for details on ChromeOS support.
 
-###Inactivity Reset
+### Inactivity Reset
 
 Allow content to be reset after a administrator-specified period of inactivity.
 
-###Daily restart
+### Daily restart
 
 Application can be completely restarted at an administrator-specified time once per day.
 
-###Remote Schedule Server
+### Remote Schedule Server
 
 Accepts a URL to a JSON feed for a content schedule. If no item is currently scheduled, the default content (specified by the Content URL on Kiosk setup page) is used. Default content will be overridden by scheduled items. Schedule URL is polled at configurable interval. `kiosk_t` parameter is appended to the URL with a value of the current timestamp to prevent caching of the schedule. Schedule should be formatted according to (a simplified version of) the format provided by [Chrome Sign Builder](https://chrome.google.com/webstore/detail/chrome-sign-builder/odjaaghiehpobimgdjjfofmablbaleem?hl=en) (exported schedules from Chrome Sign Builder are currently supported without support for screen position, repetition or display settings):
 ```
@@ -76,17 +76,17 @@ Accepts a URL to a JSON feed for a content schedule. If no item is currently sch
 }
 ```
 
-####Note:
+#### Note:
 
 Remote schedule server must have [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) headers set or the [Allow-Control-Allow-Origin:*](https://chrome.google.com/webstore/detail/allow-control-allow-origi/nlfbmbojpeacfghkpbjhddihlkkiljbi?hl=en-US) Chrome extension can be installed to allow access. JSONP is not an option since scripts from arbitrary domains cannot be executed inside Chrome extensions.
 
-###Auto-start
+### Auto-start
 
 On ChromeOS devices: Using managed devices and setting Kiosk application to start in Kiosk mode is the recommended solution.
 On Windows and OSX: From chrome://apps/ right click on "Kiosk" and "Create shortcut" then copy this shortcut into the startup folder (Windows) or add to login items (OSX).
 Linux: Likely similar to Windows and OSX, untested.
 
-##Support & Feature Requests
+## Support & Feature Requests
 
 This product is maintained by [Matt Cook](mailto:matt@lookitscook.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/matt-cook/kiosk/issues
 
@@ -94,13 +94,13 @@ Patches and new features are released at our convenience. If you need a bug fix 
 
 Pull requests are welcome.
 
-##Known Limitations
+## Known Limitations
 
 - [Remote management is inaccessible on ChromeOS.](https://github.com/matt-cook/kiosk/issues/14)
 - [Content URLs must be public. (http:// or https://)](https://github.com/matt-cook/kiosk/issues/9)
 - [OSX menu bar will show on hover.](https://github.com/matt-cook/kiosk/issues/41)
 
-##Changelog
+## Changelog
 
 - v5.10.1
   - Auto-restart after 15 seconds if local file directory doesn't exist. For example, on some systems the app can start prior to external drives mounting after restart. This restart is canceled by pressing CTRL+A.

@@ -23,7 +23,7 @@ function init() {
   /*chrome.management.getPermissionWarningsByManifest(
     JSON.stringify(chrome.runtime.getManifest()),
     function(warning){
-      console.log("PERMISSION WARNIINGS",warning);
+      console.log("PERMISSION WARNINGS",warning);
     }
   );*/
 

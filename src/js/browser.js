@@ -33,6 +33,13 @@ $(function(){
   //prevent existing fullscreen on escape key press
   window.onkeydown = window.onkeyup = function(e) { if (e.keyCode == 27) { e.preventDefault(); } };
 
+  $(document).keydown(function(e) {
+    //refresh on F3 or ctrl+r
+    if ((e.which == 168) || (e.which == 82 && e.ctrlKey)){
+      loadContent();
+    }
+  });
+
   function rotateURL(){
     if(contentURL.length > 1){
       if (urlrotateindex < (contentURL.length-1)){
@@ -155,24 +162,7 @@ $(function(){
 
        $('#submit').on('click', submitLoginForm);
      }
-     $(document).keydown(function(e) {
-        if ((e.which == 168) || (e.which == 82 && e.ctrlKey)) {
-          chrome.runtime.getBackgroundPage(function(backgroundPage) {
-            backgroundPage.stopAutoRestart();
-            $('#dialogConfirm').modal('open');
-            $('#dialogConfirm .text').text('Do you want to reload Kiosk?');
-            $('#dialogConfirm .ok').on('click', function(e) {
-              $('#dialogConfirm').modal('close');
-              chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
-              chrome.runtime.sendMessage('reload'); //all other systems
-            });
-            $('#dialogConfirm .cancel').on('click', function(e) {
-              e.preventDefault();
-              $('#dialogConfirm').modal('close');
-            });
-        });
-       }
-     });
+
      if(data.restart && parseInt(data.restart)){
        var hour = parseInt(data.restart) - 1;
        var now = moment();

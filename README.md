@@ -48,6 +48,10 @@ On desktop operating systems basic configuration as well as application restart 
 
 Allow content to be reset after a administrator-specified period of inactivity.
 
+### Manual Reset
+
+Pressing F3 or CTRL+R will reset the content.
+
 ### Daily restart
 
 Application can be completely restarted at an administrator-specified time once per day.
@@ -102,6 +106,9 @@ Pull requests are welcome.
 
 ## Changelog
 
+- v5.11.0
+  - Reset content on F3 or ctrl+r
+
 - v5.10.1
   - Auto-restart after 15 seconds if local file directory doesn't exist. For example, on some systems the app can start prior to external drives mounting after restart. This restart is canceled by pressing CTRL+A.
 
@@ -120,8 +127,8 @@ Pull requests are welcome.
   - Scroll bar bug fix
 
 - v5.9.0
- - Add support for tabs/multiple content URL
- - Update to Materialize 0.97.8
+  - Add support for tabs/multiple content URL
+  - Update to Materialize 0.97.8
 
 - v5.8.2
   - Open new windows in modal to allow closing

@@ -108,6 +108,7 @@ Pull requests are welcome.
 
 - v5.11.0
   - Reset content on F3 or ctrl+r
+  - Optionally clear cookies and cache on reset
 
 - v5.10.1
   - Auto-restart after 15 seconds if local file directory doesn't exist. For example, on some systems the app can start prior to external drives mounting after restart. This restart is canceled by pressing CTRL+A.

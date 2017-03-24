@@ -431,9 +431,11 @@ $(function(){
      .attr('src',url)
      .appendTo($webviewContainer);
      if(resetcache || clearcookies) {
+       var reload = false;
        if (resetcache) {
          chrome.storage.local.remove('resetcache');
          resetcache = false;
+         reload = true;
        }
        var clearDataType = {
          appcache: true,
@@ -444,7 +446,7 @@ $(function(){
          localStorage: true,
          webSQL: true,
        };
-       $webview[0].clearData({since: 0}, clearDataType, resetcache ? loadContent : null);
+       $webview[0].clearData({since: 0}, clearDataType, reload ? loadContent : null);
      }
   }
 

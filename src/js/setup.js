@@ -82,7 +82,9 @@ $(function(){
       $('.rotate-rate').removeClass('disabled');
     }
   }
-
+  if(data.allowprint) {
+    $("#allowprint").prop("checked",true);
+  }
   if(data.local) {
     $("#local").prop("checked",true);
     $('.local, .settings-detail').removeClass('disabled');
@@ -256,6 +258,7 @@ $(function(){
     var rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
     var host = $('#host').val();
     var remote = $("#remote").is(':checked');
+    var allowprint = $("#allowprint").is(':checked');
     var local = $("#local").is(':checked');
     var restart = $("#restart").is(':checked');
     var port = parseInt($('#port').val());
@@ -365,6 +368,8 @@ $(function(){
       }
       return false;
     }else{
+      if(allowprint) chrome.storage.local.set({'allowprint':allowprint});
+      else chrome.storage.local.remove('allowprint');
       if(local) chrome.storage.local.set({'local':local});
       else chrome.storage.local.remove('local');
       if(remote) chrome.storage.local.set({'remote':remote});

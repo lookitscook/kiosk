@@ -123,6 +123,16 @@ $(function(){
  }
 
   chrome.storage.local.get(null,function(data){
+
+    if(data.allowprint){
+      $(document).keydown(function(e) {
+        //print on ctrl+p
+        if (e.which == 80 && e.ctrlKey){
+          window.print();
+        }
+      });
+    }
+
      if(data.local){
        $(document).keydown(function(e) {
          if(e.which == 65 && e.ctrlKey){

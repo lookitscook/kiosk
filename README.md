@@ -107,7 +107,8 @@ Pull requests are welcome.
 ## Changelog
 
 - v5.11.0
-  - Reset content on F3 or ctrl+r
+  - Reset content on F3 or CTRL+R
+  - Optionally open print dialog on CTRL+P
   - Optionally clear cookies and cache on reset
   - Optionally override `Authorization` header
 

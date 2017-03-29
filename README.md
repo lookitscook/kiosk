@@ -111,6 +111,8 @@ Pull requests are welcome.
   - Optionally open print dialog on CTRL+P
   - Optionally clear cookies and cache on reset
   - Optionally override `Authorization` header
+  - Fix bug with rendering remote admin, render index.html by default when serving local content.
+  - Update internal web server to latest version
 
 - v5.10.1
   - Auto-restart after 15 seconds if local file directory doesn't exist. For example, on some systems the app can start prior to external drives mounting after restart. This restart is canceled by pressing CTRL+A.

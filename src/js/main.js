@@ -122,6 +122,7 @@ function init() {
     directoryServer = new WSC.WebApplication({host:host,
                                               port:port,
                                               renderIndex:true,
+                                              optRenderIndex:true,
                                               entry:entry
                                              })
     directoryServer.start()
@@ -138,6 +139,7 @@ function init() {
                                               port:port,
                                               handlers:handlers,
                                               renderIndex:true,
+                                              optRenderIndex:true,
                                               auth:{ username: settings.username,
                                                      password: settings.password }
                                              })

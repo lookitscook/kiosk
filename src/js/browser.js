@@ -128,7 +128,8 @@ $(function(){
       $(document).keydown(function(e) {
         //print on ctrl+p
         if (e.which == 80 && e.ctrlKey){
-          window.print();
+          var activeBrowserID = $('#tabs a.active').attr('href');
+          $(activeBrowserID+' webview').get(0).print();
         }
       });
     }

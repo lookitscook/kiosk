@@ -82,7 +82,9 @@ $(function(){
       $('.rotate-rate').removeClass('disabled');
     }
   }
-
+  if(data.allowprint) {
+    $("#allowprint").prop("checked",true);
+  }
   if(data.local) {
     $("#local").prop("checked",true);
     $('.local, .settings-detail').removeClass('disabled');
@@ -122,6 +124,7 @@ $(function(){
     $('.reset').removeClass('disabled');
     $("#resetinterval").val(data.reset).siblings('label').addClass('active');
   }
+  if (data.clearcookiesreset) $("#clear-cookies-reset").prop("checked",true);
   if(data.restart && parseInt(data.restart)){
     var restart = parseInt(data.restart);
     $('#houroffset > option').removeAttr('selected');
@@ -157,6 +160,7 @@ $(function(){
   }
   if(data.servelocalport) $("#servelocalport").val(data.servelocalport);
   if(data.useragent) $('#useragent').val(data.useragent).siblings('label').addClass('active');
+  if(data.authorization) $('#authorization').val(data.authorization).siblings('label').addClass('active');
 
   $('select').material_select();
 
@@ -254,11 +258,12 @@ $(function(){
     var rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
     var host = $('#host').val();
     var remote = $("#remote").is(':checked');
+    var allowprint = $("#allowprint").is(':checked');
     var local = $("#local").is(':checked');
-    var reset = $("#reset").is(':checked');
     var restart = $("#restart").is(':checked');
     var port = parseInt($('#port').val());
     var reset = $("#reset").is(':checked');
+    var resetcookies = $('#clear-cookies-reset').is(':checked');
     var hidecursor = $("#hidecursor").is(':checked');
     var disablecontextmenu = $("#disablecontextmenu").is(':checked');
     var disabledrag = $("#disabledrag").is(':checked');
@@ -266,6 +271,7 @@ $(function(){
     var disableselection = $("#disableselection").is(':checked');
     var newwindow =  $("#newwindow").is(':checked');
     var useragent = $('#useragent').val();
+    var authorization = $('#authorization').val();
     port = port < 0 ? 0 : port;
     var username = $("#username").val();
     var password = $("#password").val();
@@ -362,6 +368,8 @@ $(function(){
       }
       return false;
     }else{
+      if(allowprint) chrome.storage.local.set({'allowprint':allowprint});
+      else chrome.storage.local.remove('allowprint');
       if(local) chrome.storage.local.set({'local':local});
       else chrome.storage.local.remove('local');
       if(remote) chrome.storage.local.set({'remote':remote});
@@ -376,6 +384,8 @@ $(function(){
       }
       if(reset) chrome.storage.local.set({'reset':reset});
       else chrome.storage.local.remove('reset');
+      if (resetcookies) chrome.storage.local.set({'clearcookiesreset':resetcookies});
+      else chrome.storage.local.remove('clearcookiesreset');
       if(restart){
         restart = parseInt($('#hour').val())+parseInt($('#houroffset').val());
         chrome.storage.local.set({'restart':restart});
@@ -416,6 +426,7 @@ $(function(){
       if(rotaterate) chrome.storage.local.set({'rotaterate': rotaterate});
       else chrome.storage.local.remove('rotaterate');
       chrome.storage.local.set({'useragent':useragent});
+      chrome.storage.local.set({'authorization':authorization});
       chrome.storage.local.set({'sleepmode':sleepmode});
       chrome.runtime.sendMessage('reload');
     }

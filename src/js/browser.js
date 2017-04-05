@@ -20,8 +20,10 @@ $(function(){
   var disabletouchhighlight = false;
   var disableselection = false;
   var useragent = '';
+  var authorization = '';
   var resetcache = false;
   var partition = null;
+  var clearcookies = false;
 
   $('.modal').not('#newWindow').modal();
   $('#newWindow').modal({
@@ -32,6 +34,13 @@ $(function(){
 
   //prevent existing fullscreen on escape key press
   window.onkeydown = window.onkeyup = function(e) { if (e.keyCode == 27) { e.preventDefault(); } };
+
+  $(document).keydown(function(e) {
+    //refresh on F3 or ctrl+r
+    if ((e.which == 168) || (e.which == 82 && e.ctrlKey)){
+      loadContent();
+    }
+  });
 
   function rotateURL(){
     if(contentURL.length > 1){
@@ -114,6 +123,17 @@ $(function(){
  }
 
   chrome.storage.local.get(null,function(data){
+
+    if(data.allowprint){
+      $(document).keydown(function(e) {
+        //print on ctrl+p
+        if (e.which == 80 && e.ctrlKey){
+          var activeBrowserID = $('#tabs a.active').attr('href');
+          $(activeBrowserID+' webview').get(0).print();
+        }
+      });
+    }
+
      if(data.local){
        $(document).keydown(function(e) {
          if(e.which == 65 && e.ctrlKey){
@@ -188,11 +208,13 @@ $(function(){
      allownewwindow = data.newwindow ? true : false
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
+     clearcookies = data.clearcookiesreset ? true : false;
 
      if(reset) $('*').on(ACTIVE_EVENTS,active);
 
      defaultURL = contentURL = Array.isArray(data.url) ? data.url : [data.url];
      useragent = data.useragent;
+     authorization = data.authorization;
      if(data.multipleurlmode == 'rotate'){
         defaultURL = contentURL[urlrotateindex];
         rotaterate = data.rotaterate ? data.rotaterate : DEFAULT_ROTATE_RATE;
@@ -320,6 +342,15 @@ $(function(){
           });
         }
      });
+     $webview[0].request.onBeforeSendHeaders.addListener(
+        function(details) {
+          if (authorization) {
+            details.requestHeaders.push({name: 'Authorization', value: authorization})
+          }
+          return {requestHeaders: details.requestHeaders};
+        },
+        {urls: ["<all_urls>"]},
+        ["blocking", "requestHeaders"]);
      if(allownewwindow){
        $webview.on('newwindow',function(e){
         $('#newWindow webview').remove();
@@ -372,7 +403,7 @@ $(function(){
     }else{
       $('body').removeClass('tabbed');
     }
-    if(resetcache) partition = null;
+    if(resetcache || clearcookies) partition = null;
     if(!partition){
       partition = "persist:kiosk"+(Date.now());
       chrome.storage.local.set({'partition':partition});
@@ -421,9 +452,13 @@ $(function(){
      .data('id',id)
      .attr('src',url)
      .appendTo($webviewContainer);
-     if(resetcache) {
-       chrome.storage.local.remove('resetcache');
-       resetcache = false;
+     if(resetcache || clearcookies) {
+       var reload = false;
+       if (resetcache) {
+         chrome.storage.local.remove('resetcache');
+         resetcache = false;
+         reload = true;
+       }
        var clearDataType = {
          appcache: true,
          cache: true, //remove entire cache
@@ -433,7 +468,7 @@ $(function(){
          localStorage: true,
          webSQL: true,
        };
-       $webview[0].clearData({since: 0}, clearDataType, loadContent);
+       $webview[0].clearData({since: 0}, clearDataType, reload ? loadContent : null);
      }
   }
 

@@ -1,11 +1,11 @@
 {
   "name": "Kiosk",
-  "description": "Launch any URL as a full-screen kiosk. (Works with Appazur Kiosk Launcher.)",
+  "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.5.1",
+  "version": "5.11.0",
   "author": {
-    "name": "ZEBRADOG",
-    "email": "support@zebradog.com"
+    "name": "Matt Cook",
+    "email": "matt@lookitscook.com"
   },
   "kiosk_enabled": true,
   "offline_enabled": true,
@@ -15,7 +15,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/js/jquery.min.js","js/main.js"],
+      "scripts": ["www/js/jquery.min.js","js/lib/wsc-chrome.js","js/admin.js","js/main.js"],
       "persistent": false
     }
   },
@@ -25,13 +25,17 @@
     }
   },
   "permissions": [
+    "<all_urls>",
     "system.display",
     "system.network",
     "power",
     "webview",
     "alwaysOnTopWindows",
     "storage",
-    {"fileSystem": ["directory"]}
+    "app.window.fullscreen",
+    "app.window.fullscreen.overrideEsc",
+    {"fileSystem": ["directory","retainEntries"]}
   ],
   "optional_permissions": [ "audioCapture", "videoCapture" ]
+
 }

@@ -6,41 +6,85 @@
     <link rel="icon" href="../www/favicon.ico" type="image/x-icon">
     <link type="text/css" rel="stylesheet" href="../www/css/materialize.min.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="../www/css/shared.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="../css/browser.css"  media="screen,projection"/>
     <script language="javascript" type="text/javascript" src="../www/js/jquery.min.js"></script>
     <script language="javascript" type="text/javascript" src="../www/js/moment.js"></script>
     <script language="javascript" type="text/javascript" src="../www/js/materialize.min.js"></script>
     <script language="javascript" type="text/javascript" src="../js/browser.js"></script>
   </head>
-  <body style="margin:0;padding:0;background:black">
+  <body>
     <div id="login" class="modal">
-      <div class="action-bar">
-        <div class="row">&nbsp;</div>
-        <div class="row">
-          <div class="input-field col offset-s2  s8">
-            <input id="username" type="text" class="validate">
-            <label for="username">Username</label>
-          </div>
+      <div class="modal-content">
+        <div class="action-bar">
+          <div class="row">&nbsp;</div>
+          <div class="row">
+            <div class="input-field col offset-s2  s8">
+              <input id="username" type="text" class="validate">
+              <label for="username">Username</label>
+            </div>
 
-          <div class="input-field offset-s2  col s8">
-            <input id="password" type="password" class="validate">
-            <label for="password">Password</label>
-          </div>
+            <div class="input-field offset-s2  col s8">
+              <input id="password" type="password" class="validate">
+              <label for="password">Password</label>
+            </div>
 
-          <div class="input-field col offset-s2  s8">
-            <a href="#" id="submit" class="btn-large waves-effect" style="float:right">Go</a>
+            <div class="input-field col offset-s2  s8">
+              <a href="#" id="submit" class="btn-large waves-effect" style="float:right">Go</a>
+            </div>
           </div>
+          <div class="row">&nbsp;</div>
         </div>
-        <div class="row">&nbsp;</div>
       </div>
     </div>
     <div id="mediaPermission" class="modal">
       <div class="modal-content">
         <h4>Permission Request</h4>
-        <p>This application needs video and/or audio device access. Please grant access in the following dialogue.<p>
-      <div class="modal-footer">
-        <a href="#!" class="cancel modal-action modal-close waves-effect waves-red btn-flat ">Cancel</a>
-        <a href="#!" class="ok modal-action modal-close waves-effect waves-green btn-flat ">OK</a>
+        <p>This application needs video and/or audio device access. Please grant access in the following dialogue.</p>
+        <div class="modal-footer">
+          <a href="#!" class="cancel modal-action modal-close waves-effect waves-red btn-flat ">Cancel</a>
+          <a href="#!" class="ok modal-action modal-close waves-effect waves-green btn-flat ">OK</a>
+        </div>
       </div>
+    </div>
+    <div id="dialogAlert" class="modal">
+      <div class="modal-content">
+        <h5 class="text"></h5>
+        <div class="modal-footer">
+          <a href="#!" class="ok modal-action modal-close waves-effect waves-green btn-flat ">OK</a>
+        </div>
+      </div>
+    </div>
+    <div id="dialogConfirm" class="modal">
+      <div class="modal-content">
+        <h5 class="text"></h5>
+        <div class="modal-footer">
+          <a href="#!" class="cancel modal-action modal-close waves-effect waves-red btn-flat ">Cancel</a>
+          <a href="#!" class="ok modal-action modal-close waves-effect waves-green btn-flat ">OK</a>
+        </div>
+      </div>
+    </div>
+    <div id="dialogPrompt" class="modal">
+      <div class="modal-content">
+        <div class="row">
+         <div class="input-field col s12">
+           <input id="promptValue" type="text" placeholder="">
+           <label for="promptValue" class="text"></label>
+         </div>
+       </div>
+        <div class="modal-footer">
+          <a href="#!" class="cancel modal-action modal-close waves-effect waves-red btn-flat ">Cancel</a>
+          <a href="#!" class="ok modal-action modal-close waves-effect waves-green btn-flat ">OK</a>
+        </div>
+      </div>
+    </div>
+    <div id="newWindow" class="modal"></div>
+    <div id="container">
+      <div id="tabs" class="row">
+        <div class="col s12">
+          <ul class="tabs"></ul>
+        </div>
+      </div>
+      <div id="content"></div>
     </div>
   </body>
 </html>

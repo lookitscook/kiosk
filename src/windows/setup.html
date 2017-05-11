@@ -4,6 +4,7 @@
     <title>Kiosk: Setup</title>
     <link rel="shortcut icon" href="../www/favicon.ico" type="image/x-icon">
     <link rel="icon" href="../www/favicon.ico" type="image/x-icon">
+    <link type="text/css" rel="stylesheet" href="../www/css/material-icons/material-icons.css" media="screen,projection">
     <link type="text/css" rel="stylesheet" href="../www/css/materialize.min.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="../www/css/shared.css"  media="screen,projection"/>
     <script language="javascript" type="text/javascript" src="../www/js/jquery.min.js"></script>
@@ -14,51 +15,109 @@
   <body>
     <nav role="navigation">
       <div class="container">
-        <div class="nav-wrapper"><a id="logo-container" href="http://www.zebradog.com" target="_blank" class="brand-logo"><img src="../www/img/logo.png" alt=""></a>
+        <div class="nav-wrapper"><a id="logo-container" href="https://chrome.google.com/webstore/detail/kiosk/afhcomalholahplbjhnmahkoekoijban" target="_blank" class="brand-logo">Kiosk</a>
           <ul id="nav-mobile" class="right side-nav">
-            <li><a href="http://demo.zebradog.com"  id="demo" target="_blank">View Examples</a></li>
           </ul><a href="#" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
         </div>
       </div>
     </nav>
     <div class="container">
-      <h1>Setup</h1>
+        <br><br>
+        <h4>Content</h4>
 
         <div class="row">
-          <div class="input-field col s12">
-            <input id="url" type="text">
-            <label for="url">Default Content URL (must start with http:// or https://)</label>
+          <div class="col s8">
+            <p class="caption">
+              To add content, just enter the url and press enter.
+              If more than one URL is specified they can either be opened in tabs or rotated at defined rate.
+              <strong>URL must start with http:// or https://</strong>
+            </p>
+            <div id="url" class="chips chips-initial"></div>
+          </div>
+          <div class="input-field col s4">
+            <input type="checkbox" id="servelocal" />
+            <label for="servelocal">Serve Local Content</label>
+          </div>
+        </div>
+        <div class="row disabled servelocal">
+          <div class="col s5">
+            <label for="servelocalhost">Host</label>
+             <select id="servelocalhost" class="browser-default" disabled>
+               <option value="127.0.0.1">lo - 127.0.0.1</option>
+            </select>
+          </div>
+          <div class="col s1">
+            <label for="servelocalport">Port</label>
+            <input id="servelocalport" type="text" value="8080">
+          </div>
+          <div class="col s5">
+            <label for="servelocaldirectory">Directory (<a id="changelocaldirectory" href="#">change</a>)</label>
+            <input class="file-path validate" disabled id="servelocaldirectory" type="text" />
+          </div>
+        </div>
+        <div class="row disabled multiple-url-mode">
+          <div class="col s5">
+            <label for="multiple-url-mode">Multiple URL Mode</label>
+             <select id="multiple-url-mode">
+               <option value="tabs">Tabs</option>
+               <option value="rotate">Rotate</option>
+            </select>
+          </div>
+          <div class="col disabled s2 rotate-rate">
+            <label for="rotate-rate">Rotate Rate (seconds)</label>
+            <input id="rotate-rate" type="text" value="30">
           </div>
         </div>
 
         <div class="row">
           <div class="col s12">
-            <h4>General</h4>
+            <h4>Browser</h4>
           </div>
         </div>
 
         <div class="row">
-          <div class="col s2">
+          <div class="col s3">
             <input type="checkbox" id="hidecursor" />
             <label for="hidecursor" >Hide Cursor</label>
           </div>
-          <div class="col s2">
+          <div class="col s3">
             <input type="checkbox" id="disablecontextmenu" />
             <label for="disablecontextmenu">Disable Context Menu</label>
           </div>
-          <div class="col s2">
+          <div class="col s3">
             <input type="checkbox" id="disabledrag" />
             <label for="disabledrag">Disable Image Drag</label>
           </div>
-          <div class="col s2">
+          <div class="col s3">
             <input type="checkbox" id="disabletouchhighlight" />
             <label for="disabletouchhighlight">Disable Touch Highlight</label>
           </div>
-          <div class="col s2">
+          <div class="col s3">
             <input type="checkbox" id="disableselection" />
             <label for="disableselection">Disable Text Selection</label>
           </div>
+          <div class="col s3">
+            <input type="checkbox" id="newwindow" />
+            <label for="newwindow">Enable New Windows and Dialogs</label>
+          </div>
+          <div class="col s3">
+            <input type="checkbox" id="allowprint" />
+            <label for="allowprint">Enable Printing (CTRL+P)</label>
+          </div>
         </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="useragent" type="text">
+            <label for="url">Override User Agent</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="authorization" type="text">
+            <label for="url">Override Authorization Header</label>
+          </div>
+        </div>
+
 
         <div class="row">
           <div class="col s12">
@@ -102,7 +161,7 @@
           </div>
           <div class="col s1">
             <label for="port">Port</label>
-            <input id="port" type="text" value="80">
+            <input id="port" type="text" value="8080">
           </div>
         </div>
 
@@ -122,6 +181,10 @@
               </div>
               <div class="col input-field s8">
                 <label for="reset">minutes</label>
+              </div>
+              <div class="col input-field s12">
+                <input id="clear-cookies-reset" type="checkbox" />
+                <label for="clear-cookies-reset">Clear Cache on Reset</label>
               </div>
             </div>
           </div>
@@ -173,11 +236,27 @@
         </div>
 
         <div class="row">
-          <div class="col s12">
-            <p><a class="btn-large waves-effect" id="save">Save</a></p>
+          <div class="col s5">
+            <label for="sleep-mode">Sleep Mode</label>
+             <select id="sleep-mode">
+               <option value="display">Prevent from sleeping.</option>
+               <option value="system">Keep system awake; screen can dim.</option>
+               <option value="none">Allow system sleep.</option>
+            </select>
           </div>
         </div>
 
+        <div class="row">
+          <div class="col s12">
+            <p>
+              <a href="#" class="btn-large waves-effect" id="save">Save</a>
+              <span style="margin:1em 0 0 3em;">
+                <input id="reset-cache" type="checkbox">
+                <label for="reset-cache">Clear Cache on Save</label>
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
   </body>
 </html>

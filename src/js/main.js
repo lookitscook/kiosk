@@ -27,50 +27,23 @@ function init() {
     }
   );*/
 
-  chrome.storage.local.get(null,function(data){
-    if(('url' in data)){
-      //setup has been completed
-
-      // Sleepmode may not have been selected by user in setup because it
-      // is a new config param, so assume the previous hard-coded value as
-      // default.
-      if (!data.sleepmode) {
-        chrome.storage.local.set({'sleepmode': 'display'});
-        data.sleepmode = 'display';
-      }
-      if (data.sleepmode == 'none') {
-        chrome.power.releaseKeepAwake();
-      } else {
-        chrome.power.requestKeepAwake(data.sleepmode);
-      }
-
-      if(data.servelocaldirectory && data.servelocalhost && data.servelocalport){
-        //serve files from local directory
-        chrome.fileSystem.restoreEntry(data.servelocaldirectory,function(entry){
-          //if we can't get the directory (removed drive possibly)
-          //wait 15 seconds and reload the app
-          if(!entry){
-            restartTimeout = setTimeout(function(){
-              chrome.runtime.sendMessage('reload');
-            }, 15*1000);
-            return
+  try {
+	  chrome.storage.managed.get(null, function(items) {
+		  console.log('Group Policy: ' + JSON.stringify(items));
+		  if(items.url) {
+     		  chrome.storage.local.set(items, function() {
+    		      init_start();
+    		  });
+		  }
+          else {
+              init_start();
           }
-
-          var host = data.servelocalhost;
-          var port = data.servelocalport;
-          startWebserverDirectoryEntry(host,port,entry);
-        });
-      }
-      if(data.host && data.port){
-        //make setup page available remotely via HTTP
-        startWebserver(data.host,data.port,'www',data);
-      }
-      openWindow("windows/browser.html");
-    }else{
-      //need to run setup
-      openWindow("windows/setup.html");
-    }
-  });
+	  });
+  }
+  catch(e) {
+	  console.log('Group Policy exception:', e);
+      init_start();
+  }
 
   chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
     if(request == "reload"){
@@ -92,6 +65,53 @@ function init() {
       });
     }
   });
+
+  function init_start() {
+    chrome.storage.local.get(null,function(data){
+        if(('url' in data)){
+          //setup has been completed
+
+          // Sleepmode may not have been selected by user in setup because it
+          // is a new config param, so assume the previous hard-coded value as
+          // default.
+          if (!data.sleepmode) {
+            chrome.storage.local.set({'sleepmode': 'display'});
+            data.sleepmode = 'display';
+          }
+          if (data.sleepmode == 'none') {
+            chrome.power.releaseKeepAwake();
+          } else {
+            chrome.power.requestKeepAwake(data.sleepmode);
+          }
+
+          if(data.servelocaldirectory && data.servelocalhost && data.servelocalport){
+            //serve files from local directory
+            chrome.fileSystem.restoreEntry(data.servelocaldirectory,function(entry){
+              //if we can't get the directory (removed drive possibly)
+              //wait 15 seconds and reload the app
+              if(!entry){
+                restartTimeout = setTimeout(function(){
+                  chrome.runtime.sendMessage('reload');
+                }, 15*1000);
+                return
+              }
+
+              var host = data.servelocalhost;
+              var port = data.servelocalport;
+              startWebserverDirectoryEntry(host,port,entry);
+            });
+          }
+          if(data.host && data.port){
+            //make setup page available remotely via HTTP
+            startWebserver(data.host,data.port,'www',data);
+          }
+          openWindow("windows/browser.html");
+        }else{
+          //need to run setup
+          openWindow("windows/setup.html");
+        }
+    });
+  }
 
   function openWindow(path){
     if(win) win.close();

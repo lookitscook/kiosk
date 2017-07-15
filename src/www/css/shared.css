@@ -35,3 +35,6 @@ strong{
   height:80%;
   overflow:hidden;
 }
+#url .chip{
+  overflow:hidden;
+}

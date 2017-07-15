@@ -127,7 +127,13 @@ $(function(){
     $('.reset').removeClass('disabled');
     $("#resetinterval").val(data.reset).siblings('label').addClass('active');
   }
-  if (data.clearcookiesreset) $("#clear-cookies-reset").prop("checked",true);
+  if(data.screensavertime && data.screensaverurl){
+    $('#use-screensaver').prop("checked", true);
+    $('.use-screensaver').removeClass('disabled');
+    $("#screensaver-time").val(parseFloat(data.screensavertime)).siblings('label').addClass('active');
+    $('#screensaver-url').val(data.screensaverurl);
+  }
+  if (data.clearcookiesreset) $(".clear-cookies-reset").prop("checked",true);
   if(data.restart && parseInt(data.restart)){
     var restart = parseInt(data.restart);
     $('#houroffset > option').removeAttr('selected');
@@ -237,6 +243,14 @@ $(function(){
 
   $("#servelocal,#servelocalport").on('change',setLocalContentURL);
 
+   $("#use-screensaver").on('change',function(){
+    if($("#use-screensaver").is(':checked')){
+      $('.use-screensaver').hide().removeClass('disabled').slideDown();
+    }else{
+      $('.use-screensaver').slideUp();
+    }
+  });
+
   function setLocalContentURL(){
     if($("#servelocal").is(':checked')){
       $('#url').val('http://127.0.0.1:'+$('#servelocalport').val()+'/').siblings('label').addClass('active');
@@ -267,7 +281,8 @@ $(function(){
     var restart = $("#restart").is(':checked');
     var port = parseInt($('#port').val());
     var reset = $("#reset").is(':checked');
-    var resetcookies = $('#clear-cookies-reset').is(':checked');
+    var resetcookies = $('.clear-cookies-reset').is(':checked');
+    var useScreensaver = $('#use-screensaver').is(':checked');
     var hidecursor = $("#hidecursor").is(':checked');
     var disablecontextmenu = $("#disablecontextmenu").is(':checked');
     var disabledrag = $("#disabledrag").is(':checked');
@@ -298,6 +313,17 @@ $(function(){
       if(reset <= 0 ){
         reset = false;
         error.push("Reset interval is required.");
+      }
+    }
+    if(useScreensaver){
+      var screensaverTime = parseFloat($('#screensaver-time').val()) || 0;
+      if(screensaverTime <= 0){
+        screensaverTime = null;
+        error.push('Screensaver time is required.');
+      }
+      var screensaverURL = $('#screensaver-url').val();
+      if(!screensaverURL){
+        error.push('Screensaver URL is required.');
       }
     }
     if(url && Array.isArray(url)){
@@ -390,6 +416,13 @@ $(function(){
       }
       if(reset) chrome.storage.local.set({'reset':reset});
       else chrome.storage.local.remove('reset');
+      if(screensaverTime && screensaverURL){
+        chrome.storage.local.set({'screensavertime':screensaverTime});
+        chrome.storage.local.set({'screensaverurl':screensaverURL});
+      }else{
+        chrome.storage.local.remove('screensavertime');
+        chrome.storage.local.remove('screensaverurl');
+      }
       if (resetcookies) chrome.storage.local.set({'clearcookiesreset':resetcookies});
       else chrome.storage.local.remove('clearcookiesreset');
       if(restart){

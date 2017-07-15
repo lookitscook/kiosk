@@ -10,17 +10,33 @@ body,#container{
   padding:0;
   overflow:hidden;
 }
-
-#content{
+#content, #screensaver{
   position:absolute;
   top:0;
   right:0;
   bottom:0;
   left:0;
 }
+#screensaver{
+  z-index:3;
+  display:none;
+  visibility: hidden;
+}
+#content{
+  z-index:1;
+}
 body.tabbed #content{
     top:48px;
 }
+body.screensaverActive #content{
+  display:none;
+  visibility: hidden;
+}
+body.screensaverActive #screensaver{
+  display:block;
+  visibility: visible;
+}
+
 #tabs{
   display:none;
   visibility: hidden;
@@ -28,6 +44,7 @@ body.tabbed #content{
 body.tabbed #tabs{
   display:block;
   visibility: visible;
+  z-index:2;
 }
 .tabs{
   overflow-x: hidden;

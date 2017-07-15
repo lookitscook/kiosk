@@ -187,7 +187,7 @@
                 <label for="reset">minutes</label>
               </div>
               <div class="col input-field s12">
-                <input id="clear-cookies-reset" type="checkbox" />
+                <input class="clear-cookies-reset" type="checkbox" />
                 <label for="clear-cookies-reset">Clear Cache on Reset</label>
               </div>
             </div>
@@ -224,6 +224,10 @@
             <input type="checkbox" id="remote-schedule" />
             <label for="remote-schedule">Remote Schedule Server</label>
           </div>
+          <div class="col s3">
+            <input type="checkbox" id="use-screensaver" />
+            <label for="use-screensaver">Use Screensaver</label>
+          </div>
         </div>
         <div class="row remote-schedule-detail disabled">
           <div class="input-field col s12">
@@ -233,6 +237,23 @@
           <div class="col input-field s2">
             <input id="schedule-poll-interval" type="number" step="0.1" value="15">
             <label for="schedule-poll-interval" class="active">Schedule Poll Interval</label>
+         </div>
+         <div class="col input-field s2">
+           <label>minutes</label>
+         </div>
+          <div class="col input-field s4">
+            <input class="clear-cookies-reset" type="checkbox" />
+            <label for="clear-cookies-reset">Clear Cache on Screensaver</label>
+          </div>
+        </div>
+        <div class="row use-screensaver disabled">
+          <div class="input-field col s12">
+            <input id="screensaver-url" type="text">
+            <label for="screensaver-url" class="active">Screensaver URL (must start with http:// or https://)</label>
+          </div>
+          <div class="col input-field s2">
+            <input id="screensaver-time" type="number" step="0.1" value="15">
+            <label for="screensaver-time" class="active">Screensaver Timeout</label>
          </div>
          <div class="col input-field s2">
            <label>minutes</label>

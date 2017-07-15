@@ -4,12 +4,13 @@ $(function(){
   var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
   var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
   var DEFAULT_ROTATE_RATE = 30; //seconds
-  var ACTIVE_EVENTS = "click mousedown mouseup mousemove touch touchstart touchend keypress keydown";
+  var ACTIVE_EVENTS = "click mousedown mouseup touch touchstart touchend keypress keydown";
 
   var restarting = false;
   var reset = false;
+  var useScreensaver, screensaverTime, screensaverURL;
   var win = window;
-  var activeTimeout;
+  var resetTimeout, screensaverTimeout;
   var restart;
   var urlrotateindex = 0;
   var rotaterate;
@@ -39,7 +40,7 @@ $(function(){
   $(document).keydown(function(e) {
     //refresh on F3 or ctrl+r
     if ((e.which == 168) || (e.which == 82 && e.ctrlKey)){
-      loadContent();
+      loadContent(true);
     }
   });
 
@@ -52,7 +53,7 @@ $(function(){
       }
       currentURL = contentURL[urlrotateindex];
       $("#browser").remove();
-      loadContent();
+      loadContent(false);
     }
   }
 
@@ -113,12 +114,12 @@ $(function(){
        //only on a change do we want to load
        if(scheduledContent[0].content && !hasURL(scheduledContent[0].content)){
           currentURL = scheduledContent[0].content.length ? scheduledContent[0].content : [scheduledContent[0].content];
-          loadContent();
+          loadContent(false);
        }
     }
     else if(currentURL != defaultURL){
         currentURL = defaultURL;
-        loadContent();
+        loadContent(false);
     }
    }
  }
@@ -210,9 +211,12 @@ $(function(){
      allownewwindow = data.newwindow ? true : false
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
+     screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
+     screensaverURL = data.screensaverurl;
+     useScreensaver = screensaverTime && screensaverURL;
      clearcookies = data.clearcookiesreset ? true : false;
 
-     if(reset) $('*').on(ACTIVE_EVENTS,active);
+     if(reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
 
      defaultURL = contentURL = Array.isArray(data.url) ? data.url : [data.url];
      useragent = data.useragent;
@@ -223,7 +227,7 @@ $(function(){
         setInterval(rotateURL,rotaterate * 1000);
      }
      currentURL = defaultURL;
-     loadContent();
+     loadContent(true);
 
   });
 
@@ -239,7 +243,7 @@ $(function(){
       var url = data.url.split(',');
       if(!hasURL(url)){
         contentURL = currentURL = url;
-        loadContent();
+        loadContent(false);
       }
     }
   });
@@ -257,10 +261,18 @@ $(function(){
   }
 
   function active(){
+    $('body').removeClass('screensaverActive');
+    if(useScreensaver){
+      if(screensaverTimeout) clearTimeout(screensaverTimeout);
+      screensaverTimeout = setTimeout(function(){
+        $('body').addClass('screensaverActive');
+        loadContent(false, true);
+      }, screensaverTime*60*1000);
+    }
     if(reset){
-      if(activeTimeout) clearTimeout(activeTimeout);
-      activeTimeout = setTimeout(function(){
-        loadContent();
+      if(resetTimeout) clearTimeout(resetTimeout);
+      resetTimeout = setTimeout(function(){
+        loadContent(true);
       },reset*60*1000);
     }
   }
@@ -408,8 +420,14 @@ $(function(){
     }
   }
 
-  function loadContent(){
-    active(); //we should reset the active on load content as well
+  function loadContent(alsoLoadScreensaver, screensaverActive){
+    if(!screensaverActive) {
+      active(); //we should reset the active on load content as well
+    }
+    if(alsoLoadScreensaver && screensaverURL){
+      $('#screensaver .browser').remove();
+      loadURL(screensaverURL, 0, null, true);
+    }
     if(!currentURL) return;
     if(!Array.isArray(currentURL)) currentURL = [currentURL];
     $('#content .browser').remove();
@@ -446,7 +464,7 @@ $(function(){
         break;
     }
     for(var i = 0; i < currentURL.length; i++){
-      addURL(currentURL[i],i,colClass);
+      loadURL(currentURL[i],i,colClass);
     }
     var $tabs = $('ul.tabs');
     if(currentURL.length > 12){
@@ -457,11 +475,13 @@ $(function(){
     $tabs.tabs();
   }
 
-  function addURL(url, i, colClass){
-    var id = "browser"+i;
-    var $tab = $('<li class="tab col '+colClass+' '+id+'"><a href="#'+id+'">'+url+'</a></li>').appendTo('#tabs .tabs');
+  function loadURL(url, i, colClass, isScreensaver){
+    var id = (isScreensaver ? "screensaver" : "browser")+i;
+    if(!isScreensaver){
+      var $tab = $('<li class="tab col '+colClass+' '+id+'"><a href="#'+id+'">'+url+'</a></li>').appendTo('#tabs .tabs');
+    }
     var $webviewContainer = $('<div id="'+id+'" class="browser"/>');
-    $webviewContainer.appendTo('#content');
+    $webviewContainer.appendTo(isScreensaver ? '#screensaver' : '#content');
     var $webview = $('<webview />');
     initWebview($webview);
     $webview
@@ -484,7 +504,7 @@ $(function(){
          localStorage: true,
          webSQL: true,
        };
-       $webview[0].clearData({since: 0}, clearDataType, reload ? loadContent : null);
+       $webview[0].clearData({since: 0}, clearDataType, reload ?  function() { loadContent(true); }  : null);
      }
   }
 
@@ -493,7 +513,7 @@ $(function(){
       restarting = true;
       $("#browserContainer").remove();
       setTimeout(function(){
-        loadContent();
+        loadContent(true);
         restarting = false;
       },RESTART_DELAY);
    }

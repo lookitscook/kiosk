@@ -14,6 +14,7 @@ $(function(){
   var urlrotateindex = 0;
   var rotaterate;
   var schedule,scheduleURL,contentURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
+  var hidegslidescontrols = false;
   var hidecursor = false;
   var disablecontextmenu = false;
   var disabledrag = false;
@@ -198,6 +199,7 @@ $(function(){
        setInterval(checkSchedule,CHECK_SCHEDULE_DELAY);
      }
 
+     hidegslidescontrols = !!data.hidegslidescontrols;
      hidecursor = data.hidecursor ? true : false;
      disablecontextmenu = data.disablecontextmenu ? true : false;
      disabledrag = data.disabledrag ? true : false;
@@ -320,6 +322,20 @@ $(function(){
         command: 'kioskGetTitle',
         id: $webview.parent().attr('id')
        }, '*');
+
+       if(hidegslidescontrols && browser.src.indexOf('https://docs.google.com/presentation') >= 0){
+         $webview.css({
+          height:'99%',
+          bottom: '1px'
+         });
+         browser.insertCSS({code:".punch-viewer-nav-fixed{ display:none; visibility:hidden; }"});
+         setTimeout(function(){
+           $webview.css({
+            height:'100%',
+            bottom: 0,
+          });
+         }, 10);
+       }
        if(hidecursor)
          browser.insertCSS({code:"*{cursor:none;}"});
        if(disablecontextmenu)

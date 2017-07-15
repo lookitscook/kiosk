@@ -19,7 +19,6 @@ body,#container{
 }
 #screensaver{
   z-index:3;
-  display:none;
   visibility: hidden;
 }
 #content{
@@ -29,11 +28,9 @@ body.tabbed #content{
     top:48px;
 }
 body.screensaverActive #content{
-  display:none;
   visibility: hidden;
 }
 body.screensaverActive #screensaver{
-  display:block;
   visibility: visible;
 }
 

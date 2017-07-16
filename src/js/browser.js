@@ -267,6 +267,8 @@ $(function(){
     if(useScreensaver){
       if(screensaverTimeout) clearTimeout(screensaverTimeout);
       screensaverTimeout = setTimeout(function(){
+        $('#newWindow').modal('close');
+        $('#newWindow webview').remove();
         $('body').addClass('screensaverActive');
         loadContent(false, true);
       }, screensaverTime*60*1000);
@@ -427,12 +429,26 @@ $(function(){
         $('#newWindow webview').remove();
          var $newWebview = $('<webview/>');
          initWebview($newWebview);
+         $newWebview.css({
+             right:'1px',
+             width:'99%'
+        });
          $newWebview.on('close',function(e){
            $('#newWindow').modal('close');
            $('#newWindow webview').remove();
          });
          e.originalEvent.window.attach($newWebview[0]);
          $('#newWindow').append($newWebview).modal('open');
+         setTimeout(function(){
+           $newWebview.css({
+             bottom:0,
+             right:0,
+             top:0,
+             left:0,
+             height:'100%',
+             width:'100%'
+           })
+         }, 10);
        })
        .on('dialog',function(e){
         var $modal;

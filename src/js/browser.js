@@ -14,6 +14,7 @@ $(function(){
   var restart;
   var urlrotateindex = 0;
   var rotaterate;
+  var whitelist;
   var schedule,scheduleURL,contentURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
   var hidegslidescontrols = false;
   var hidecursor = false;
@@ -219,6 +220,7 @@ $(function(){
      if(reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
 
      defaultURL = contentURL = Array.isArray(data.url) ? data.url : [data.url];
+     whitelist = Array.isArray(data.whitelist) ? data.whitelist : [data.whitelist];
      useragent = data.useragent;
      authorization = data.authorization;
      if(data.multipleurlmode == 'rotate'){
@@ -275,6 +277,32 @@ $(function(){
         loadContent(true);
       },reset*60*1000);
     }
+  }
+
+  function getDomainWhiteListError(url){
+    if(!whitelist || !whitelist.length){
+      return null;
+    }
+    requestedURL = url.replace('https://','').replace('http://','');
+    for(var i = 0; i < whitelist.length; i++){
+      var allowedURL = whitelist[i].replace('https://','').replace('http://','');
+      var allowedPath = allowedURL.split('/');
+      var requestedPath = requestedURL.split('/');
+      if(allowedPath && allowedPath.length > 1){
+        //match the whole path
+        if(requestedURL.indexOf(allowedURL) == 0){
+          return null;
+        }
+      }else{
+        //match just the domain portion
+        var allowedDomain = allowedPath && allowedPath.length ? allowedPath[0] : allowedPath;
+        var requestedDomain = requestedPath && requestedPath.length ? requestedPath[0] : requestedPath;
+        if(requestedDomain.indexOf(allowedDomain) >= 0){
+          return null;
+        }
+      }
+    }
+    return `Request to ${requestedDomain} blocked.`;
   }
 
   function initWebview($webview){
@@ -361,6 +389,16 @@ $(function(){
        browser.focus();
      })
      .on('loadcommit',function(e){
+        if(e.originalEvent.isTopLevel && $webview.parent().attr('id').indexOf('screensaver') < 0){
+          var err = getDomainWhiteListError(e.originalEvent.url);
+          if(err){
+            var webview = $webview.get(0);
+            webview.stop();
+            webview.back();
+            Materialize.toast(err, 4000);
+            return;
+          }
+        }
 	      if(useragent) e.target.setUserAgentOverride(useragent);
         if(reset){
           ACTIVE_EVENTS.split(' ').forEach(function(type,i){
@@ -381,6 +419,11 @@ $(function(){
         ["blocking", "requestHeaders"]);
      if(allownewwindow){
        $webview.on('newwindow',function(e){
+        var err = getDomainWhiteListError(e.originalEvent.targetUrl);
+        if(err){
+          Materialize.toast(err, 4000);
+          return;
+        }
         $('#newWindow webview').remove();
          var $newWebview = $('<webview/>');
          initWebview($newWebview);

@@ -41,6 +41,17 @@ $(function(){
     }
   }
 
+  $('#whitelist').material_chip({
+    placeholder: '+Domain',
+    secondaryPlaceholder: '+Domain'
+  });
+  $('#whitelist').on('chip.add', function(e,chip){
+    var err;
+    if(!(chip.tag.indexOf('.') >=0)){
+      Materialize.toast('Whitelist domain must be valid top-level domain.', 4000);
+    }
+  });
+
   // UX: Simulate an enter keypress whenever the Chips input loses focus
   $('#url').on('blur', ':input', function() {
     if(this.value && this.value.length) {
@@ -51,6 +62,17 @@ $(function(){
         return false;
       }
 
+      $(this).trigger($.Event('keydown', {
+        which: 13
+      }));
+    }
+  });
+  $('#whitelist').on('blur', ':input', function() {
+    if(this.value && this.value.length) {
+      if(!this.value.indexOf('.') >=0) {
+        Materialize.toast('Whitelist domain must be valid top-level domain.', 4000);
+        return false;
+      }
       $(this).trigger($.Event('keydown', {
         which: 13
       }));
@@ -72,6 +94,19 @@ $(function(){
     if(urlTags.length > 1){
       $('.multiple-url-mode').removeClass('disabled').show();
     }
+  }
+  if(data.whitelist){
+    var whitelistTags = [];
+    if(Array.isArray(data.whitelist)){
+      //possibly multiple content items
+      for(var i = 0; i < data.whitelist.length; i++){
+        whitelistTags.push({ tag: data.whitelist[i] });
+      }
+    }else{
+      //only a single content item
+      whitelistTags.push({ tag: data.whitelist });
+    }
+    $('#whitelist').material_chip({ data: whitelistTags });
   }
   if(data.rotaterate){
     $("#rotate-rate").val(data.rotaterate);
@@ -271,6 +306,7 @@ $(function(){
     e.preventDefault();
     var error = [];
     var url = $('#url').material_chip('data');
+    var whitelist = $('#whitelist').material_chip('data');
     var multipleurlmode = $("#multiple-url-mode").val();
     var rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
     var host = $('#host').val();
@@ -342,6 +378,17 @@ $(function(){
       }
     }else{
       error.push("Content URL is required.");
+    }
+    if(whitelist && Array.isArray(url)){
+      var whitelistDomains = [];
+      for(var i = 0; i < whitelist.length; i++){
+        if(whitelist[i].tag.indexOf('.') < 0) {
+          error.push('Whitelist domain must be valid top-level domain.');
+        }else{
+          whitelistDomains.push(whitelist[i].tag);
+        }
+      }
+      whitelist = whitelistDomains;
     }
     if((remote || local)){
       if(!username){
@@ -461,6 +508,7 @@ $(function(){
       if(resetcache) chrome.storage.local.set({'resetcache': resetcache});
       else chrome.storage.local.remove('resetcache');
       chrome.storage.local.set({'url':url});
+      chrome.storage.local.set({'whitelist':whitelist});
       chrome.storage.local.set({'multipleurlmode':multipleurlmode});
       if(rotaterate) chrome.storage.local.set({'rotaterate': rotaterate});
       else chrome.storage.local.remove('rotaterate');

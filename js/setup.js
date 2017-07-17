@@ -171,7 +171,7 @@ $(function(){
     $("#screensaver-time").val(parseFloat(data.screensavertime)).siblings('label').addClass('active');
     $('#screensaver-url').val(data.screensaverurl);
   }
-  if (data.clearcookiesreset) $(".clear-cookies-reset").prop("checked",true);
+  if (data.clearcookiesreset) $("#clear-cookies-reset, #screensaver-reset").prop("checked",true);
   if(data.restart && parseInt(data.restart)){
     var restart = parseInt(data.restart);
     $('#houroffset > option').removeAttr('selected');
@@ -320,7 +320,7 @@ $(function(){
     var restart = $("#restart").is(':checked');
     var port = parseInt($('#port').val());
     var reset = $("#reset").is(':checked');
-    var resetcookies = $('.clear-cookies-reset').is(':checked');
+    var resetcookies = $('#clear-cookies-reset').is(':checked') || $('#screensaver-reset').is(':checked');
     var useScreensaver = $('#use-screensaver').is(':checked');
     var hidecursor = $("#hidecursor").is(':checked');
     var disablecontextmenu = $("#disablecontextmenu").is(':checked');

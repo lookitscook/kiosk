@@ -45,6 +45,34 @@ $(function(){
     }
   });
 
+  $('#nav .home').click(function(e){
+    if($('#nav .home').hasClass('inactive')){
+      return;
+    }
+    var activeBrowserID = $('#tabs a.active').attr('href');
+    var $webview = $(activeBrowserID+' webview');
+    var activeHomeURL = $webview.data('src');
+    $webview.attr('src', activeHomeURL);
+  });
+
+  $('#nav .back').click(function(e){
+    if($('#nav .back').hasClass('inactive')){
+      return;
+    }
+    var activeBrowserID = $('#tabs a.active').attr('href');
+    var $webview = $(activeBrowserID+' webview');
+    $webview.get(0).back();
+  });
+
+  $('#nav .refresh').click(function(e){
+    if($('#nav .refresh').hasClass('inactive')){
+      return;
+    }
+    var activeBrowserID = $('#tabs a.active').attr('href');
+    var $webview = $(activeBrowserID+' webview');
+    $webview.attr('src', $webview.attr('src'));
+  });
+
   function rotateURL(){
     if(contentURL.length > 1){
       if (urlrotateindex < (contentURL.length-1)){
@@ -135,6 +163,10 @@ $(function(){
           $(activeBrowserID+' webview').get(0).print();
         }
       });
+    }
+
+    if(data.shownav){
+      $('body').addClass('show-nav');
     }
 
      if(data.local){
@@ -307,6 +339,23 @@ $(function(){
     return `Request to ${requestedDomain} blocked.`;
   }
 
+  function setNavStatus(){
+    var activeBrowserID = $('#tabs a.active').attr('href');
+    var $webview = $(activeBrowserID+' webview');
+    var activeHomeURL = $webview.data('src');
+    var currentURL = $webview.attr('src');
+    if(currentURL == activeHomeURL){
+      $('#nav .home').addClass('inactive');
+    }else{
+      $('#nav .home').removeClass('inactive');
+    }
+    if($webview.get(0).canGoBack()){
+      $('#nav .back').removeClass('inactive');
+    }else{
+      $('#nav .back').addClass('inactive');
+    }
+  }
+
   function initWebview($webview){
      $webview.css({
        width:'100%',
@@ -389,6 +438,9 @@ $(function(){
        if(disableselection)
          browser.insertCSS({code:"*{-webkit-user-select: none; user-select: none;}"});
        browser.focus();
+     })
+     .on('loadstop', function(e){
+        setNavStatus();
      })
      .on('loadcommit',function(e){
         if(e.originalEvent.isTopLevel && $webview.parent().attr('id').indexOf('screensaver') < 0){
@@ -531,7 +583,7 @@ $(function(){
     }else{
       $tabs.removeClass('scroll');
     }
-    $tabs.tabs();
+    $tabs.tabs({ onShow: function(tab) { setNavStatus(); } });
   }
 
   function loadURL(url, i, colClass, isScreensaver){
@@ -545,6 +597,7 @@ $(function(){
     initWebview($webview);
     $webview
      .data('id',id)
+     .data('src',url)
      .attr('src',url)
      .appendTo($webviewContainer);
      if(resetcache || clearcookies) {

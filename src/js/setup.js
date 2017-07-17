@@ -127,6 +127,9 @@ $(function(){
     $("#local").prop("checked",true);
     $('.local, .settings-detail').removeClass('disabled');
   }
+  if(data.shownav) {
+    $("#shownav").prop("checked",true);
+  }
   if(data.remote) {
     $("#remote").prop("checked",true);
     $('.remote, .settings-detail').removeClass('disabled');
@@ -336,6 +339,7 @@ $(function(){
     var schedulepollinterval = parseFloat($('#schedule-poll-interval').val()) ? parseFloat($('#schedule-poll-interval').val()) : DEFAULT_SCHEDULE_POLL_INTERVAL;
     var sleepmode = $("#sleep-mode").val();
     var resetcache = $('#reset-cache').is(':checked');
+    var shownav = $('#shownav').is(':checked');
 
     var servelocal = $("#servelocal").is(':checked');
     var servelocaldirectory = $('#servelocaldirectory').data('directory');
@@ -445,6 +449,8 @@ $(function(){
       }
       return false;
     }else{
+      if(shownav) chrome.storage.local.set({'shownav':shownav});
+      else chrome.storage.local.remove('shownav');
       if(allowprint) chrome.storage.local.set({'allowprint':allowprint});
       else chrome.storage.local.remove('allowprint');
       if(hidegslidescontrols) chrome.storage.local.set({'hidegslidescontrols':hidegslidescontrols});

@@ -9,6 +9,7 @@ body,#container{
   margin:0;
   padding:0;
   overflow:hidden;
+  background:#000;
 }
 #content, #screensaver{
   position:absolute;
@@ -24,7 +25,7 @@ body,#container{
 #content{
   z-index:1;
 }
-body.tabbed #content{
+body.tabbed #content, body.show-nav #content{
     top:48px;
 }
 body.screensaverActive #content{
@@ -38,11 +39,13 @@ body.screensaverActive #screensaver{
   display:none;
   visibility: hidden;
 }
-body.tabbed #tabs{
+
+body.tabbed #tabs, body.show-nav #tabs{
   display:block;
   visibility: visible;
   z-index:2;
 }
+
 .tabs{
   overflow-x: hidden;
   background: #000;
@@ -52,6 +55,57 @@ body.tabbed #tabs{
   height:48px;
   position:absolute;
   top:0;
+  display:none;
+  visibility: hidden;
+}
+body.tabbed .tabs{
+  display:block;
+  visibility: visible;
+}
+body.show-nav .tabs{
+  left: 144px;
+  width: auto;
+}
+#nav{
+  display:none;
+  visibility:hidden;
+  background: #000;
+  position:absolute;
+  height:48px;
+  width:144px;
+  left:0;
+  top:0;
+}
+#nav ul{
+  height:48px;
+  width:144px;
+}
+#nav li, #nav a{
+  display:block;
+  height:48px;
+  width:48px;
+  margin:0;
+  padding:0;
+  text-align:center;
+  line-height:32px;
+}
+#nav a i.material-icons{
+  height:48px;
+  line-height:48px;
+}
+#nav a:hover{
+  background-color: #222;
+  -webkit-transition: background-color 0.5s;
+}
+#nav li.inactive a{
+  color: #333;
+}
+#nav li.inactive a:hover{
+  background-color: #000;
+}
+body.show-nav #nav{
+  display:block;
+  visibility: visible;
 }
 .tabs.scroll{
   overflow-x: auto;

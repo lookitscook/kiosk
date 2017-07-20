@@ -98,7 +98,7 @@ Linux: Likely similar to Windows and OSX, untested.
 
 This product is maintained by [Matt Cook](mailto:matt@lookitscook.com) and provided without warranty or guaranteed  support. If you need a bug fix please check that it has not be reported and submit details here: https://github.com/matt-cook/kiosk/issues
 
-Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to matt@lookitscook.com for a quote. Alternatively, if the issue does not yet have a milestone assigned to it, add a bounty via https://www.bountysource.com and either we or a third party developer can prioritize the update.
+Patches and new features are released at our convenience. If you need a bug fix or new feature on a specific schedule, please send details to support@cook.company for a quote. Alternatively, if the issue does not yet have a milestone assigned to it, add a bounty via https://www.bountysource.com and either we or a third party developer can prioritize the update.
 
 Pull requests are welcome.
 
@@ -109,6 +109,12 @@ Pull requests are welcome.
 - [OSX menu bar will show on hover.](https://github.com/matt-cook/kiosk/issues/41)
 
 ## Changelog
+
+- v5.12.0
+  - New feature: Navigation bar (home/back/refresh)
+  - New feature: Screensaver
+  - New feature: Hide Google Slides navigation (allowing Google Slides to be used for digital signage or screensaver)
+  - New feature: Domain whitelist: prevent navigation to unspecified domains. 
 
 - v5.11.0
   - Reset content on F3 or CTRL+R

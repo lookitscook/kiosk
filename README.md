@@ -115,6 +115,7 @@ Pull requests are welcome.
   - New feature: Screensaver
   - New feature: Hide Google Slides navigation (allowing Google Slides to be used for digital signage or screensaver)
   - New feature: Domain whitelist: prevent navigation to unspecified domains. 
+  - Bug fix: Correct whitespace for pop-up windows
 
 - v5.11.0
   - Reset content on F3 or CTRL+R

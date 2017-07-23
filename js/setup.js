@@ -165,13 +165,12 @@ $(function(){
     $('.reset').removeClass('disabled');
     $("#resetinterval").val(data.reset).siblings('label').addClass('active');
   }
-  if(data.screensavertime && data.screensaverurl){
+  if(data.screensaverurl){
     $('#use-screensaver').prop("checked", true);
     $('.use-screensaver').removeClass('disabled');
-    $("#screensaver-time").val(parseFloat(data.screensavertime)).siblings('label').addClass('active');
-    $('#screensaver-url').val(data.screensaverurl);
+    $('#screensaver-url').val(data.screensaverurl).siblings('label').addClass('active');
   }
-  if (data.clearcookiesreset) $("#clear-cookies-reset, #screensaver-reset").prop("checked",true);
+  if (data.clearcookiesreset) $("#clear-cookies-reset").prop("checked",true);
   if(data.restart && parseInt(data.restart)){
     var restart = parseInt(data.restart);
     $('#houroffset > option').removeAttr('selected');
@@ -320,7 +319,7 @@ $(function(){
     var restart = $("#restart").is(':checked');
     var port = parseInt($('#port').val());
     var reset = $("#reset").is(':checked');
-    var resetcookies = $('#clear-cookies-reset').is(':checked') || $('#screensaver-reset').is(':checked');
+    var resetcookies = $('#clear-cookies-reset').is(':checked');
     var useScreensaver = $('#use-screensaver').is(':checked');
     var hidecursor = $("#hidecursor").is(':checked');
     var disablecontextmenu = $("#disablecontextmenu").is(':checked');
@@ -352,14 +351,12 @@ $(function(){
       if(!reset) reset = 0;
       if(reset <= 0 ){
         reset = false;
-        error.push("Reset interval is required.");
+        error.push("Inactivity reset time is required.");
       }
     }
     if(useScreensaver){
-      var screensaverTime = parseFloat($('#screensaver-time').val()) || 0;
-      if(screensaverTime <= 0){
-        screensaverTime = null;
-        error.push('Screensaver time is required.');
+      if(reset <= 0){
+        error.push("Inactivity reset time is required.");
       }
       var screensaverURL = $('#screensaver-url').val();
       if(!screensaverURL){
@@ -469,11 +466,9 @@ $(function(){
       }
       if(reset) chrome.storage.local.set({'reset':reset});
       else chrome.storage.local.remove('reset');
-      if(screensaverTime && screensaverURL){
-        chrome.storage.local.set({'screensavertime':screensaverTime});
+      if(screensaverURL){
         chrome.storage.local.set({'screensaverurl':screensaverURL});
       }else{
-        chrome.storage.local.remove('screensavertime');
         chrome.storage.local.remove('screensaverurl');
       }
       if (resetcookies) chrome.storage.local.set({'clearcookiesreset':resetcookies});

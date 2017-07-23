@@ -8,9 +8,9 @@ $(function(){
 
   var restarting = false;
   var reset = false;
-  var useScreensaver, screensaverTime, screensaverURL;
+  var screensaverURL;
   var win = window;
-  var resetTimeout, screensaverTimeout;
+  var resetTimeout;
   var restart;
   var urlrotateindex = 0;
   var rotaterate;
@@ -244,9 +244,7 @@ $(function(){
      allownewwindow = data.newwindow ? true : false
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
-     screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
      screensaverURL = data.screensaverurl;
-     useScreensaver = screensaverTime && screensaverURL;
      clearcookies = data.clearcookiesreset ? true : false;
 
      if(reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
@@ -261,8 +259,13 @@ $(function(){
         setInterval(rotateURL,rotaterate * 1000);
      }
      currentURL = defaultURL;
-     loadContent(true);
-
+     if(resetcache){
+       clearCache(function(){
+         loadContent(true);
+       })
+     }else{
+      loadContent(true);
+     }
   });
 
   window.addEventListener('message', function(e){
@@ -296,20 +299,22 @@ $(function(){
 
   function active(){
     $('body').removeClass('screensaverActive');
-    if(useScreensaver){
-      if(screensaverTimeout) clearTimeout(screensaverTimeout);
-      screensaverTimeout = setTimeout(function(){
-        $('#newWindow').modal('close');
-        $('#newWindow webview').remove();
-        $('body').addClass('screensaverActive');
-        loadContent(false, true);
-      }, screensaverTime*60*1000);
-    }
-    if(reset){
+    if(reset || screensaverURL){
       if(resetTimeout) clearTimeout(resetTimeout);
       resetTimeout = setTimeout(function(){
-        loadContent(true);
-      },reset*60*1000);
+        if(screensaverURL){
+          $('#newWindow').modal('close');
+          $('#newWindow webview').remove();
+          $('body').addClass('screensaverActive');
+        }
+        if(clearcookies){
+          clearCache(function(){
+            loadContent(false);
+          });
+        }else{
+          loadContent(false);
+        }
+      }, reset*60*1000);
     }
   }
 
@@ -531,9 +536,9 @@ $(function(){
     }
   }
 
-  function loadContent(alsoLoadScreensaver, screensaverActive){
-    if(!screensaverActive) {
-      active(); //we should reset the active on load content as well
+  function loadContent(alsoLoadScreensaver){
+    if(!$('body').hasClass('screensaverActive')) {
+      active();
     }
     if(alsoLoadScreensaver && screensaverURL){
       $('#screensaver .browser').remove();
@@ -547,11 +552,6 @@ $(function(){
       $('body').addClass('tabbed');
     }else{
       $('body').removeClass('tabbed');
-    }
-    if(resetcache || clearcookies) partition = null;
-    if(!partition){
-      partition = "persist:kiosk"+(Date.now());
-      chrome.storage.local.set({'partition':partition});
     }
     var colClass = 's1';
     switch(currentURL.length){
@@ -600,24 +600,37 @@ $(function(){
      .data('src',url)
      .attr('src',url)
      .appendTo($webviewContainer);
-     if(resetcache || clearcookies) {
-       var reload = false;
-       if (resetcache) {
-         chrome.storage.local.remove('resetcache');
-         resetcache = false;
-         reload = true;
-       }
-       var clearDataType = {
-         appcache: true,
-         cache: true, //remove entire cache
-         cookies: true,
-         fileSystems: true,
-         indexedDB: true,
-         localStorage: true,
-         webSQL: true,
-       };
-       $webview[0].clearData({since: 0}, clearDataType, reload ?  function() { loadContent(true); }  : null);
-     }
+  }
+
+  function clearCache(cb){
+    if (resetcache) { //set true when we're restarting once after saving from admin
+      chrome.storage.local.remove('resetcache');
+      resetcache = false;
+    }
+    var clearDataType = {
+      appcache: true,
+      cache: true, //remove entire cache
+      cookies: true,
+      fileSystems: true,
+      indexedDB: true,
+      localStorage: true,
+      webSQL: true,
+    };
+    deferredArray = [];
+    $('webview').each(function(i, webview){
+      var deferred = new $.Deferred();
+      webview.clearData({since: 0}, clearDataType, function(){
+        deferred.resolve();
+      });
+      deferredArray.push(deferred);
+    });
+    $.when.apply($, deferredArray).then(function() {
+      partition = "persist:kiosk"+(Date.now());
+      chrome.storage.local.set({'partition':partition});
+      if(cb){
+        cb();
+      }
+    });
   }
 
   function onEnded(event){

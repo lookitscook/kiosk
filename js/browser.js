@@ -4,13 +4,13 @@ $(function(){
   var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
   var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
   var DEFAULT_ROTATE_RATE = 30; //seconds
-  var ACTIVE_EVENTS = "click mousedown mouseup touch touchstart touchend keypress keydown";
+  var ACTIVE_EVENTS = "click mousedown mouseup mousemove touch touchstart touchend keypress keydown";
 
   var restarting = false;
   var reset = false;
-  var screensaverURL;
+  var useScreensaver, screensaverTime, screensaverURL;
   var win = window;
-  var resetTimeout;
+  var resetTimeout, screensaverTimeout;
   var restart;
   var urlrotateindex = 0;
   var rotaterate;
@@ -27,6 +27,9 @@ $(function(){
   var resetcache = false;
   var partition = null;
   var clearcookies = false;
+
+  window.oncontextmenu = function(){return false};
+  window.ondragstart = function(){return false};
 
   $('.modal').not('#newWindow').modal();
   $('#newWindow').modal({
@@ -244,7 +247,9 @@ $(function(){
      allownewwindow = data.newwindow ? true : false
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
+     screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
      screensaverURL = data.screensaverurl;
+     useScreensaver = screensaverTime && screensaverURL ? true : false;
      clearcookies = data.clearcookiesreset ? true : false;
 
      if(reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
@@ -299,13 +304,45 @@ $(function(){
 
   function active(){
     $('body').removeClass('screensaverActive');
-    if(reset || screensaverURL){
-      if(resetTimeout) clearTimeout(resetTimeout);
+    if(resetTimeout) {
+      clearTimeout(resetTimeout);
+      resetTimeout = false;
+    }
+    if(screensaverTimeout) {
+      clearTimeout(screensaverTimeout);
+      screensaverTimeout = false;
+    }
+    startScreensaverTimeout();
+    startResetTimeout();
+  }
+
+  function startScreensaverTimeout(){
+    if(useScreensaver && !screensaverTimeout){
+      screensaverTimeout = setTimeout(function(){
+        screensaverTimeout = false;
+        if($('body').hasClass('screensaverActive')){
+          return;
+        }
+        $('#newWindow').modal('close');
+        $('#newWindow webview').remove();
+        $('body').addClass('screensaverActive');
+        if(clearcookies){
+        clearCache(function(){
+          loadContent(false);
+        });
+        }else{
+          loadContent(false);
+        }
+      }, screensaverTime*60*1000);
+    }
+  };
+
+  function startResetTimeout(){
+    if(reset && !resetTimeout){
       resetTimeout = setTimeout(function(){
-        if(screensaverURL){
-          $('#newWindow').modal('close');
-          $('#newWindow webview').remove();
-          $('body').addClass('screensaverActive');
+        resetTimeout = false;
+        if($('body').hasClass('screensaverActive')){
+          return;
         }
         if(clearcookies){
           clearCache(function(){
@@ -316,7 +353,7 @@ $(function(){
         }
       }, reset*60*1000);
     }
-  }
+  };
 
   function getDomainWhiteListError(url){
     if(!whitelist || !whitelist.length){
@@ -538,7 +575,8 @@ $(function(){
 
   function loadContent(alsoLoadScreensaver){
     if(!$('body').hasClass('screensaverActive')) {
-      active();
+      startScreensaverTimeout();
+      startResetTimeout();
     }
     if(alsoLoadScreensaver && screensaverURL){
       $('#screensaver .browser').remove();

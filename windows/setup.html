@@ -187,7 +187,7 @@
       <div class="row">
         <div class="col s12">
             <input type="checkbox" id="reset" />
-            <label for="reset">Enable Inactivity Reset or Screensaver</label>
+            <label for="reset">Enable Inactivity Reset</label>
             <div class="row reset disabled">
               <div class="col input-field s2">
                 <input id="resetinterval" type="text" value="5">
@@ -199,17 +199,29 @@
                 <input id="clear-cookies-reset" type="checkbox" />
                 <label for="clear-cookies-reset">Clear Cache on Inactivty</label>
               </div>
-              <div class="col input-field s4">
-                <input type="checkbox" id="use-screensaver" />
-                <label for="use-screensaver">Use Screensaver</label>
-              </div>
             </div>
           </div>
       </div>
-      <div class="row use-screensaver disabled">
-          <div class="input-field col s12">
-            <input id="screensaver-url" type="text">
-            <label for="screensaver-url">Screensaver URL (must start with http:// or https://)</label>
+      <div class="row">
+        <div class="col s12">
+          <input type="checkbox" id="use-screensaver" />
+          <label for="use-screensaver">Enable Screensaver</label>
+          <div class="row use-screensaver disabled">
+              <div class="col input-field s2">
+                <input id="screensaver-time" type="text" value="5">
+              </div>
+              <div class="col input-field s2">
+                <label for="screensaver-time">minutes</label>
+              </div>
+              <div class="col input-field s4">
+                <input id="screensaver-reset" type="checkbox" />
+                <label for="screensaver-reset">Clear Cache on Inactivty</label>
+              </div>
+              <div class="input-field col s12">
+                <input id="screensaver-url" type="text">
+                <label for="screensaver-url">Screensaver URL (must start with http:// or https://)</label>
+              </div>
+            </div>
           </div>
       </div>
       <div class="row">

@@ -2,7 +2,7 @@
   "name": "Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.12.0",
+  "version": "5.12.1",
   "author": {
     "name": "Matt Cook",
     "email": "matt@lookitscook.com"
@@ -15,7 +15,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/js/jquery.min.js","js/lib/wsc-chrome.js","js/admin.js","js/main.js"],
+      "scripts": ["www/js/jquery.min.js","js/lib/wsc-chrome.js","js/main.js"],
       "persistent": false
     }
   },

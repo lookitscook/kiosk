@@ -72,27 +72,6 @@ function init() {
     }
   });
 
-  chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
-    if(request == "reload"){
-      chrome.runtime.getPlatformInfo(function(p){
-        if(p.os == "cros"){
-          //we're on ChromeOS, so `reload()` will always work
-          chrome.runtime.reload();
-        }else{
-          //we're OSX/Win/*nix so `reload()` may not work if Chrome is not
-          // running the background. Simply close all windows and reset.
-          if(directoryServer) directoryServer.stop();
-          if(adminServer) adminServer.stop();
-          var w = chrome.app.window.getAll();
-          for(var i = 0; i < w.length; i++){
-            w[i].close();
-          }
-          init();
-        }
-      });
-    }
-  });
-
   function openWindow(path){
     if(win) win.close();
     chrome.system.display.getInfo(function(d){
@@ -154,3 +133,70 @@ function stopAutoRestart(){
     clearTimeout(restartTimeout);
   }
 }
+
+function AdminDataHandler(request) {
+  WSC.BaseHandler.prototype.constructor.call(this)
+}
+
+var app = this;
+_.extend(AdminDataHandler.prototype, {
+  put: function() {
+    var newData = this.request.bodyparams
+
+    chrome.storage.local.get(null, function(data) {
+
+      var saveData = {}
+      var restart = false;
+      for(var key in newData){
+        var value = newData[key]
+        if(data.hasOwnProperty(key)){
+          if(key == 'url' && !Array.isArray(value)){
+            value = value.split(',');
+          }
+          data[key] = value;
+          saveData[key] = value;
+          if(key == "url"){
+            chrome.runtime.sendMessage({url: value});
+          }
+        }else if(key == "restart"){
+          restart = true;
+        }
+      }
+      chrome.storage.local.set(saveData);
+      this.setHeader('content-type','text/json')
+      var buf = new TextEncoder('utf-8').encode(JSON.stringify(data)).buffer
+      this.write(buf)
+      this.finish()
+
+      if(restart) setTimeout( function() {
+        chrome.runtime.getPlatformInfo(function(p){
+      if(p.os == "cros"){
+        //we're on ChromeOS, so `reload()` will always work
+        chrome.runtime.reload();
+      }else{
+        //we're OSX/Win/*nix so `reload()` may not work if Chrome is not
+        // running the background. Simply close all windows and reset.
+        if(directoryServer) directoryServer.stop();
+        if(adminServer) adminServer.stop();
+        var w = chrome.app.window.getAll();
+        for(var i = 0; i < w.length; i++){
+          w[i].close();
+        }
+        init();
+      }
+    });
+      }, 1000 )
+                              
+      
+    }.bind(this))
+
+  },
+  get: function() {
+    chrome.storage.local.get(null, function(data) {
+      this.setHeader('content-type','text/json')
+      var buf = new TextEncoder('utf-8').encode(JSON.stringify(data)).buffer
+      this.write(buf)
+      this.finish()
+    }.bind(this))
+  }
+}, WSC.BaseHandler.prototype);

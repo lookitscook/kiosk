@@ -110,6 +110,9 @@ Pull requests are welcome.
 
 ## Changelog
 
+- v5.12.1
+  - Bug fix: Restart via Remote Admin now functional
+
 - v5.12.0
   - New feature: Navigation bar (home/back/refresh)
   - New feature: Screensaver

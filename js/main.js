@@ -72,6 +72,27 @@ function init() {
     }
   });
 
+  chrome.runtime.onMessage.addListener(function(request,sender,sendResponse){
+     if(request == "reload"){
+       chrome.runtime.getPlatformInfo(function(p){
+         if(p.os == "cros"){
+           //we're on ChromeOS, so `reload()` will always work
+           chrome.runtime.reload();
+         }else{
+           //we're OSX/Win/*nix so `reload()` may not work if Chrome is not
+           // running the background. Simply close all windows and reset.
+           if(directoryServer) directoryServer.stop();
+           if(adminServer) adminServer.stop();
+           var w = chrome.app.window.getAll();
+           for(var i = 0; i < w.length; i++){
+             w[i].close();
+           }
+           init();
+         }
+       });
+     }
+   });
+
   function openWindow(path){
     if(win) win.close();
     chrome.system.display.getInfo(function(d){
@@ -152,12 +173,10 @@ _.extend(AdminDataHandler.prototype, {
         if(data.hasOwnProperty(key)){
           if(key == 'url' && !Array.isArray(value)){
             value = value.split(',');
+            restart = true;
           }
           data[key] = value;
           saveData[key] = value;
-          if(key == "url"){
-            chrome.runtime.sendMessage({url: value});
-          }
         }else if(key == "restart"){
           restart = true;
         }

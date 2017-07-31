@@ -280,16 +280,6 @@ $(function(){
     }
   });
 
-  chrome.runtime.onMessage.addListener(function(data){
-    if(data.url){
-      var url = data.url.split(',');
-      if(!hasURL(url)){
-        contentURL = currentURL = url;
-        loadContent(false);
-      }
-    }
-  });
-
   function hasURL(url){
     if(Array.isArray(url)){
       for(var i = 0; i < url.length; i++){

@@ -41,6 +41,17 @@ $(function(){
     }
   }
 
+  $('#whitelist').material_chip({
+    placeholder: '+Domain',
+    secondaryPlaceholder: '+Domain'
+  });
+  $('#whitelist').on('chip.add', function(e,chip){
+    var err;
+    if(!(chip.tag.indexOf('.') >=0)){
+      Materialize.toast('Whitelist domain must be valid top-level domain.', 4000);
+    }
+  });
+
   // UX: Simulate an enter keypress whenever the Chips input loses focus
   $('#url').on('blur', ':input', function() {
     if(this.value && this.value.length) {
@@ -51,6 +62,17 @@ $(function(){
         return false;
       }
 
+      $(this).trigger($.Event('keydown', {
+        which: 13
+      }));
+    }
+  });
+  $('#whitelist').on('blur', ':input', function() {
+    if(this.value && this.value.length) {
+      if(!this.value.indexOf('.') >=0) {
+        Materialize.toast('Whitelist domain must be valid top-level domain.', 4000);
+        return false;
+      }
       $(this).trigger($.Event('keydown', {
         which: 13
       }));
@@ -73,6 +95,19 @@ $(function(){
       $('.multiple-url-mode').removeClass('disabled').show();
     }
   }
+  if(data.whitelist){
+    var whitelistTags = [];
+    if(Array.isArray(data.whitelist)){
+      //possibly multiple content items
+      for(var i = 0; i < data.whitelist.length; i++){
+        whitelistTags.push({ tag: data.whitelist[i] });
+      }
+    }else{
+      //only a single content item
+      whitelistTags.push({ tag: data.whitelist });
+    }
+    $('#whitelist').material_chip({ data: whitelistTags });
+  }
   if(data.rotaterate){
     $("#rotate-rate").val(data.rotaterate);
   }
@@ -85,9 +120,15 @@ $(function(){
   if(data.allowprint) {
     $("#allowprint").prop("checked",true);
   }
+  if(data.hidegslidescontrols) {
+    $("#hidegslidescontrols").prop("checked",true);
+  }
   if(data.local) {
     $("#local").prop("checked",true);
     $('.local, .settings-detail').removeClass('disabled');
+  }
+  if(data.shownav) {
+    $("#shownav").prop("checked",true);
   }
   if(data.remote) {
     $("#remote").prop("checked",true);
@@ -124,7 +165,13 @@ $(function(){
     $('.reset').removeClass('disabled');
     $("#resetinterval").val(data.reset).siblings('label').addClass('active');
   }
-  if (data.clearcookiesreset) $("#clear-cookies-reset").prop("checked",true);
+  if(data.screensavertime && data.screensaverurl){
+    $('#use-screensaver').prop("checked", true);
+    $('.use-screensaver').removeClass('disabled');
+    $("#screensaver-time").val(parseFloat(data.screensavertime)).siblings('label').addClass('active');
+    $('#screensaver-url').val(data.screensaverurl).siblings('label').addClass('active');
+  }
+  if (data.clearcookiesreset) $("#clear-cookies-reset, #screensaver-reset").prop("checked",true);
   if(data.restart && parseInt(data.restart)){
     var restart = parseInt(data.restart);
     $('#houroffset > option').removeAttr('selected');
@@ -190,7 +237,20 @@ $(function(){
       });
     });
   }
-
+  $("#clear-cookies-reset").on('change',function(e){
+    if($("#clear-cookies-reset").is(':checked')){
+      $("#screensaver-reset").prop("checked",true);
+    }else{
+      $("#screensaver-reset").prop("checked",false);
+    }
+  });
+  $("#screensaver-reset").on('change',function(e){
+    if($("#screensaver-reset").is(':checked')){
+      $("#clear-cookies-reset").prop("checked",true);
+    }else{
+      $("#clear-cookies-reset").prop("checked",false);
+    }
+  });  
   $("#reset").on('change',function(){
     if($("#reset").is(':checked')){
       $('.reset').hide().removeClass('disabled').slideDown();
@@ -234,6 +294,14 @@ $(function(){
 
   $("#servelocal,#servelocalport").on('change',setLocalContentURL);
 
+   $("#use-screensaver").on('change',function(){
+    if($("#use-screensaver").is(':checked')){
+      $('.use-screensaver').hide().removeClass('disabled').slideDown();
+    }else{
+      $('.use-screensaver').slideUp();
+    }
+  });
+
   function setLocalContentURL(){
     if($("#servelocal").is(':checked')){
       $('#url').val('http://127.0.0.1:'+$('#servelocalport').val()+'/').siblings('label').addClass('active');
@@ -254,16 +322,19 @@ $(function(){
     e.preventDefault();
     var error = [];
     var url = $('#url').material_chip('data');
+    var whitelist = $('#whitelist').material_chip('data');
     var multipleurlmode = $("#multiple-url-mode").val();
     var rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
     var host = $('#host').val();
     var remote = $("#remote").is(':checked');
     var allowprint = $("#allowprint").is(':checked');
+    var hidegslidescontrols = $("#hidegslidescontrols").is(':checked');
     var local = $("#local").is(':checked');
     var restart = $("#restart").is(':checked');
     var port = parseInt($('#port').val());
     var reset = $("#reset").is(':checked');
-    var resetcookies = $('#clear-cookies-reset').is(':checked');
+    var resetcookies = $('#clear-cookies-reset').is(':checked') || $('#screensaver-reset').is(':checked');
+    var useScreensaver = $('#use-screensaver').is(':checked');
     var hidecursor = $("#hidecursor").is(':checked');
     var disablecontextmenu = $("#disablecontextmenu").is(':checked');
     var disabledrag = $("#disabledrag").is(':checked');
@@ -281,6 +352,7 @@ $(function(){
     var schedulepollinterval = parseFloat($('#schedule-poll-interval').val()) ? parseFloat($('#schedule-poll-interval').val()) : DEFAULT_SCHEDULE_POLL_INTERVAL;
     var sleepmode = $("#sleep-mode").val();
     var resetcache = $('#reset-cache').is(':checked');
+    var shownav = $('#shownav').is(':checked');
 
     var servelocal = $("#servelocal").is(':checked');
     var servelocaldirectory = $('#servelocaldirectory').data('directory');
@@ -293,7 +365,18 @@ $(function(){
       if(!reset) reset = 0;
       if(reset <= 0 ){
         reset = false;
-        error.push("Reset interval is required.");
+        error.push("Inactivity reset time is required.");
+      }
+    }
+    if(useScreensaver){
+      var screensaverTime = parseFloat($('#screensaver-time').val()) || 0;
+      if(screensaverTime <= 0){
+        screensaverTime = null;
+        error.push('Screensaver time is required.');
+      }
+      var screensaverURL = $('#screensaver-url').val();
+      if(!screensaverURL){
+        error.push('Screensaver URL is required.');
       }
     }
     if(url && Array.isArray(url)){
@@ -312,6 +395,17 @@ $(function(){
       }
     }else{
       error.push("Content URL is required.");
+    }
+    if(whitelist && Array.isArray(url)){
+      var whitelistDomains = [];
+      for(var i = 0; i < whitelist.length; i++){
+        if(whitelist[i].tag.indexOf('.') < 0) {
+          error.push('Whitelist domain must be valid top-level domain.');
+        }else{
+          whitelistDomains.push(whitelist[i].tag);
+        }
+      }
+      whitelist = whitelistDomains;
     }
     if((remote || local)){
       if(!username){
@@ -368,8 +462,12 @@ $(function(){
       }
       return false;
     }else{
+      if(shownav) chrome.storage.local.set({'shownav':shownav});
+      else chrome.storage.local.remove('shownav');
       if(allowprint) chrome.storage.local.set({'allowprint':allowprint});
       else chrome.storage.local.remove('allowprint');
+      if(hidegslidescontrols) chrome.storage.local.set({'hidegslidescontrols':hidegslidescontrols});
+      else chrome.storage.local.remove('hidegslidescontrols');
       if(local) chrome.storage.local.set({'local':local});
       else chrome.storage.local.remove('local');
       if(remote) chrome.storage.local.set({'remote':remote});
@@ -384,6 +482,13 @@ $(function(){
       }
       if(reset) chrome.storage.local.set({'reset':reset});
       else chrome.storage.local.remove('reset');
+      if(screensaverTime && screensaverURL){
+        chrome.storage.local.set({'screensavertime':screensaverTime});
+        chrome.storage.local.set({'screensaverurl':screensaverURL});
+      }else{
+        chrome.storage.local.remove('screensavertime');
+        chrome.storage.local.remove('screensaverurl');
+      }
       if (resetcookies) chrome.storage.local.set({'clearcookiesreset':resetcookies});
       else chrome.storage.local.remove('clearcookiesreset');
       if(restart){
@@ -422,6 +527,7 @@ $(function(){
       if(resetcache) chrome.storage.local.set({'resetcache': resetcache});
       else chrome.storage.local.remove('resetcache');
       chrome.storage.local.set({'url':url});
+      chrome.storage.local.set({'whitelist':whitelist});
       chrome.storage.local.set({'multipleurlmode':multipleurlmode});
       if(rotaterate) chrome.storage.local.set({'rotaterate': rotaterate});
       else chrome.storage.local.remove('rotaterate');

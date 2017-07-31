@@ -68,6 +68,12 @@
             <input id="rotate-rate" type="text" value="30">
           </div>
         </div>
+        <div class="row">
+          <div class="col s12">
+            <label for="whitelist">Domain Whitelist</label>
+            <div id="whitelist" class="chips chips-initial"></div>
+          </div>
+        </div>
 
         <div class="row">
           <div class="col s12">
@@ -103,6 +109,14 @@
           <div class="col s3">
             <input type="checkbox" id="allowprint" />
             <label for="allowprint">Enable Printing (CTRL+P)</label>
+          </div>
+          <div class="col s3">
+            <input type="checkbox" id="shownav" />
+            <label for="shownav">Show Navigation</label>
+          </div>
+          <div class="col s3">
+            <input type="checkbox" id="hidegslidescontrols" />
+            <label for="hidegslidescontrols">Hide Google Slides Controls</label>
           </div>
         </div>
         <div class="row">
@@ -170,25 +184,48 @@
             <h4>Scheduling</h4>
           </div>
         </div>
-
       <div class="row">
-          <div class="col s3">
+        <div class="col s12">
             <input type="checkbox" id="reset" />
-            <label for="reset">Inactivity Reset</label>
+            <label for="reset">Enable Inactivity Reset</label>
             <div class="row reset disabled">
-              <div class="col input-field s4">
+              <div class="col input-field s2">
                 <input id="resetinterval" type="text" value="5">
               </div>
-              <div class="col input-field s8">
+              <div class="col input-field s2">
                 <label for="reset">minutes</label>
               </div>
-              <div class="col input-field s12">
+              <div class="col input-field s4">
                 <input id="clear-cookies-reset" type="checkbox" />
-                <label for="clear-cookies-reset">Clear Cache on Reset</label>
+                <label for="clear-cookies-reset">Clear Cache on Inactivty</label>
               </div>
             </div>
           </div>
-          <div class="col s3">
+      </div>
+      <div class="row">
+        <div class="col s12">
+          <input type="checkbox" id="use-screensaver" />
+          <label for="use-screensaver">Enable Screensaver</label>
+          <div class="row use-screensaver disabled">
+              <div class="col input-field s2">
+                <input id="screensaver-time" type="text" value="5">
+              </div>
+              <div class="col input-field s2">
+                <label for="screensaver-time">minutes</label>
+              </div>
+              <div class="col input-field s4">
+                <input id="screensaver-reset" type="checkbox" />
+                <label for="screensaver-reset">Clear Cache on Inactivty</label>
+              </div>
+              <div class="input-field col s12">
+                <input id="screensaver-url" type="text">
+                <label for="screensaver-url">Screensaver URL (must start with http:// or https://)</label>
+              </div>
+            </div>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col s12" >
             <input type="checkbox" id="restart" />
             <label for="restart">Daily Restart</label>
             <div class="row restart disabled">
@@ -216,7 +253,9 @@
               </div>
             </div>
           </div>
-          <div class="col s3">
+        </div>
+        <div class="row">
+          <div class="col s12">
             <input type="checkbox" id="remote-schedule" />
             <label for="remote-schedule">Remote Schedule Server</label>
           </div>
@@ -224,17 +263,16 @@
         <div class="row remote-schedule-detail disabled">
           <div class="input-field col s12">
             <input id="remote-schedule-url" type="text">
-            <label for="remote-schedule-url" class="active">Schedule URL (must start with http:// or https://)</label>
+            <label for="remote-schedule-url">Schedule URL (must start with http:// or https://)</label>
           </div>
           <div class="col input-field s2">
             <input id="schedule-poll-interval" type="number" step="0.1" value="15">
-            <label for="schedule-poll-interval" class="active">Schedule Poll Interval</label>
+            <label for="schedule-poll-interval">Schedule Poll Interval</label>
          </div>
          <div class="col input-field s2">
            <label>minutes</label>
          </div>
         </div>
-
         <div class="row">
           <div class="col s5">
             <label for="sleep-mode">Sleep Mode</label>

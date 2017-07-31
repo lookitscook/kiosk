@@ -1,0 +1,124 @@
+body,#container{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  bottom:0;
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  background:#000;
+}
+#content, #screensaver{
+  position:absolute;
+  top:0;
+  right:0;
+  bottom:0;
+  left:0;
+}
+#screensaver{
+  z-index:3;
+  visibility: hidden;
+}
+#content{
+  z-index:1;
+}
+body.tabbed #content, body.show-nav #content{
+    top:48px;
+}
+body.screensaverActive #content{
+  visibility: hidden;
+}
+body.screensaverActive #screensaver{
+  visibility: visible;
+}
+
+#tabs{
+  display:none;
+  visibility: hidden;
+}
+
+body.tabbed #tabs, body.show-nav #tabs{
+  display:block;
+  visibility: visible;
+  z-index:2;
+}
+
+.tabs{
+  overflow-x: hidden;
+  background: #000;
+  left:0;
+  right:0;
+  width:100%;
+  height:48px;
+  position:absolute;
+  top:0;
+  display:none;
+  visibility: hidden;
+}
+body.tabbed .tabs{
+  display:block;
+  visibility: visible;
+}
+body.show-nav .tabs{
+  left: 144px;
+  width: auto;
+}
+#nav{
+  display:none;
+  visibility:hidden;
+  background: #000;
+  position:absolute;
+  height:48px;
+  width:144px;
+  left:0;
+  top:0;
+}
+#nav ul{
+  height:48px;
+  width:144px;
+}
+#nav li, #nav a{
+  display:block;
+  height:48px;
+  width:48px;
+  margin:0;
+  padding:0;
+  text-align:center;
+  line-height:32px;
+}
+#nav a i.material-icons{
+  height:48px;
+  line-height:48px;
+}
+#nav a:hover{
+  background-color: #222;
+  -webkit-transition: background-color 0.5s;
+}
+#nav li.inactive a{
+  color: #333;
+}
+#nav li.inactive a:hover{
+  background-color: #000;
+}
+body.show-nav #nav{
+  display:block;
+  visibility: visible;
+}
+.tabs.scroll{
+  overflow-x: auto;
+}
+.tabs .tab{
+  float:none;
+}
+.tabs .tab a{
+    color:rgba(255,255,255,0.7);
+}
+.tabs .tab a.active, .tabs .tab a:hover{
+    color:rgba(255,255,255,1.0);
+}
+.tabs .indicator {
+   background-color: rgb(255,255,255) !important;
+}

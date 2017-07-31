@@ -8,12 +8,15 @@ $(function(){
 
   var restarting = false;
   var reset = false;
+  var useScreensaver, screensaverTime, screensaverURL;
   var win = window;
-  var activeTimeout;
+  var resetTimeout, screensaverTimeout;
   var restart;
   var urlrotateindex = 0;
   var rotaterate;
+  var whitelist;
   var schedule,scheduleURL,contentURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
+  var hidegslidescontrols = false;
   var hidecursor = false;
   var disablecontextmenu = false;
   var disabledrag = false;
@@ -24,6 +27,9 @@ $(function(){
   var resetcache = false;
   var partition = null;
   var clearcookies = false;
+
+  window.oncontextmenu = function(){return false};
+  window.ondragstart = function(){return false};
 
   $('.modal').not('#newWindow').modal();
   $('#newWindow').modal({
@@ -38,8 +44,36 @@ $(function(){
   $(document).keydown(function(e) {
     //refresh on F3 or ctrl+r
     if ((e.which == 168) || (e.which == 82 && e.ctrlKey)){
-      loadContent();
+      loadContent(true);
     }
+  });
+
+  $('#nav .home').click(function(e){
+    if($('#nav .home').hasClass('inactive')){
+      return;
+    }
+    var activeBrowserID = $('#tabs a.active').attr('href');
+    var $webview = $(activeBrowserID+' webview');
+    var activeHomeURL = $webview.data('src');
+    $webview.attr('src', activeHomeURL);
+  });
+
+  $('#nav .back').click(function(e){
+    if($('#nav .back').hasClass('inactive')){
+      return;
+    }
+    var activeBrowserID = $('#tabs a.active').attr('href');
+    var $webview = $(activeBrowserID+' webview');
+    $webview.get(0).back();
+  });
+
+  $('#nav .refresh').click(function(e){
+    if($('#nav .refresh').hasClass('inactive')){
+      return;
+    }
+    var activeBrowserID = $('#tabs a.active').attr('href');
+    var $webview = $(activeBrowserID+' webview');
+    $webview.attr('src', $webview.attr('src'));
   });
 
   function rotateURL(){
@@ -51,7 +85,7 @@ $(function(){
       }
       currentURL = contentURL[urlrotateindex];
       $("#browser").remove();
-      loadContent();
+      loadContent(false);
     }
   }
 
@@ -112,12 +146,12 @@ $(function(){
        //only on a change do we want to load
        if(scheduledContent[0].content && !hasURL(scheduledContent[0].content)){
           currentURL = scheduledContent[0].content.length ? scheduledContent[0].content : [scheduledContent[0].content];
-          loadContent();
+          loadContent(false);
        }
     }
     else if(currentURL != defaultURL){
         currentURL = defaultURL;
-        loadContent();
+        loadContent(false);
     }
    }
  }
@@ -132,6 +166,10 @@ $(function(){
           $(activeBrowserID+' webview').get(0).print();
         }
       });
+    }
+
+    if(data.shownav){
+      $('body').addClass('show-nav');
     }
 
      if(data.local){
@@ -198,6 +236,7 @@ $(function(){
        setInterval(checkSchedule,CHECK_SCHEDULE_DELAY);
      }
 
+     hidegslidescontrols = !!data.hidegslidescontrols;
      hidecursor = data.hidecursor ? true : false;
      disablecontextmenu = data.disablecontextmenu ? true : false;
      disabledrag = data.disabledrag ? true : false;
@@ -208,11 +247,15 @@ $(function(){
      allownewwindow = data.newwindow ? true : false
 
      reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
+     screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
+     screensaverURL = data.screensaverurl;
+     useScreensaver = screensaverTime && screensaverURL ? true : false;
      clearcookies = data.clearcookiesreset ? true : false;
 
-     if(reset) $('*').on(ACTIVE_EVENTS,active);
+     if(reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
 
      defaultURL = contentURL = Array.isArray(data.url) ? data.url : [data.url];
+     whitelist = Array.isArray(data.whitelist) ? data.whitelist : [data.whitelist];
      useragent = data.useragent;
      authorization = data.authorization;
      if(data.multipleurlmode == 'rotate'){
@@ -221,8 +264,13 @@ $(function(){
         setInterval(rotateURL,rotaterate * 1000);
      }
      currentURL = defaultURL;
-     loadContent();
-
+     if(resetcache){
+       clearCache(function(){
+         loadContent(true);
+       })
+     }else{
+      loadContent(true);
+     }
   });
 
   window.addEventListener('message', function(e){
@@ -237,7 +285,7 @@ $(function(){
       var url = data.url.split(',');
       if(!hasURL(url)){
         contentURL = currentURL = url;
-        loadContent();
+        loadContent(false);
       }
     }
   });
@@ -255,11 +303,98 @@ $(function(){
   }
 
   function active(){
-    if(reset){
-      if(activeTimeout) clearTimeout(activeTimeout);
-      activeTimeout = setTimeout(function(){
-        loadContent();
-      },reset*60*1000);
+    $('body').removeClass('screensaverActive');
+    if(resetTimeout) {
+      clearTimeout(resetTimeout);
+      resetTimeout = false;
+    }
+    if(screensaverTimeout) {
+      clearTimeout(screensaverTimeout);
+      screensaverTimeout = false;
+    }
+    startScreensaverTimeout();
+    startResetTimeout();
+  }
+
+  function startScreensaverTimeout(){
+    if(useScreensaver && !screensaverTimeout){
+      screensaverTimeout = setTimeout(function(){
+        screensaverTimeout = false;
+        if($('body').hasClass('screensaverActive')){
+          return;
+        }
+        $('#newWindow').modal('close');
+        $('#newWindow webview').remove();
+        $('body').addClass('screensaverActive');
+        if(clearcookies){
+        clearCache(function(){
+          loadContent(false);
+        });
+        }else{
+          loadContent(false);
+        }
+      }, screensaverTime*60*1000);
+    }
+  };
+
+  function startResetTimeout(){
+    if(reset && !resetTimeout){
+      resetTimeout = setTimeout(function(){
+        resetTimeout = false;
+        if($('body').hasClass('screensaverActive')){
+          return;
+        }
+        if(clearcookies){
+          clearCache(function(){
+            loadContent(false);
+          });
+        }else{
+          loadContent(false);
+        }
+      }, reset*60*1000);
+    }
+  };
+
+  function getDomainWhiteListError(url){
+    if(!whitelist || !whitelist.length){
+      return null;
+    }
+    requestedURL = url.replace('https://','').replace('http://','');
+    for(var i = 0; i < whitelist.length; i++){
+      var allowedURL = whitelist[i].replace('https://','').replace('http://','');
+      var allowedPath = allowedURL.split('/');
+      var requestedPath = requestedURL.split('/');
+      if(allowedPath && allowedPath.length > 1){
+        //match the whole path
+        if(requestedURL.indexOf(allowedURL) == 0){
+          return null;
+        }
+      }else{
+        //match just the domain portion
+        var allowedDomain = allowedPath && allowedPath.length ? allowedPath[0] : allowedPath;
+        var requestedDomain = requestedPath && requestedPath.length ? requestedPath[0] : requestedPath;
+        if(requestedDomain.indexOf(allowedDomain) >= 0){
+          return null;
+        }
+      }
+    }
+    return `Request to ${requestedDomain} blocked.`;
+  }
+
+  function setNavStatus(){
+    var activeBrowserID = $('#tabs a.active').attr('href');
+    var $webview = $(activeBrowserID+' webview');
+    var activeHomeURL = $webview.data('src');
+    var currentURL = $webview.attr('src');
+    if(currentURL == activeHomeURL){
+      $('#nav .home').addClass('inactive');
+    }else{
+      $('#nav .home').removeClass('inactive');
+    }
+    if($webview.get(0).canGoBack()){
+      $('#nav .back').removeClass('inactive');
+    }else{
+      $('#nav .back').addClass('inactive');
     }
   }
 
@@ -320,6 +455,20 @@ $(function(){
         command: 'kioskGetTitle',
         id: $webview.parent().attr('id')
        }, '*');
+
+       if(hidegslidescontrols && browser.src.indexOf('https://docs.google.com/presentation') >= 0){
+         $webview.css({
+          height:'99%',
+          bottom: '1px'
+         });
+         browser.insertCSS({code:".punch-viewer-nav-fixed{ display:none; visibility:hidden; }"});
+         setTimeout(function(){
+           $webview.css({
+            height:'100%',
+            bottom: 0,
+          });
+         }, 10);
+       }
        if(hidecursor)
          browser.insertCSS({code:"*{cursor:none;}"});
        if(disablecontextmenu)
@@ -332,7 +481,20 @@ $(function(){
          browser.insertCSS({code:"*{-webkit-user-select: none; user-select: none;}"});
        browser.focus();
      })
+     .on('loadstop', function(e){
+        setNavStatus();
+     })
      .on('loadcommit',function(e){
+        if(e.originalEvent.isTopLevel && $webview.parent().attr('id').indexOf('screensaver') < 0){
+          var err = getDomainWhiteListError(e.originalEvent.url);
+          if(err){
+            var webview = $webview.get(0);
+            webview.stop();
+            webview.back();
+            Materialize.toast(err, 4000);
+            return;
+          }
+        }
 	      if(useragent) e.target.setUserAgentOverride(useragent);
         if(reset){
           ACTIVE_EVENTS.split(' ').forEach(function(type,i){
@@ -353,15 +515,34 @@ $(function(){
         ["blocking", "requestHeaders"]);
      if(allownewwindow){
        $webview.on('newwindow',function(e){
+        var err = getDomainWhiteListError(e.originalEvent.targetUrl);
+        if(err){
+          Materialize.toast(err, 4000);
+          return;
+        }
         $('#newWindow webview').remove();
          var $newWebview = $('<webview/>');
          initWebview($newWebview);
+         $newWebview.css({
+             right:'1px',
+             width:'99%'
+        });
          $newWebview.on('close',function(e){
            $('#newWindow').modal('close');
            $('#newWindow webview').remove();
          });
          e.originalEvent.window.attach($newWebview[0]);
          $('#newWindow').append($newWebview).modal('open');
+         setTimeout(function(){
+           $newWebview.css({
+             bottom:0,
+             right:0,
+             top:0,
+             left:0,
+             height:'100%',
+             width:'100%'
+           })
+         }, 10);
        })
        .on('dialog',function(e){
         var $modal;
@@ -392,8 +573,15 @@ $(function(){
     }
   }
 
-  function loadContent(){
-    active(); //we should reset the active on load content as well
+  function loadContent(alsoLoadScreensaver){
+    if(!$('body').hasClass('screensaverActive')) {
+      startScreensaverTimeout();
+      startResetTimeout();
+    }
+    if(alsoLoadScreensaver && screensaverURL){
+      $('#screensaver .browser').remove();
+      loadURL(screensaverURL, 0, null, true);
+    }
     if(!currentURL) return;
     if(!Array.isArray(currentURL)) currentURL = [currentURL];
     $('#content .browser').remove();
@@ -402,11 +590,6 @@ $(function(){
       $('body').addClass('tabbed');
     }else{
       $('body').removeClass('tabbed');
-    }
-    if(resetcache || clearcookies) partition = null;
-    if(!partition){
-      partition = "persist:kiosk"+(Date.now());
-      chrome.storage.local.set({'partition':partition});
     }
     var colClass = 's1';
     switch(currentURL.length){
@@ -430,7 +613,7 @@ $(function(){
         break;
     }
     for(var i = 0; i < currentURL.length; i++){
-      addURL(currentURL[i],i,colClass);
+      loadURL(currentURL[i],i,colClass);
     }
     var $tabs = $('ul.tabs');
     if(currentURL.length > 12){
@@ -438,38 +621,54 @@ $(function(){
     }else{
       $tabs.removeClass('scroll');
     }
-    $tabs.tabs();
+    $tabs.tabs({ onShow: function(tab) { setNavStatus(); } });
   }
 
-  function addURL(url, i, colClass){
-    var id = "browser"+i;
-    var $tab = $('<li class="tab col '+colClass+' '+id+'"><a href="#'+id+'">'+url+'</a></li>').appendTo('#tabs .tabs');
+  function loadURL(url, i, colClass, isScreensaver){
+    var id = (isScreensaver ? "screensaver" : "browser")+i;
+    if(!isScreensaver){
+      var $tab = $('<li class="tab col '+colClass+' '+id+'"><a href="#'+id+'">'+url+'</a></li>').appendTo('#tabs .tabs');
+    }
     var $webviewContainer = $('<div id="'+id+'" class="browser"/>');
-    $webviewContainer.appendTo('#content');
+    $webviewContainer.appendTo(isScreensaver ? '#screensaver' : '#content');
     var $webview = $('<webview />');
     initWebview($webview);
     $webview
      .data('id',id)
+     .data('src',url)
      .attr('src',url)
      .appendTo($webviewContainer);
-     if(resetcache || clearcookies) {
-       var reload = false;
-       if (resetcache) {
-         chrome.storage.local.remove('resetcache');
-         resetcache = false;
-         reload = true;
-       }
-       var clearDataType = {
-         appcache: true,
-         cache: true, //remove entire cache
-         cookies: true,
-         fileSystems: true,
-         indexedDB: true,
-         localStorage: true,
-         webSQL: true,
-       };
-       $webview[0].clearData({since: 0}, clearDataType, reload ? loadContent : null);
-     }
+  }
+
+  function clearCache(cb){
+    if (resetcache) { //set true when we're restarting once after saving from admin
+      chrome.storage.local.remove('resetcache');
+      resetcache = false;
+    }
+    var clearDataType = {
+      appcache: true,
+      cache: true, //remove entire cache
+      cookies: true,
+      fileSystems: true,
+      indexedDB: true,
+      localStorage: true,
+      webSQL: true,
+    };
+    deferredArray = [];
+    $('webview').each(function(i, webview){
+      var deferred = new $.Deferred();
+      webview.clearData({since: 0}, clearDataType, function(){
+        deferred.resolve();
+      });
+      deferredArray.push(deferred);
+    });
+    $.when.apply($, deferredArray).then(function() {
+      partition = "persist:kiosk"+(Date.now());
+      chrome.storage.local.set({'partition':partition});
+      if(cb){
+        cb();
+      }
+    });
   }
 
   function onEnded(event){
@@ -477,7 +676,7 @@ $(function(){
       restarting = true;
       $("#browserContainer").remove();
       setTimeout(function(){
-        loadContent();
+        loadContent(true);
         restarting = false;
       },RESTART_DELAY);
    }

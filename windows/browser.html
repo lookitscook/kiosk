@@ -4,6 +4,7 @@
     <title>Kiosk: Content</title>
     <link rel="shortcut icon" href="../www/favicon.ico" type="image/x-icon">
     <link rel="icon" href="../www/favicon.ico" type="image/x-icon">
+    <link type="text/css" rel="stylesheet" href="../www/css/material-icons/material-icons.css" media="screen,projection">
     <link type="text/css" rel="stylesheet" href="../www/css/materialize.min.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="../www/css/shared.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="../css/browser.css"  media="screen,projection"/>
@@ -80,10 +81,16 @@
     <div id="newWindow" class="modal"></div>
     <div id="container">
       <div id="tabs" class="row">
-        <div class="col s12">
-          <ul class="tabs"></ul>
-        </div>
+        <nav id="nav">
+            <ul>
+              <li class="home inactive"><a href="#"><i class="material-icons">home</i></a></li>
+              <li class="back inactive"><a href="#"><i class="material-icons">arrow_back</i></a></li>
+              <li class="refresh"><a href="#"><i class="material-icons">refresh</i></a></li>
+            </ul>
+        </nav>
+        <ul class="tabs"></ul>
       </div>
+      <div id="screensaver"></div>
       <div id="content"></div>
     </div>
   </body>

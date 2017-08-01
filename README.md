@@ -110,7 +110,8 @@ Pull requests are welcome.
 
 ## Changelog
 
-- v5.12.1
+- v5.13.0
+  - New feature: Restart can now be scheduled for specific days
   - Bug fix: Restart via Remote Admin now functional
 
 - v5.12.0

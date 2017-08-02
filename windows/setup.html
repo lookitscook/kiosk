@@ -229,7 +229,7 @@
             <input type="checkbox" id="restart" />
             <label for="restart">Daily Restart</label>
             <div class="row restart disabled">
-              <div class="col input-field s6">
+              <div class="col input-field s4">
                  <select id="hour" class="browser-default">
                    <option value="1">1:00</option>
                    <option value="2">2:00</option>
@@ -245,10 +245,22 @@
                    <option value="12">12:00</option>
                 </select>
               </div>
-              <div class="col input-field s6">
+              <div class="col input-field s4">
                  <select id="houroffset">
                    <option value="0" selected>AM</option>
                    <option value="12">PM</option>
+                </select>
+              </div>
+              <div class="col input-field s4">
+                 <select id="restartday">
+                   <option value="" selected>Daily</option>
+                   <option value="monday" class="monday">Monday</option>
+                   <option value="tuesday" class="tuesday">Tuesday</option>
+                   <option value="wednesday" class="wednesday">Wednesday</option>
+                   <option value="thursday" class="thursday">Thursday</option>
+                   <option value="friday" class="friday">Friday</option>
+                   <option value="saturday" class="saturday">Saturday</option>
+                   <option value="sunday" class="sunday">Sunday</option>
                 </select>
               </div>
             </div>

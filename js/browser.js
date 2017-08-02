@@ -218,8 +218,17 @@ $(function(){
        var hour = parseInt(data.restart) - 1;
        var now = moment();
        restart = moment();
-       restart.hour(hour).set({'minute':0, 'second':0, 'millisecond':0});
-       if(now.isAfter(restart)) restart.add(1,'d'); //if we're past the time today, do it tomorrow
+       if(data.restartday){
+        restart.day(data.restartday);
+       }
+       restart.hour(hour+1).set({'minute':0, 'second':0, 'millisecond':0});
+       if(now.isAfter(restart)) {
+         if(data.restartday){
+            restart.add(1,'w'); //if we're past the time today, do it next week
+         }else{
+            restart.add(1,'d'); //if we're past the time today, do it tomorrow
+         }
+       };
        setInterval(function(){
           var now = moment();
           if(now.isAfter(restart)) {
@@ -277,16 +286,6 @@ $(function(){
     var data = e.data;
     if(data.title && data.id){
       $('#tabs .tab.'+data.id+' a').text(data.title);
-    }
-  });
-
-  chrome.runtime.onMessage.addListener(function(data){
-    if(data.url){
-      var url = data.url.split(',');
-      if(!hasURL(url)){
-        contentURL = currentURL = url;
-        loadContent(false);
-      }
     }
   });
 

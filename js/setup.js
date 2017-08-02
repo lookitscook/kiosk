@@ -187,6 +187,10 @@ $(function(){
     $("#hour option[value="+restart+"]").prop('selected',true);
     $("#hour").siblings('label').addClass('active');
   }
+  if(data.restartday){
+    $('#restartday > option').removeAttr('selected');
+    $('#restartday > option.'+data.restartday).prop('selected', true);
+  }
   if(data.hidecursor) $("#hidecursor").prop("checked",true);
   if(data.disablecontextmenu) $("#disablecontextmenu").prop("checked",true);
   if(data.disabledrag) $("#disabledrag").prop("checked",true);
@@ -331,6 +335,7 @@ $(function(){
     var hidegslidescontrols = $("#hidegslidescontrols").is(':checked');
     var local = $("#local").is(':checked');
     var restart = $("#restart").is(':checked');
+    var restartday = $('#restartday').val();
     var port = parseInt($('#port').val());
     var reset = $("#reset").is(':checked');
     var resetcookies = $('#clear-cookies-reset').is(':checked') || $('#screensaver-reset').is(':checked');
@@ -494,8 +499,10 @@ $(function(){
       if(restart){
         restart = parseInt($('#hour').val())+parseInt($('#houroffset').val());
         chrome.storage.local.set({'restart':restart});
+        chrome.storage.local.set({'restartday':restartday})
       }else{
         chrome.storage.local.remove('restart');
+        chrome.storage.local.remove('restartday');
       }
       if(remoteschedule) chrome.storage.local.set({'remoteschedule':remoteschedule});
       else chrome.storage.local.remove('remoteschedule');

@@ -113,6 +113,7 @@ Pull requests are welcome.
 - v5.13.0
   - New feature: Restart can now be scheduled for specific days
   - Bug fix: Restart via Remote Admin now functional
+  - Bug fix: Scheduled restart is no longer off by an hour
 
 - v5.12.0
   - New feature: Navigation bar (home/back/refresh)

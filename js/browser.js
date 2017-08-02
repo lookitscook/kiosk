@@ -221,8 +221,14 @@ $(function(){
        if(data.restartday){
         restart.day(data.restartday);
        }
-       restart.hour(hour).set({'minute':0, 'second':0, 'millisecond':0});
-       if(now.isAfter(restart)) restart.add(1,'d'); //if we're past the time today, do it tomorrow
+       restart.hour(hour+1).set({'minute':0, 'second':0, 'millisecond':0});
+       if(now.isAfter(restart)) {
+         if(data.restartday){
+            restart.add(1,'w'); //if we're past the time today, do it next week
+         }else{
+            restart.add(1,'d'); //if we're past the time today, do it tomorrow
+         }
+       };
        setInterval(function(){
           var now = moment();
           if(now.isAfter(restart)) {

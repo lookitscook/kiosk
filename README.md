@@ -110,6 +110,9 @@ Pull requests are welcome.
 
 ## Changelog
 
+- v5.13.1
+  - Bug fix: Remote admin page reloads correctly over slow connections
+
 - v5.13.0
   - New feature: Restart can now be scheduled for specific days
   - Bug fix: Restart via Remote Admin now functional

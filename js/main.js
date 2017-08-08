@@ -177,7 +177,8 @@ _.extend(AdminDataHandler.prototype, {
           }
           data[key] = value;
           saveData[key] = value;
-        }else if(key == "restart"){
+        }
+        if(key.toString() == "restart"){
           restart = true;
         }
       }

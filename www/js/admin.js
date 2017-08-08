@@ -26,9 +26,7 @@ $(function(){
       url: "http://"+address+'/data',
       type: 'PUT',
       data: {'restart': true},
-      success: function(){
-        window.location.reload();
-      }
+      success: reload
     })
   });
 
@@ -68,11 +66,24 @@ $(function(){
         url: "http://"+address+'/data',
         type: 'PUT',
         data: newData,
-        success: function(){
-          window.location.reload();
-        }
+        success: reload
       })
     }
   });
+
+  function reload(){
+    $('#loading').text('Restarting...');
+    $('#loading').append('<h5>5</h5>');
+    var timerInterval = setInterval(function(){
+      var currentTime = parseInt($('#loading > h5').text(),10);
+      if(currentTime > 1){
+        $('#loading > h5').text(currentTime - 1);
+      }
+    }, 1000);
+    setTimeout(function(){
+      clearInterval(timerInterval);
+      window.location.reload();
+    }, 5 * 1000 + 500);
+  }
 
 })

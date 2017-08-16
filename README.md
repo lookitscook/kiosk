@@ -110,6 +110,9 @@ Pull requests are welcome.
 
 ## Changelog
 
+-  v5.14.0
+  - Changed license from MIT to GPLv3. Going forward ya'll gotta share.
+
 - v5.13.1
   - Bug fix: Remote admin page reloads correctly over slow connections
 

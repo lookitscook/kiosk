@@ -1,11 +1,11 @@
 {
-  "name": "Kiosk",
+  "name": "Duluth Trading Company: Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.14.0",
+  "version": "0.0.1",
   "author": {
     "name": "Matt Cook",
-    "email": "matt@lookitscook.com"
+    "email": "matt@cook.company"
   },
   "kiosk_enabled": true,
   "offline_enabled": true,
@@ -36,6 +36,8 @@
     "app.window.fullscreen.overrideEsc",
     {"fileSystem": ["directory","retainEntries"]}
   ],
-  "optional_permissions": [ "audioCapture", "videoCapture" ]
-
+  "optional_permissions": [ "audioCapture", "videoCapture" ],
+  "storage": {
+    "managed_schema": "schema.json"
+  }
 }

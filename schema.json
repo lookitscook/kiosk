@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "url": {
+        "description": "Content URL",
+        "type": "string"
+     }
+  }
+}

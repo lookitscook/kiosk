@@ -20,7 +20,6 @@
   },
   "homepage": "https://github.com/matt-cook/duluth-trading-company-kiosk#readme",
   "devDependencies": {
-    "browserify": "^14.4.0",
     "glob-run": "^0.1.6",
     "htmlmin": "0.0.7",
     "js-beautify": "^1.6.14",

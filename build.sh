@@ -26,10 +26,10 @@ cp src/www/js/jquery.min.js dist/www/js/jquery.min.js;
 cp src/www/js/materialize.min.js dist/www/js/materialize.min.js;
 cp src/www/js/moment.js dist/www/js/moment.js;
 cp src/js/lib/wsc-chrome.js dist/js/lib/wsc-chrome.js;
-browserify src/js/browser.js | uglifyjs > dist/js/browser.js;
-browserify src/js/main.js | uglifyjs > dist/js/main.js;
-browserify src/js/setup.js | uglifyjs > dist/js/setup.js;
-browserify src/www/js/admin.js | uglifyjs > dist/www/js/admin.js;
+uglifyjs src/js/browser.js > dist/js/browser.js;
+uglifyjs src/js/main.js > dist/js/main.js;
+uglifyjs src/js/setup.js > dist/js/setup.js;
+uglifyjs src/www/js/admin.js > dist/www/js/admin.js;
 
 #build assets
 cp -R src/img dist/img;

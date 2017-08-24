@@ -4,7 +4,8 @@
   "description": "Duluth Trading Company: Kiosk",
   "main": "main.js",
   "scripts": {
-    "lint": "jshint src/**.js",
+    "lint": "jshint src/js/**.js",
+    "beautify": "glob-run js-beautify -r 'src/js/**.js' && js-beautify -r 'src/www/js/admin.js'",
     "test": "mocha test/",
     "build": "./build.sh"
   },
@@ -20,7 +21,9 @@
   "homepage": "https://github.com/matt-cook/duluth-trading-company-kiosk#readme",
   "devDependencies": {
     "browserify": "^14.4.0",
+    "glob-run": "^0.1.6",
     "htmlmin": "0.0.7",
+    "js-beautify": "^1.6.14",
     "jshint": "^2.9.5",
     "mocha": "^3.5.0",
     "node-sass": "^4.5.3",

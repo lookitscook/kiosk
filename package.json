@@ -27,5 +27,10 @@
     "mocha": "^3.5.0",
     "node-sass": "^4.5.3",
     "uglify-js": "^3.0.28"
+  },
+  "dependencies": {
+    "jquery": "=1.11.1",
+    "materialize-css": "=0.100.1",
+    "moment": "=2.10.3"
   }
 }

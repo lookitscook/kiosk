@@ -11,8 +11,8 @@ mkdir dist/windows;
 mkdir dist/js/lib;
 
 #build css
-cp src/www/css/materialize.min.css dist/www/css/materialize.min.css
-cp -R src/www/css/material-icons dist/www/css/material-icons
+cp -R lib/material-icons dist/www/css/material-icons
+cp node_modules/materialize-css/dist/css/materialize.min.css dist/www/css/materialize.min.css
 node-sass src/css/browser.scss --output-style compressed -o dist/css/
 node-sass src/www/css/shared.scss --output-style compressed -o dist/www/css/
 
@@ -22,10 +22,10 @@ htmlmin src/windows/setup.html > dist/windows/setup.html
 htmlmin src/www/index.html > dist/www/index.html
 
 #build js
-cp src/www/js/jquery.min.js dist/www/js/jquery.min.js;
-cp src/www/js/materialize.min.js dist/www/js/materialize.min.js;
-cp src/www/js/moment.js dist/www/js/moment.js;
-cp src/js/lib/wsc-chrome.js dist/js/lib/wsc-chrome.js;
+cp node_modules/jquery/dist/jquery.min.js dist/www/js/jquery.min.js;
+cp node_modules/materialize-css/dist/js/materialize.min.js dist/www/js/materialize.min.js;
+cp node_modules/moment/min/moment.min.js dist/www/js/moment.min.js;
+cp lib/wsc-chrome/wsc-chrome.js dist/js/lib/wsc-chrome.js;
 uglifyjs src/js/browser.js > dist/js/browser.js;
 uglifyjs src/js/main.js > dist/js/main.js;
 uglifyjs src/js/setup.js > dist/js/setup.js;
@@ -33,7 +33,6 @@ uglifyjs src/www/js/admin.js > dist/www/js/admin.js;
 
 #build assets
 cp -R src/img dist/img;
-cp -R src/www/font dist/www/font;
 cp src/www/favicon.ico dist/www/favicon.ico;
 
 #build meta

@@ -1,0 +1,29 @@
+{
+  "name": "duluth-trading-company-kiosk",
+  "version": "0.0.1",
+  "description": "Duluth Trading Company: Kiosk",
+  "main": "main.js",
+  "scripts": {
+    "lint": "jshint src/**.js",
+    "test": "mocha test/",
+    "build": "./build.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matt-cook/duluth-trading-company-kiosk.git"
+  },
+  "author": "Matt Cook <support@cook.company>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/matt-cook/duluth-trading-company-kiosk/issues"
+  },
+  "homepage": "https://github.com/matt-cook/duluth-trading-company-kiosk#readme",
+  "devDependencies": {
+    "browserify": "^14.4.0",
+    "htmlmin": "0.0.7",
+    "jshint": "^2.9.5",
+    "mocha": "^3.5.0",
+    "node-sass": "^4.5.3",
+    "uglify-js": "^3.0.28"
+  }
+}

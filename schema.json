@@ -1,9 +1,186 @@
 {
   "type": "object",
   "properties": {
+    "shownav": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+   },
+   "allowprint": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "hidegslidecontrols": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "local": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "remote": {
+      "title": "",
+      "description": "",
+      "type": "remote"
+    },
+    "host": {
+      "title": "",
+      "description": "",
+      "type": "string"
+    },
+    "port": {
+      "title": "",
+      "description": "",
+      "type": "string"
+    },
+    "username": {
+      "title": "",
+      "description": "",
+      "type": "string"
+    },
+    "password": {
+      "title": "",
+      "description": "",
+      "type": "string"
+    },
+    "reset": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "screensavertime": {
+      "title": "",
+      "description": "",
+      "type": "integer"
+    },
+    "screensaverurl": {
+      "title": "",
+      "description": "",
+      "type": "string"
+    },
+    "clearcookiesreset": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "restart": {
+      "title": "",
+      "description": "",
+      "type": "integer"
+    },
+    "restartday": {
+      "title": "",
+      "description": "",
+      "type": "integer"
+    },
+    "remoteschedule": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "remotescheduleurl": {
+      "title": "",
+      "description": "",
+      "type": "string"
+    },
+    "schedulepollinterval": {
+      "title": "",
+      "description": "",
+      "type": "integer"
+    },
+    "hidecursor": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "disablecontextmenu": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "disabledrag": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "disabletouchhighlight": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "disableselection": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "newwindow": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "servelocaldirectory": {
+      "title": "Serve Local: Directory",
+      "description": "The directory to serve content from",
+      "type": "string"
+    },
+    "servelocalhost": {
+      "title": "Serve Local: Host",
+      "description": "The host to serve local content on",
+      "type": "string"
+    },
+    "servelocalport": {
+      "title": "Serve Local: Port",
+      "description": "The port to serve local content on",
+      "type": "integer"
+    },
+    "resetcache": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
     "url": {
-        "description": "Content URL",
+      "title": "Content URL(s)",
+      "description": "URL must start with http:// or https://",
+      "type": "array",
+      "items": {
         "type": "string"
-     }
+      }
+    },
+    "whitelist": {
+      "title": "",
+      "description": "",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "multipleurlmode": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+    },
+    "rotaterate": {
+      "title": "",
+      "description": "",
+      "type": "number"
+    },
+    "useragent": {
+      "title": "",
+      "description": "",
+      "type": "string"
+    },
+    "authorization": {
+      "title": "",
+      "description": "",
+      "type": "string"
+    },
+    "sleepmode": {
+      "title": "",
+      "description": "",
+      "type": "string"
+    }
   }
 }

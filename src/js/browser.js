@@ -275,7 +275,7 @@ $(function() {
     if (reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
 
     defaultURL = contentURL = Array.isArray(data.url) ? data.url : [data.url];
-    whitelist = Array.isArray(data.whitelist) ? data.whitelist : [data.whitelist];
+    whitelist = Array.isArray(data.whitelist) ? data.whitelist : data.whitelist ? [data.whitelist] : [];
     useragent = data.useragent;
     authorization = data.authorization;
     if (data.multipleurlmode == 'rotate') {

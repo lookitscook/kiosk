@@ -24,7 +24,7 @@
     "remote": {
       "title": "",
       "description": "",
-      "type": "remote"
+      "type": "boolean"
     },
     "host": {
       "title": "",
@@ -160,7 +160,7 @@
     "multipleurlmode": {
       "title": "",
       "description": "",
-      "type": "boolean"
+      "type": "string"
     },
     "rotaterate": {
       "title": "",

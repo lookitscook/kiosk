@@ -34,7 +34,7 @@
     "port": {
       "title": "",
       "description": "",
-      "type": "string"
+      "type": "number"
     },
     "username": {
       "title": "",
@@ -49,7 +49,7 @@
     "reset": {
       "title": "",
       "description": "",
-      "type": "boolean"
+      "type": "number"
     },
     "screensavertime": {
       "title": "",

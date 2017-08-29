@@ -2,6 +2,158 @@ var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
 
 $(function() {
 
+  function updateData(data) {
+    if (data.newwindow) {
+      $("#newwindow").prop("checked", true);
+    }
+    if (data.url) {
+      var urlTags = [];
+      if (Array.isArray(data.url)) {
+        //possibly multiple content items
+        for (var i = 0; i < data.url.length; i++) {
+          urlTags.push({
+            tag: data.url[i]
+          });
+        }
+      } else {
+        //only a single content item, legacy support
+        urlTags.push({
+          tag: data.url
+        });
+      }
+      $('#url').material_chip({
+        data: urlTags
+      });
+      if (urlTags.length > 1) {
+        $('.multiple-url-mode').removeClass('disabled').show();
+      }
+    }
+    if (data.whitelist) {
+      var whitelistTags = [];
+      if (Array.isArray(data.whitelist)) {
+        //possibly multiple content items
+        for (var i = 0; i < data.whitelist.length; i++) {
+          whitelistTags.push({
+            tag: data.whitelist[i]
+          });
+        }
+      } else {
+        //only a single content item
+        whitelistTags.push({
+          tag: data.whitelist
+        });
+      }
+      $('#whitelist').material_chip({
+        data: whitelistTags
+      });
+    }
+    if (data.rotaterate) {
+      $("#rotate-rate").val(data.rotaterate);
+    }
+    if (data.multipleurlmode) {
+      $("#multiple-url-mode").val(data.multipleurlmode);
+      if (data.multipleurlmode == 'rotate') {
+        $('.rotate-rate').removeClass('disabled');
+      }
+    }
+    if (data.allowprint) {
+      $("#allowprint").prop("checked", true);
+    }
+    if (data.hidegslidescontrols) {
+      $("#hidegslidescontrols").prop("checked", true);
+    }
+    if (data.local) {
+      $("#local").prop("checked", true);
+      $('.local, .settings-detail').removeClass('disabled');
+    }
+    if (data.shownav) {
+      $("#shownav").prop("checked", true);
+    }
+    if (data.remote) {
+      $("#remote").prop("checked", true);
+      $('.remote, .settings-detail').removeClass('disabled');
+    }
+    if (data.username) $("#username").val(data.username).siblings('label').addClass('active');
+    if (data.password) {
+      $("#password").val(data.password).siblings('label').addClass('active');
+      $("#confirm_password").val(data.password).siblings('label').addClass('active');
+    }
+    if (data.host) {
+      $('#host').children("[value='" + data.host + "']").prop('selected', true);
+    }
+    if (data.port) $("#port").val(data.port);
+
+    if (data.remoteschedule) {
+      $("#remote-schedule").prop("checked", true);
+      $('.remote-schedule-detail').removeClass('disabled');
+    }
+    if (data.remotescheduleurl)
+      $("#remote-schedule-url").val(data.remotescheduleurl).siblings('label').addClass('active');
+
+    if (data.schedulepollinterval) {
+      $('#schedule-poll-interval').val(data.schedulepollinterval);
+    }
+
+    if (data.sleepmode) {
+      $('#sleep-mode').children("[value='" + data.sleepmode + "']").prop('selected', true);
+    }
+
+    if (data.reset && parseFloat(data.reset)) {
+      var reset = parseFloat(data.reset);
+      $("#reset").prop("checked", true);
+      $('.reset').removeClass('disabled');
+      $("#resetinterval").val(data.reset).siblings('label').addClass('active');
+    }
+    if (data.screensavertime && data.screensaverurl) {
+      $('#use-screensaver').prop("checked", true);
+      $('.use-screensaver').removeClass('disabled');
+      $("#screensaver-time").val(parseFloat(data.screensavertime)).siblings('label').addClass('active');
+      $('#screensaver-url').val(data.screensaverurl).siblings('label').addClass('active');
+    }
+    if (data.clearcookiesreset) $("#clear-cookies-reset, #screensaver-reset").prop("checked", true);
+    if (data.restart && parseInt(data.restart)) {
+      var restart = parseInt(data.restart);
+      $('#houroffset > option').removeAttr('selected');
+      if (restart > 12) {
+        restart = restart - 12;
+        $("#houroffset option:contains('PM')").prop('selected', true);
+      } else {
+        $("#houroffset option:contains('AM')").prop('selected', true);
+      }
+      $("#restart").prop("checked", true);
+      $('.restart').removeClass('disabled');
+      $('#hour option').removeAttr('selected');
+      $("#hour option[value=" + restart + "]").prop('selected', true);
+      $("#hour").siblings('label').addClass('active');
+    }
+    if (data.restartday) {
+      $('#restartday > option').removeAttr('selected');
+      $('#restartday > option.' + data.restartday).prop('selected', true);
+    }
+    if (data.hidecursor) $("#hidecursor").prop("checked", true);
+    if (data.disablecontextmenu) $("#disablecontextmenu").prop("checked", true);
+    if (data.disabledrag) $("#disabledrag").prop("checked", true);
+    if (data.disabletouchhighlight) $("#disabletouchhighlight").prop("checked", true);
+    if (data.disableselection) $("#disableselection").prop("checked", true);
+    if (data.servelocaldirectory) {
+      var servelocaldirectoryname = data.servelocaldirectory.split(':');
+      servelocaldirectoryname = (servelocaldirectoryname.length == 2) ? servelocaldirectoryname[1] : null;
+      if (servelocaldirectoryname) {
+        $("#servelocal").prop("checked", true);
+        $('.servelocal').removeClass('disabled');
+        $("#servelocaldirectory").data('directory', data.servelocaldirectory);
+        $("#servelocaldirectory").attr('value', servelocaldirectoryname);
+      }
+    }
+    if (data.servelocalhost) {
+      $('#servelocalhost').children("[value='" + data.servelocalhost + "']").prop('selected', true);
+    }
+    if (data.servelocalport) $("#servelocalport").val(data.servelocalport);
+    if (data.useragent) $('#useragent').val(data.useragent).siblings('label').addClass('active');
+    if (data.authorization) $('#authorization').val(data.authorization).siblings('label').addClass('active');
+
+  }
+
   $.getJSON(chrome.runtime.getURL("../schema.json"), function(schema) {
     chrome.storage.local.get(null, function(data) {
       chrome.system.network.getNetworkInterfaces(function(interfaces) {
@@ -12,10 +164,6 @@ $(function() {
           opt.value = interface.address;
           opt.innerText = interface.name + " - " + interface.address;
           document.getElementById("host").appendChild(opt);
-        }
-
-        if (data.newwindow) {
-          $("#newwindow").prop("checked", true);
         }
 
         $('#url').material_chip({
@@ -68,6 +216,7 @@ $(function() {
             }));
           }
         });
+
         $('#whitelist').on('blur', ':input', function() {
           if (this.value && this.value.length) {
             if (this.value.indexOf('.') < 0) {
@@ -79,152 +228,6 @@ $(function() {
             }));
           }
         });
-
-        if (data.url) {
-          var urlTags = [];
-          if (Array.isArray(data.url)) {
-            //possibly multiple content items
-            for (var i = 0; i < data.url.length; i++) {
-              urlTags.push({
-                tag: data.url[i]
-              });
-            }
-          } else {
-            //only a single content item, legacy support
-            urlTags.push({
-              tag: data.url
-            });
-          }
-          $('#url').material_chip({
-            data: urlTags
-          });
-          if (urlTags.length > 1) {
-            $('.multiple-url-mode').removeClass('disabled').show();
-          }
-        }
-        if (data.whitelist) {
-          var whitelistTags = [];
-          if (Array.isArray(data.whitelist)) {
-            //possibly multiple content items
-            for (var i = 0; i < data.whitelist.length; i++) {
-              whitelistTags.push({
-                tag: data.whitelist[i]
-              });
-            }
-          } else {
-            //only a single content item
-            whitelistTags.push({
-              tag: data.whitelist
-            });
-          }
-          $('#whitelist').material_chip({
-            data: whitelistTags
-          });
-        }
-        if (data.rotaterate) {
-          $("#rotate-rate").val(data.rotaterate);
-        }
-        if (data.multipleurlmode) {
-          $("#multiple-url-mode").val(data.multipleurlmode);
-          if (data.multipleurlmode == 'rotate') {
-            $('.rotate-rate').removeClass('disabled');
-          }
-        }
-        if (data.allowprint) {
-          $("#allowprint").prop("checked", true);
-        }
-        if (data.hidegslidescontrols) {
-          $("#hidegslidescontrols").prop("checked", true);
-        }
-        if (data.local) {
-          $("#local").prop("checked", true);
-          $('.local, .settings-detail').removeClass('disabled');
-        }
-        if (data.shownav) {
-          $("#shownav").prop("checked", true);
-        }
-        if (data.remote) {
-          $("#remote").prop("checked", true);
-          $('.remote, .settings-detail').removeClass('disabled');
-        }
-        if (data.username) $("#username").val(data.username).siblings('label').addClass('active');
-        if (data.password) {
-          $("#password").val(data.password).siblings('label').addClass('active');
-          $("#confirm_password").val(data.password).siblings('label').addClass('active');
-        }
-        if (data.host) {
-          $('#host').children("[value='" + data.host + "']").prop('selected', true);
-        }
-        if (data.port) $("#port").val(data.port);
-
-        if (data.remoteschedule) {
-          $("#remote-schedule").prop("checked", true);
-          $('.remote-schedule-detail').removeClass('disabled');
-        }
-        if (data.remotescheduleurl)
-          $("#remote-schedule-url").val(data.remotescheduleurl).siblings('label').addClass('active');
-
-        if (data.schedulepollinterval) {
-          $('#schedule-poll-interval').val(data.schedulepollinterval);
-        }
-
-        if (data.sleepmode) {
-          $('#sleep-mode').children("[value='" + data.sleepmode + "']").prop('selected', true);
-        }
-
-        if (data.reset && parseFloat(data.reset)) {
-          var reset = parseFloat(data.reset);
-          $("#reset").prop("checked", true);
-          $('.reset').removeClass('disabled');
-          $("#resetinterval").val(data.reset).siblings('label').addClass('active');
-        }
-        if (data.screensavertime && data.screensaverurl) {
-          $('#use-screensaver').prop("checked", true);
-          $('.use-screensaver').removeClass('disabled');
-          $("#screensaver-time").val(parseFloat(data.screensavertime)).siblings('label').addClass('active');
-          $('#screensaver-url').val(data.screensaverurl).siblings('label').addClass('active');
-        }
-        if (data.clearcookiesreset) $("#clear-cookies-reset, #screensaver-reset").prop("checked", true);
-        if (data.restart && parseInt(data.restart)) {
-          var restart = parseInt(data.restart);
-          $('#houroffset > option').removeAttr('selected');
-          if (restart > 12) {
-            restart = restart - 12;
-            $("#houroffset option:contains('PM')").prop('selected', true);
-          } else {
-            $("#houroffset option:contains('AM')").prop('selected', true);
-          }
-          $("#restart").prop("checked", true);
-          $('.restart').removeClass('disabled');
-          $('#hour option').removeAttr('selected');
-          $("#hour option[value=" + restart + "]").prop('selected', true);
-          $("#hour").siblings('label').addClass('active');
-        }
-        if (data.restartday) {
-          $('#restartday > option').removeAttr('selected');
-          $('#restartday > option.' + data.restartday).prop('selected', true);
-        }
-        if (data.hidecursor) $("#hidecursor").prop("checked", true);
-        if (data.disablecontextmenu) $("#disablecontextmenu").prop("checked", true);
-        if (data.disabledrag) $("#disabledrag").prop("checked", true);
-        if (data.disabletouchhighlight) $("#disabletouchhighlight").prop("checked", true);
-        if (data.disableselection) $("#disableselection").prop("checked", true);
-        if (data.servelocaldirectory) {
-          var servelocaldirectoryname = data.servelocaldirectory.split(':');
-          servelocaldirectoryname = (servelocaldirectoryname.length == 2) ? servelocaldirectoryname[1] : null;
-          if (servelocaldirectoryname) {
-            $("#servelocal").prop("checked", true);
-            $('.servelocal').removeClass('disabled');
-            $("#servelocaldirectory").data('directory', data.servelocaldirectory);
-            $("#servelocaldirectory").attr('value', servelocaldirectoryname);
-          }
-        }
-        if (data.servelocalhost) {
-          $('#servelocalhost').children("[value='" + data.servelocalhost + "']").prop('selected', true);
-        }
-        if (data.servelocalport) $("#servelocalport").val(data.servelocalport);
-        if (data.useragent) $('#useragent').val(data.useragent).siblings('label').addClass('active');
-        if (data.authorization) $('#authorization').val(data.authorization).siblings('label').addClass('active');
 
         $('select').material_select();
 
@@ -336,8 +339,55 @@ $(function() {
           }
         });
 
-        $('#save').click(function(e) {
+        updateData(data);
+
+        $('#import-policy').click(function(e) {
           e.preventDefault();
+          uploadPolicy();
+        });
+
+        $('#export-policy').click(function(e) {
+          e.preventDefault();
+          download("kiosk-policy.json", "This is the content of my file :)");
+        });
+
+        function uploadPolicy() {
+          var element = document.createElement('input');
+          element.setAttribute('type', 'file');
+          element.style.display = 'none';
+          document.body.appendChild(element);
+          element.addEventListener('change', function(e) {
+            var file = element.files[0];
+            var fileReader = new FileReader();
+            fileReader.onload = function(fileLoadedEvent) {
+              console.log('1111', fileLoadedEvent.target.result);
+              console.log('22222', JSON.parse(fileLoadedEvent.target.result));
+              updateData(JSON.parse(fileLoadedEvent.target.result));
+              console.log('33333');
+              document.body.removeChild(element);
+            };
+            fileReader.readAsText(file, "UTF-8");
+          });
+          element.click();
+
+        }
+
+        function download(filename, text) {
+          var updated = validateData();
+          if (!updated) {
+            return;
+          }
+          var policy = encodeURIComponent(JSON.stringify(updated, null, 2));
+          var element = document.createElement('a');
+          element.setAttribute('href', 'data:text/plain;charset=utf-8,' + policy);
+          element.setAttribute('download', filename);
+          element.style.display = 'none';
+          document.body.appendChild(element);
+          element.click();
+          document.body.removeChild(element);
+        }
+
+        function validateData() {
           var error = [];
           var updated = {};
           updated.url = $('#url').material_chip('data');
@@ -507,17 +557,24 @@ $(function() {
           }
           for (var field in schema.properties) {
             if (updated[field] && schema.properties[field].type !== 'array' && (typeof updated[field]).toLowerCase() !== schema.properties[field].type) {
-              error.push(field + ' must be a ' + schema.properties[field].type, 'is', (typeof updated[field]).toLowerCase());
+              error.push(field + ' must be a ' + schema.properties[field].type + ' is ' + (typeof updated[field]).toLowerCase());
             }
           }
-
           if (error.length) {
             for (var i = 0; i < error.length; i++) {
               Materialize.toast(error[i], 4000);
             }
-            return false;
+            return;
           }
+          return updated;
+        }
 
+        $('#save').click(function(e) {
+          e.preventDefault();
+          var updated = validateData();
+          if (!updated) {
+            return;
+          }
           var remove = [];
           for (var field in schema.properties) {
             if (!updated[field]) {
@@ -527,7 +584,6 @@ $(function() {
           chrome.storage.local.remove(remove);
           chrome.storage.local.set(updated);
           chrome.runtime.sendMessage('reload');
-
         });
 
       });

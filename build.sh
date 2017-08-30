@@ -22,14 +22,16 @@ htmlmin src/windows/setup.html > dist/windows/setup.html
 htmlmin src/www/index.html > dist/www/index.html
 
 #build js
+cp node_modules/async/dist/async.min.js dist/www/js/async.min.js;
 cp node_modules/jquery/dist/jquery.min.js dist/www/js/jquery.min.js;
 cp node_modules/materialize-css/dist/js/materialize.min.js dist/www/js/materialize.min.js;
 cp node_modules/moment/min/moment.min.js dist/www/js/moment.min.js;
+cp lib/lodash.min.js dist/www/js/lodash.min.js;
 cp lib/wsc-chrome/wsc-chrome.js dist/js/lib/wsc-chrome.js;
-uglifyjs src/js/browser.js > dist/js/browser.js;
-uglifyjs src/js/main.js > dist/js/main.js;
-uglifyjs src/js/setup.js > dist/js/setup.js;
-uglifyjs src/www/js/admin.js > dist/www/js/admin.js;
+uglifyjs src/js/browser.js > dist/js/browser.min.js;
+uglifyjs src/js/main.js > dist/js/main.min.js;
+uglifyjs src/js/setup.js > dist/js/setup.min.js;
+uglifyjs src/www/js/admin.js > dist/www/js/admin.min.js;
 
 #build assets
 cp -R src/img dist/img;

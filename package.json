@@ -29,6 +29,7 @@
     "uglify-js": "^3.0.28"
   },
   "dependencies": {
+    "async": "^2.5.0",
     "jquery": "=1.11.1",
     "materialize-css": "=0.100.1",
     "moment": "=2.10.3"

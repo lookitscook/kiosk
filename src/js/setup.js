@@ -51,7 +51,7 @@ $(function() {
       $("#rotate-rate").val(data.rotaterate);
     }
     if (data.multipleurlmode) {
-      $("#multiple-url-mode").val(data.multipleurlmode);
+      $('#multiple-url-mode').children("[value='" + data.multipleurlmode + "']").prop('selected', true);
       if (data.multipleurlmode == 'rotate') {
         $('.rotate-rate').removeClass('disabled');
       }
@@ -93,7 +93,6 @@ $(function() {
     if (data.schedulepollinterval) {
       $('#schedule-poll-interval').val(data.schedulepollinterval);
     }
-
     if (data.sleepmode) {
       $('#sleep-mode').children("[value='" + data.sleepmode + "']").prop('selected', true);
     }
@@ -151,6 +150,8 @@ $(function() {
     if (data.servelocalport) $("#servelocalport").val(data.servelocalport);
     if (data.useragent) $('#useragent').val(data.useragent).siblings('label').addClass('active');
     if (data.authorization) $('#authorization').val(data.authorization).siblings('label').addClass('active');
+
+    $('select').material_select();
 
   }
 
@@ -252,8 +253,6 @@ $(function() {
         }));
       }
     });
-
-    $('select').material_select();
 
     $("#servelocal").on('change', function() {
       if ($("#servelocal").is(':checked')) {
@@ -430,10 +429,10 @@ $(function() {
       updated.port = parseInt($('#port').val());
       updated.port = updated.port < 0 ? 0 : updated.port;
       updated.reset = $("#reset").is(':checked');
-      updated.resetcookies = $('#clear-cookies-reset').is(':checked') || $('#screensaver-reset').is(':checked');
+      updated.clearcookiesreset = $('#clear-cookies-reset').is(':checked') || $('#screensaver-reset').is(':checked');
       var useScreensaver = $('#use-screensaver').is(':checked');
-      updated.screensaverTime = parseFloat($('#screensaver-time').val()) || 0;
-      updated.screensaverURL = $('#screensaver-url').val();
+      updated.screensavertime = parseFloat($('#screensaver-time').val()) || 0;
+      updated.screensaverurl = $('#screensaver-url').val();
       updated.hidecursor = $("#hidecursor").is(':checked');
       updated.disablecontextmenu = $("#disablecontextmenu").is(':checked');
       updated.disabledrag = $("#disabledrag").is(':checked');
@@ -446,7 +445,7 @@ $(function() {
       updated.password = $("#password").val();
       var passwordConfirm = $("#confirm_password").val();
       updated.remoteschedule = $("#remote-schedule").is(':checked');
-      updated.emotescheduleurl = $("#remote-schedule-url").val();
+      updated.remotescheduleurl = $("#remote-schedule-url").val();
       updated.schedulepollinterval = parseFloat($('#schedule-poll-interval').val()) ? parseFloat($('#schedule-poll-interval').val()) : DEFAULT_SCHEDULE_POLL_INTERVAL;
       updated.sleepmode = $("#sleep-mode").val();
       updated.resetcache = $('#reset-cache').is(':checked');
@@ -473,16 +472,16 @@ $(function() {
         }
       }
       if (useScreensaver) {
-        if (updated.screensaverTime <= 0) {
-          delete updated.screensaverTime;
+        if (updated.screensavertime <= 0) {
+          delete updated.screensavertime;
           error.push('Screensaver time is required.');
         }
-        if (!updated.screensaverURL) {
+        if (!updated.screensaverurl) {
           error.push('Screensaver URL is required.');
         }
       } else {
-        delete updated.screensaverTime;
-        delete updated.screensaverURL;
+        delete updated.screensavertime;
+        delete updated.screensaverurl;
       }
       if (updated.url && Array.isArray(updated.url) && updated.url.length) {
         var err;

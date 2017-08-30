@@ -54,7 +54,7 @@
     "screensavertime": {
       "title": "",
       "description": "",
-      "type": "integer"
+      "type": "number"
     },
     "screensaverurl": {
       "title": "",
@@ -69,12 +69,12 @@
     "restart": {
       "title": "",
       "description": "",
-      "type": "integer"
+      "type": "number"
     },
     "restartday": {
       "title": "",
       "description": "",
-      "type": "integer"
+      "type": "string"
     },
     "remoteschedule": {
       "title": "",
@@ -89,7 +89,7 @@
     "schedulepollinterval": {
       "title": "",
       "description": "",
-      "type": "integer"
+      "type": "number"
     },
     "hidecursor": {
       "title": "",
@@ -134,7 +134,7 @@
     "servelocalport": {
       "title": "Serve Local: Port",
       "description": "The port to serve local content on",
-      "type": "integer"
+      "type": "number"
     },
     "resetcache": {
       "title": "",

@@ -270,7 +270,7 @@ $(function() {
       setInterval(checkSchedule, CHECK_SCHEDULE_DELAY);
     }
 
-    hidegslidescontrols = !!data.hidegslidescontrols;
+    hidegslidescontrols = data.hidegslidescontrols ? true : false;
     hidecursor = data.hidecursor ? true : false;
     disablecontextmenu = data.disablecontextmenu ? true : false;
     disabledrag = data.disabledrag ? true : false;

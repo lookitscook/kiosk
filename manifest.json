@@ -1,8 +1,8 @@
 {
-  "name": "Duluth Trading Company: Kiosk",
+  "name": "Duluth Trading Company Kiosk v0.0.6",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "0.0.1",
+  "version": "0.0.6",
   "author": {
     "name": "Matt Cook",
     "email": "matt@cook.company"
@@ -15,7 +15,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/js/jquery.min.js","js/lib/wsc-chrome.js","js/main.min.js"],
+      "scripts": ["www/js/async.min.js","www/js/jquery.min.js","www/js/lodash.min.js","js/lib/wsc-chrome.js","js/main.min.js"],
       "persistent": false
     }
   },

@@ -27,7 +27,22 @@ function init() {
     }
   );*/
 
-  chrome.storage.local.get(null, function(data) {
+  async.series([
+    function(next) {
+      chrome.storage.managed.get(null, function(res) {
+        next(null, res);
+      });
+    },
+    function(next) {
+      chrome.storage.local.get(null, function(res) {
+        next(null, res);
+      });
+    }
+  ], function(err, res) {
+
+    var data = {};
+    _.defaults(data, res[0], res[1]);
+
     if (('url' in data)) {
       //setup has been completed
 

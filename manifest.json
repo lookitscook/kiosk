@@ -1,9 +1,9 @@
 {
-  "name": "Duluth Trading Company Kiosk v1.0.1",
+  "name": "Duluth Trading Company Kiosk v1.1.0",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "1.0.1",
-  "version_name": "duluth-1.0.1",
+  "version": "1.1.0",
+  "version_name": "duluth-1.1.0",
   "author": {
     "name": "Matt Cook",
     "email": "matt@cook.company"

@@ -45,6 +45,8 @@ $(function(){
   var resetcache = false;
   var partition = null;
   var clearcookies = false;
+  var allowPrint = false;
+  var localAdmin = false;
 
   window.oncontextmenu = function(){return false};
   window.ondragstart = function(){return false};
@@ -59,12 +61,28 @@ $(function(){
   //prevent existing fullscreen on escape key press
   window.onkeydown = window.onkeyup = function(e) { if (e.keyCode == 27) { e.preventDefault(); } };
 
-  $(document).keydown(function(e) {
+  function onKeypress(e){
     //refresh on F3 or ctrl+r
     if ((e.which == 168) || (e.which == 82 && e.ctrlKey)){
       loadContent(true);
+      return;
     }
-  });
+    //open admin login on ctrl+a
+    if(localAdmin && e.which == 65 && e.ctrlKey){
+      chrome.runtime.getBackgroundPage(function(backgroundPage) {
+        backgroundPage.stopAutoRestart();
+        $('#login').modal('open');
+        $('#username').focus();
+      });
+    }
+    //print on ctrl+p
+    if (allowPrint && e.which == 80 && e.ctrlKey){
+      var activeBrowserID = $('#tabs a.active').attr('href');
+      $(activeBrowserID+' webview').get(0).print();
+    }
+  }
+
+  $(document).keydown(onKeypress);
 
   $('#nav .home').click(function(e){
     if($('#nav .home').hasClass('inactive')){
@@ -175,31 +193,14 @@ $(function(){
  }
 
   chrome.storage.local.get(null,function(data){
-
-    if(data.allowprint){
-      $(document).keydown(function(e) {
-        //print on ctrl+p
-        if (e.which == 80 && e.ctrlKey){
-          var activeBrowserID = $('#tabs a.active').attr('href');
-          $(activeBrowserID+' webview').get(0).print();
-        }
-      });
-    }
+    allowPrint = !!data.allowprint;
 
     if(data.shownav){
       $('body').addClass('show-nav');
     }
 
      if(data.local){
-       $(document).keydown(function(e) {
-         if(e.which == 65 && e.ctrlKey){
-           chrome.runtime.getBackgroundPage(function(backgroundPage) {
-             backgroundPage.stopAutoRestart();
-             $('#login').modal('open');
-             $('#username').focus();
-          });
-         }
-       });
+       localAdmin = true;
 
        function submitLoginForm(e) {
          e.preventDefault();
@@ -302,8 +303,11 @@ $(function(){
 
   window.addEventListener('message', function(e){
     var data = e.data;
-    if(data.title && data.id){
+    if(data.command == 'title' && data.title && data.id){
       $('#tabs .tab.'+data.id+' a').text(data.title);
+    }
+    if(data.command == 'keypress' && data.event){
+      onKeypress(data.event);
     }
   });
 
@@ -462,11 +466,18 @@ $(function(){
        var browser = e.target;
        browser.executeScript({
          code:
-            "window.addEventListener('message', function(e){"
+          "var kioskAppWindow = null;"
+          + "var kioskAppOrigin = null;"
+          + "window.addEventListener('message', function(e){"
+          + "  if (!kioskAppWindow || !kioskAppOrigin) {"
+          + "    kioskAppWindow = event.source;"
+          + "    kioskAppOrigin = event.origin;"
+          + "  }"
           + "  if(e.data.command == 'kioskGetTitle'){"
-          + "    e.source.postMessage({ title: document.title, id: e.data.id }, e.origin);"
+          + "    kioskAppWindow.postMessage({ command: 'title', title: document.title, id: e.data.id }, kioskAppOrigin);"
           + "  }"
           + "});"
+          + "window.onkeydown = function(e){ kioskAppWindow.postMessage({ command:'keypress', event: { keyCode: e.keyCode || e.which, which: e.which || e.keyCode, ctrlKey: e.ctrlKey, metaKey: e.metaKey, altKey: e.altKey } }, kioskAppOrigin); }"
        });
        browser.contentWindow.postMessage({
         command: 'kioskGetTitle',

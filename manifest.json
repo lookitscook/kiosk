@@ -2,7 +2,7 @@
   "name": "Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.14.0",
+  "version": "5.14.1",
   "author": {
     "name": "Matt Cook",
     "email": "matt@lookitscook.com"

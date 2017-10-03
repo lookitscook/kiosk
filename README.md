@@ -110,6 +110,10 @@ Pull requests are welcome.
 
 ## Changelog
 
+- v5.14.1
+  - Fix bug with keypresses not being recoginized (such as CTRL+A for opening local admin login).
+  - updated icon
+
 -  v5.14.0
   - Changed license from MIT to GPLv3. Going forward ya'll gotta share.
 

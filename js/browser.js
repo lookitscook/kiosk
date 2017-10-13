@@ -76,7 +76,7 @@ $(function(){
       });
     }
     //print on ctrl+p
-    if (allowPrint && e.which == 80 && e.ctrlKey){
+    if (allowPrint && (e.which == 36 || e.which == 80 && e.ctrlKey)){
       var activeBrowserID = $('#tabs a.active').attr('href');
       $(activeBrowserID+' webview').get(0).print();
     }
@@ -93,7 +93,10 @@ $(function(){
     var activeHomeURL = $webview.data('src');
     $webview.attr('src', activeHomeURL);
   });
-
+	$('#nav .print').click(function(e){
+		var activeBrowserID = $('#tabs a.active').attr('href');
+		$(activeBrowserID+' webview').get(0).print();
+	  });
   $('#nav .back').click(function(e){
     if($('#nav .back').hasClass('inactive')){
       return;

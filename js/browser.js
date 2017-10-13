@@ -93,10 +93,10 @@ $(function(){
     var activeHomeURL = $webview.data('src');
     $webview.attr('src', activeHomeURL);
   });
-	$('#nav .print').click(function(e){
-		var activeBrowserID = $('#tabs a.active').attr('href');
-		$(activeBrowserID+' webview').get(0).print();
-	  });
+  $('#nav .print').click(function(e){
+	var activeBrowserID = $('#tabs a.active').attr('href');
+	$(activeBrowserID+' webview').get(0).print();
+  });
   $('#nav .back').click(function(e){
     if($('#nav .back').hasClass('inactive')){
       return;

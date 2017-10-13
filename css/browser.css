@@ -27,7 +27,7 @@ body,#container{
   margin:0;
   padding:0;
   overflow:hidden;
-  background:#000;
+  background:#0A3772;
 }
 #content, #screensaver{
   position:absolute;
@@ -66,7 +66,7 @@ body.tabbed #tabs, body.show-nav #tabs{
 
 .tabs{
   overflow-x: hidden;
-  background: #000;
+  background: #0A3772;
   left:0;
   right:0;
   width:100%;
@@ -87,7 +87,7 @@ body.show-nav .tabs{
 #nav{
   display:none;
   visibility:hidden;
-  background: #000;
+  background: #0A3772;
   position:absolute;
   height:48px;
   width:144px;
@@ -118,7 +118,10 @@ body.show-nav .tabs{
 #nav li.inactive a{
   color: #333;
 }
-#nav li.inactive a:hover{
+#nav li.inactive{
+  background-color: #0A3772;
+}
+#nav a:hover{
   background-color: #000;
 }
 body.show-nav #nav{

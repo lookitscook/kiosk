@@ -56,10 +56,10 @@ $(function() {
       $("#remote").prop("checked", true);
       $('.remote, .settings-detail').removeClass('disabled');
     }
-    if (data.username) $("#username").val(data.username).siblings('label').addClass('active');
+    if (data.username) $("#username").val(data.username);
     if (data.password) {
-      $("#password").val(data.password).siblings('label').addClass('active');
-      $("#confirm_password").val(data.password).siblings('label').addClass('active');
+      $("#password").val(data.password);
+      $("#confirm_password").val(data.password);
     }
     if (data.host) {
       $('#host').children("[value='" + data.host + "']").prop('selected', true);
@@ -71,7 +71,7 @@ $(function() {
       $('.remote-schedule-detail').removeClass('disabled');
     }
     if (data.remotescheduleurl)
-      $("#remote-schedule-url").val(data.remotescheduleurl).siblings('label').addClass('active');
+      $("#remote-schedule-url").val(data.remotescheduleurl);
 
     if (data.schedulepollinterval) {
       $('#schedule-poll-interval').val(data.schedulepollinterval);
@@ -84,13 +84,13 @@ $(function() {
       var reset = parseFloat(data.reset);
       $("#reset").prop("checked", true);
       $('.reset').removeClass('disabled');
-      $("#resetinterval").val(data.reset).siblings('label').addClass('active');
+      $("#resetinterval").val(data.reset);
     }
     if (data.screensavertime && data.screensaverurl) {
       $('#use-screensaver').prop("checked", true);
       $('.use-screensaver').removeClass('disabled');
-      $("#screensaver-time").val(parseFloat(data.screensavertime)).siblings('label').addClass('active');
-      $('#screensaver-url').val(data.screensaverurl).siblings('label').addClass('active');
+      $("#screensaver-time").val(parseFloat(data.screensavertime));
+      $('#screensaver-url').val(data.screensaverurl);
     }
     if (data.clearcookiesreset) $("#clear-cookies-reset, #screensaver-reset").prop("checked", true);
     if (data.restart && parseInt(data.restart)) {
@@ -106,7 +106,6 @@ $(function() {
       $('.restart').removeClass('disabled');
       $('#hour option').removeAttr('selected');
       $("#hour option[value=" + restart + "]").prop('selected', true);
-      $("#hour").siblings('label').addClass('active');
     }
     if (data.restartday) {
       $('#restartday > option').removeAttr('selected');
@@ -131,10 +130,12 @@ $(function() {
       $('#servelocalhost').children("[value='" + data.servelocalhost + "']").prop('selected', true);
     }
     if (data.servelocalport) $("#servelocalport").val(data.servelocalport);
-    if (data.useragent) $('#useragent').val(data.useragent).siblings('label').addClass('active');
-    if (data.authorization) $('#authorization').val(data.authorization).siblings('label').addClass('active');
+    if (data.useragent) $('#useragent').val(data.useragent);
+    if (data.authorization) $('#authorization').val(data.authorization);
 
     $('select').material_select();
+
+    Materialize.updateTextFields();
 
   }
 
@@ -300,10 +301,11 @@ $(function() {
 
     function setLocalContentURL() {
       if ($("#servelocal").is(':checked')) {
-        $('#url').val('http://127.0.0.1:' + $('#servelocalport').val() + '/').siblings('label').addClass('active');
+        $('#url').val('http://127.0.0.1:' + $('#servelocalport').val() + '/');
       } else {
-        $('#url').val('').siblings('label').removeClass('active');
+        $('#url').val('');
       }
+      Materialize.updateTextFields();
     }
 
     $("#multiple-url-mode").on('change', function() {

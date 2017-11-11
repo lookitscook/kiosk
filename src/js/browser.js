@@ -63,6 +63,7 @@ $(function() {
         backgroundPage.stopAutoRestart();
         $('#login').modal('open');
         $('#username').focus();
+        $('#passwordLabel').addClass('active');
       });
     }
     //print on ctrl+p

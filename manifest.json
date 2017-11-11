@@ -1,9 +1,9 @@
 {
-  "name": "Kiosk Professional v0.0.1",
-  "description": "Launch any URL as a full-screen kiosk.",
+  "name": "Kroger v0.0.1",
+  "description": "Kroger Digital Signage Application",
   "manifest_version": 2,
   "version": "0.0.1",
-  "version_name": "professional-0.0.1",
+  "version_name": "kroger-0.0.1",
   "author": {
     "name": "Matt Cook",
     "email": "matt@cook.company"

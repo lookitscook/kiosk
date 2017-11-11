@@ -21,7 +21,7 @@ body.loading #settings{
   visibility:hidden;
 }
 nav{
-  background-color:#54c76f;
+  background-color:#45d326;
 }
 .brand-logo img{
   margin:12px 0 0 0;
@@ -39,4 +39,16 @@ strong{
 }
 #url .chip{
   overflow:hidden;
+}
+input:not([type]):focus.validate+label, input[type=text]:not(.browser-default):focus.validate+label, input[type=password]:not(.browser-default):focus.validate+label, input[type=email]:not(.browser-default):focus.validate+label, input[type=url]:not(.browser-default):focus.validate+label, input[type=time]:not(.browser-default):focus.validate+label, input[type=date]:not(.browser-default):focus.validate+label, input[type=datetime]:not(.browser-default):focus.validate+label, input[type=datetime-local]:not(.browser-default):focus.validate+label, input[type=tel]:not(.browser-default):focus.validate+label, input[type=number]:not(.browser-default):focus.validate+label, input[type=search]:not(.browser-default):focus.validate+label, textarea.materialize-textarea.validate+label{
+  color:#000;
+}
+input:not([type]):focus, input[type=text]:not(.browser-default):focus, input[type=password]:not(.browser-default):focus, input[type=email]:not(.browser-default):focus, input[type=url]:not(.browser-default):focus, input[type=time]:not(.browser-default):focus, input[type=date]:not(.browser-default):focus, input[type=datetime]:not(.browser-default):focus, input[type=datetime-local]:not(.browser-default):focus, input[type=tel]:not(.browser-default):focus, input[type=number]:not(.browser-default):focus, input[type=search]:not(.browser-default):focus, textarea.materialize-textarea{
+  border-bottom: 1px solid #000 !important;
+  -webkit-box-shadow: 0 1px 0 0 #000 !important;
+  -moz-box-shadow: 0 1px 0 0 #000 !important;
+  box-shadow: 0 1px 0 0 #000 !important;
+}
+label.active, .input-field.col label{
+  color:#000 !important;
 }

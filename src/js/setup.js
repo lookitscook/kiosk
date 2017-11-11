@@ -7,45 +7,28 @@ $(function() {
       $("#newwindow").prop("checked", true);
     }
     if (data.url) {
-      var urlTags = [];
+      var urls = [];
       if (Array.isArray(data.url)) {
-        //possibly multiple content items
-        for (var i = 0; i < data.url.length; i++) {
-          urlTags.push({
-            tag: data.url[i]
-          });
-        }
+        urls = data.url;
       } else {
         //only a single content item, legacy support
-        urlTags.push({
-          tag: data.url
-        });
+        urls.push(data.url);
       }
-      $('#url').material_chip({
-        data: urlTags
-      });
-      if (urlTags.length > 1) {
+      $('#url').val(urls.join(', '));
+      if (urls.length > 1) {
         $('.multiple-url-mode').removeClass('disabled').show();
       }
     }
     if (data.whitelist) {
-      var whitelistTags = [];
+      var whitelistDomains = [];
       if (Array.isArray(data.whitelist)) {
         //possibly multiple content items
-        for (var i = 0; i < data.whitelist.length; i++) {
-          whitelistTags.push({
-            tag: data.whitelist[i]
-          });
-        }
+        whitelistDomains = data.whitelist;
       } else {
         //only a single content item
-        whitelistTags.push({
-          tag: data.whitelist
-        });
+        whitelistDomains.push(data.whitelist);
       }
-      $('#whitelist').material_chip({
-        data: whitelistTags
-      });
+      $('#whitelist').val(whitelistDomains.join(', '));
     }
     if (data.rotaterate) {
       $("#rotate-rate").val(data.rotaterate);
@@ -191,66 +174,35 @@ $(function() {
       document.getElementById("host").appendChild(opt);
     }
 
-    $('#url').material_chip({
-      placeholder: '+URL',
-      secondaryPlaceholder: 'Content URL'
-    });
-    $('#url').on('chip.add', function(e, chip) {
-      var err = validateURL(chip.tag);
-      if (err) {
-        Materialize.toast(err, 4000);
-      }
-      toggleMultipleMode();
-    });
-    $('#url').on('chip.delete', function(e, chip) {
-      toggleMultipleMode();
-    });
-
-    function toggleMultipleMode() {
-      var chips = $('.chips-initial').material_chip('data');
-      if (chips.length == 2) {
+    function toggleMultipleMode(urls) {
+      if (urls.length == 2) {
         $('.multiple-url-mode').hide().removeClass('disabled').slideDown();
-      } else if (chips.length <= 1) {
+      } else if (urls.length <= 1) {
         $('.multiple-url-mode').slideUp();
       }
     }
 
-    $('#whitelist').material_chip({
-      placeholder: '+Domain',
-      secondaryPlaceholder: '+Domain'
-    });
-    $('#whitelist').on('chip.add', function(e, chip) {
-      var err;
-      if (chip.tag.indexOf('.') < 0) {
-        Materialize.toast('Whitelist domain must be valid top-level domain.', 4000);
+    $('#url').on('change', function() {
+      if (this.value && this.value.length) {
+        var urls = parseURLs(this.value);
+        urls.forEach(function(url, i){
+          var err = validateURL(url);
+          if (err) {
+            Materialize.toast(err, 4000);
+          }
+        });
+        toggleMultipleMode(urls);
       }
     });
 
-    // UX: Simulate an enter keypress whenever the Chips input loses focus
-    $('#url').on('blur', ':input', function() {
+    $('#whitelist').on('change', function() {
       if (this.value && this.value.length) {
-        var err = validateURL(this.value);
-
-        if (err) {
-          Materialize.toast(err, 4000);
-          return false;
-        }
-
-        $(this).trigger($.Event('keydown', {
-          which: 13
-        }));
-      }
-    });
-
-    $('#whitelist').on('blur', ':input', function() {
-      if (this.value && this.value.length) {
-        if (this.value.indexOf('.') < 0) {
-          Materialize.toast('Whitelist domain must be valid top-level domain.', 4000);
-          return false;
-        }
-        $(this).trigger($.Event('keydown', {
-          which: 13
-        }));
+        var urls = parseURLs(this.value);
+        urls.forEach(function(url, i){
+          if (url.indexOf('.') < 0) {
+            Materialize.toast('Whitelist domain must be valid top-level domain.', 4000);
+          }
+        });
       }
     });
 
@@ -412,11 +364,15 @@ $(function() {
       document.body.removeChild(element);
     }
 
+    function parseURLs(inputString){
+      return inputString.split(',').map(function(v) { return v.trim(); }).filter(function(v) { return !!v; });
+    }
+
     function validateData() {
       var error = [];
       var updated = {};
-      updated.url = $('#url').material_chip('data');
-      updated.whitelist = $('#whitelist').material_chip('data');
+      updated.url = parseURLs($('#url').val());
+      updated.whitelist = parseURLs($('#whitelist').val());
       updated.multipleurlmode = $("#multiple-url-mode").val();
       updated.rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
       updated.host = $('#host').val();
@@ -487,29 +443,30 @@ $(function() {
         var err;
         var contentURL = [];
         for (var i = 0; i < updated.url.length; i++) {
-          err = validateURL(updated.url[i].tag);
+          err = validateURL(updated.url[i]);
           if (err) {
             error.push(err);
             break;
           }
-          contentURL.push(updated.url[i].tag);
+          contentURL.push(updated.url[i]);
         }
         if (err) {
           delete updated.url;
         } else {
-          updated.url = contentURL;
-        }
+            updated.url = contentURL;
+          }
       } else {
         delete updated.url;
         error.push("Content URL is required.");
       }
-      if (updated.whitelist && Array.isArray(updated.url)) {
+      if (updated.whitelist && Array.isArray(updated.whitelist) && updated.whitelist.length) {
         var whitelistDomains = [];
+        console.log('1111', updated.whitelist);
         for (var i = 0; i < updated.whitelist.length; i++) {
-          if (updated.whitelist[i].tag.indexOf('.') < 0) {
+          if (updated.whitelist[i].indexOf('.') < 0) {
             error.push('Whitelist domain must be valid top-level domain.');
           } else {
-            whitelistDomains.push(updated.whitelist[i].tag);
+            whitelistDomains.push(updated.whitelist[i]);
           }
         }
         if (!whitelistDomains.length) {

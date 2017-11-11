@@ -24,17 +24,16 @@
       </div>
     </nav>
     <div class="container">
-        <br><br>
-        <h4>Content</h4>
-
+        <br><br><br>
+        <p class="caption">
+            To add content, just enter the url and press enter.
+            If more than one URL is specified they can either be opened in tabs or rotated at defined rate.
+            <strong>URL must start with http:// or https://</strong>
+          </p> 
         <div class="row">
-          <div class="col s8">
-            <p class="caption">
-              To add content, just enter the url and press enter.
-              If more than one URL is specified they can either be opened in tabs or rotated at defined rate.
-              <strong>URL must start with http:// or https://</strong>
-            </p>
-            <div id="url" class="chips chips-initial"></div>
+          <div class="input-field col s8">
+            <label for="url" class="active">Content</label>  
+            <input id="url" type="text">
           </div>
           <div class="input-field col s4">
             <input type="checkbox" id="servelocal" />
@@ -72,8 +71,8 @@
         </div>
         <div class="row">
           <div class="col s12">
-            <label for="whitelist">Domain Whitelist</label>
-            <div id="whitelist" class="chips chips-initial"></div>
+            <label for="whitelist">Domain Whitelist. Multiple values must be seperated by a comma.</label>
+            <input id="whitelist" type="text">
           </div>
         </div>
 

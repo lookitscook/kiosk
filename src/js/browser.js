@@ -405,7 +405,7 @@ $(function() {
       }
     }
 
-    return "Request to " + requestedDomain + "blocked.";
+    return "Request to " + requestedDomain + " blocked.";
   }
 
   function setNavStatus() {

@@ -149,6 +149,16 @@
         "type": "string"
       }
     },
+    "tokenserver": {
+      "title": "Token Server URL",
+      "description": "URL to fetch additional tokens from as JSON.",
+      "type": "string"
+    },
+    "customtoken": {
+      "title": "Custom Token JSON",
+      "description": "Stringified JSON object including additional tokens.",
+      "type": "string"
+    },
     "whitelist": {
       "title": "",
       "description": "",

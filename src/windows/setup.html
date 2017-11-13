@@ -6,6 +6,8 @@
     <link rel="icon" href="../www/favicon.ico" type="image/x-icon">
     <link type="text/css" rel="stylesheet" href="../www/css/material-icons/material-icons.css" media="screen,projection">
     <link type="text/css" rel="stylesheet" href="../www/css/materialize.min.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="../css/ghpages-materialize.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="../css/style.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="../www/css/shared.css"  media="screen,projection"/>
     <script language="javascript" type="text/javascript" src="../www/js/async.min.js"></script>
     <script language="javascript" type="text/javascript" src="../www/js/lodash.min.js"></script>
@@ -15,43 +17,98 @@
     <style type="text/css">body,html{overflow:auto}</style>
   </head>
   <body>
-    <nav role="navigation">
-      <div class="container">
-        <div class="nav-wrapper"><a id="logo-container" href="https://www.kroger.com" target="_blank" class="brand-logo"><img src="../img/logo.svg" alt="Kroger"></a>
-          <ul id="nav-mobile" class="right side-nav">
-          </ul><a href="#" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+    <header>
+      <nav class="top-nav">
+        <div class="container">
+          <div class="nav-wrapper">
+            <div class="row">
+              <div class="col s12 m10 offset-m1">
+                <h1 class="header">Settings</h1>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </nav>
-    <div class="container">
-        <br><br><br>
+      </nav>
+      <div class="container"><a href="https://chrome.google.com/webstore/detail/kiosk/afhcomalholahplbjhnmahkoekoijban" data-target="nav-mobile" class="button-collapse top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a></div>
+      <ul id="nav-mobile" class="sidenav sidenav-fixed">
+        <li class="logo"><a id="logo-container" href="#" class="brand-logo">
+            <object id="front-page-logo" type="image/svg+xml" data="../img/logo.svg">Your browser does not support SVG</object></a></li>
+        <li class="no-padding">
+          <ul class="collapsible collapsible-accordion">
+            <li class="bold active"><a class="collapsible-header waves-effect waves-green">Content</a>
+              <div class="collapsible-body">
+                <ul>
+                  <li class="active"><a href="#url">URL(s)</a></li>
+                  <li><a href="#servelocal">Serve Local Content</a></li>
+                  <li><a href="#customtoken">Custom Tokens</a></li>
+                  <li><a href="#tokenserver">Token Service URL</a></li>
+                  <li><a href="#whitelist">Domain Whitelist</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li class="no-padding">
+          <ul class="collapsible collapsible-accordion">
+            <li class="bold"><a class="collapsible-header waves-effect waves-green">Browser</a>
+              <div class="collapsible-body" >
+                <ul>
+                  <li><a href="#ui">User Interface</a></li>
+                  <li><a href="#printing">Printing</a></li>
+                  <li><a href="#useragent">User Agent</a></li>
+                  <li><a href="#authheader">Authorization Header</a></li>
+                </ul>
+              </div>
+            </li>
+          </ul>
+        </li>
+        <li class="bold"><a href="#administration" class="waves-effect waves-green">Administration</a></li>
+        <li class="bold"><a href="#schedule" class="waves-effect waves-green">Schedule</a></li>
+        <li class="bold"><a href="#save" class="waves-effect waves-green">Save</a></li>
+      </ul>
+    </header>
+    <main><div class="container">
+  <div class="row">
+    <div class="col s12 m8 offset-m1 xl7 offset-xl1">
+
+        <h2>Content</h2>
         <p class="caption">
             Multiple URLs must be seperated by a comma.
             If more than one URL is specified they can either be opened in tabs or rotated at defined rate.
-            <strong>URL must start with http:// or https://</strong>
+            <strong>URL must start with http:// or https://</strong> Tokens can be embedded in the URL and will be replaced with associated value. 
+            E.g.: 'https://www.mysite.com/content?device={instanceid}' will actually request 'https://https://www.mysite.com/content?device=12345' 
+            where '12345' is a identifier unique to this installtion of the application.
           </p> 
         <div class="row">
-          <div class="input-field col s8">
-            <label class="active" for="url">Content</label>  
+          <div class="col s12">
+              <p class="caption">
+                <strong>System Tokens:</strong>
+              </p>
+              <ul id="tokens">
+                <li>{instanceid}</li>
+              </ul>
+          </div>
+          <div class="input-field col s12">
+            <label class="active" for="url"><a name="url"></a>Content URL(s)</label>  
             <input id="url" type="text">
           </div>
-          <div class="input-field col s4">
+          <div class="input-field col s12">
             <input type="checkbox" id="servelocal" />
-            <label class="active" for="servelocal">Serve Local Content</label>
+            <label class="active" for="servelocal"><a name="servelocal"></a>Serve Local Content</label>
           </div>
         </div>
         <div class="row disabled servelocal">
-          <div class="col s5">
+          <div class="col s6">
             <label class="active" for="servelocalhost">Host</label>
              <select id="servelocalhost" class="browser-default" disabled>
                <option value="127.0.0.1">lo - 127.0.0.1</option>
             </select>
           </div>
-          <div class="col s1">
+          <div class="col s6">
             <label class="active" for="servelocalport">Port</label>
             <input id="servelocalport" type="text" value="8080">
           </div>
-          <div class="col s5">
+          <div class="col s12">
             <label class="active" for="servelocaldirectory">Directory (<a id="changelocaldirectory" href="#">change</a>)</label>
             <input class="file-path validate" disabled id="servelocaldirectory" type="text" />
           </div>
@@ -70,85 +127,95 @@
           </div>
         </div>
         <div class="row">
+          <div class="input-field col s12">
+            <label class="active" for="tokenserver"><a name="tokenserver"></a>Token Service URL</label>  
+            <input id="tokenserver" type="text">
+          </div>
+          <div class="input-field col s12">
+              <label class="active" for="customtoken"><a name="customtoken"></a>Custom Token JSON</label>  
+              <input id="customtoken" type="text">
+          </div>
           <div class="col s12">
-            <label class="active" for="whitelist">Domain Whitelist. Multiple values must be seperated by a comma.</label>
-            <input id="whitelist" type="text">
+              <label class="active" for="whitelist"><a name="whitelist"></a>Domain Whitelist. Multiple values must be seperated by a comma.</label>
+              <input id="whitelist" type="text">
           </div>
         </div>
 
         <div class="row">
           <div class="col s12">
-            <h4>Browser</h4>
+            <h2><a name="ui"></a>Browser</h2>
           </div>
         </div>
 
         <div class="row">
-          <div class="col s3">
+          <div class="col s6">
             <input type="checkbox" id="hidecursor" />
             <label class="active" for="hidecursor" >Hide Cursor</label>
           </div>
-          <div class="col s3">
+          <div class="col s6">
             <input type="checkbox" id="disablecontextmenu" />
             <label class="active" for="disablecontextmenu">Disable Context Menu</label>
           </div>
-          <div class="col s3">
+          <div class="col s6">
             <input type="checkbox" id="disabledrag" />
             <label class="active" for="disabledrag">Disable Image Drag</label>
           </div>
-          <div class="col s3">
+          <div class="col s6">
             <input type="checkbox" id="disabletouchhighlight" />
             <label class="active" for="disabletouchhighlight">Disable Touch Highlight</label>
           </div>
-          <div class="col s3">
+          <div class="col s6">
             <input type="checkbox" id="disableselection" />
             <label class="active" for="disableselection">Disable Text Selection</label>
           </div>
-          <div class="col s3">
+          <div class="col s6">
             <input type="checkbox" id="newwindow" />
             <label class="active" for="newwindow">Enable New Windows and Dialogs</label>
           </div>
-          <div class="col s3">
-            <input type="checkbox" id="allowprint" />
-            <label class="active" for="allowprint">Enable Printing (CTRL+P)</label>
-          </div>
-          <div class="col s3">
+          <div class="col s6">
             <input type="checkbox" id="shownav" />
             <label class="active" for="shownav">Show Navigation</label>
           </div>
-          <div class="col s3">
+          <div class="col s6">
             <input type="checkbox" id="hidegslidescontrols" />
             <label class="active" for="hidegslidescontrols">Hide Google Slides Controls</label>
           </div>
         </div>
         <div class="row">
+          <div class="col s12">
+            <input type="checkbox" id="allowprint" />
+            <label class="active" for="allowprint"><a name="printing"></a>Enable Printing (CTRL+P)</label>
+          </div>
+        </div>
+        <div class="row">
           <div class="input-field col s12">
             <input id="useragent" type="text">
-            <label class="active" for="useragent">Override User Agent</label>
+            <label class="active" for="useragent"><a name="useragent"></a>Override User Agent</label>
           </div>
         </div>
         <div class="row">
           <div class="input-field col s12">
             <input id="authorization" type="text">
-            <label class="active" for="authorization">Override Authorization Header</label>
+            <label class="active" for="authorization"><a name="authheader"></a>Override Authorization Header</label>
           </div>
         </div>
 
 
         <div class="row">
           <div class="col s12">
-            <h4>Administration</h4>
+            <h2><a name="administration"></a>Administration</h2>
           </div>
         </div>
 
         <div class="row">
-          <div class="col s3">
+          <div class="col s6">
             <input type="checkbox" id="local" checked/>
             <label class="active" for="local">Local Administration</label>
             <div class="row local">
               <div class="col s12"><p>Press <strong>CTRL + A</strong> to activate after setup.</p></div>
             </div>
           </div>
-          <div class="col s3">
+          <div class="col s6">
             <input type="checkbox" id="remote" />
             <label class="active" for="remote">Remote Administration</label>
           </div>
@@ -168,13 +235,13 @@
           </div>
         </div>
         <div class="row disabled remote">
-          <div class="col s11">
+          <div class="col s6">
             <label class="active" for="host">Host</label>
              <select id="host" class="browser-default">
               <option value="127.0.0.1">lo - 127.0.0.1</option>
             </select>
           </div>
-          <div class="col s1">
+          <div class="col s6">
             <label class="active" for="port">Port</label>
             <input id="port" type="text" value="8080">
           </div>
@@ -182,7 +249,7 @@
 
         <div class="row">
           <div class="col s12">
-            <h4>Scheduling</h4>
+            <h2><a name="scheduling"></a>Scheduling</h2>
           </div>
         </div>
       <div class="row">
@@ -231,27 +298,27 @@
             <label class="active" for="restart">Daily Restart</label>
             <div class="row restart disabled">
               <div class="col input-field s4">
-                 <select id="hour" class="browser-default">
-                   <option value="1">1:00</option>
-                   <option value="2">2:00</option>
-                   <option value="3">3:00</option>
-                   <option value="4" selected>4:00</option>
-                   <option value="5">5:00</option>
-                   <option value="6">6:00</option>
-                   <option value="7">7:00</option>
-                   <option value="8">8:00</option>
-                   <option value="9">9:00</option>
-                   <option value="10">10:00</option>
-                   <option value="11">11:00</option>
-                   <option value="12">12:00</option>
-                </select>
-              </div>
-              <div class="col input-field s4">
-                 <select id="houroffset">
-                   <option value="0" selected>AM</option>
-                   <option value="12">PM</option>
-                </select>
-              </div>
+                  <select id="hour">
+                    <option value="1">1:00</option>
+                    <option value="2">2:00</option>
+                    <option value="3">3:00</option>
+                    <option value="4" selected>4:00</option>
+                    <option value="5">5:00</option>
+                    <option value="6">6:00</option>
+                    <option value="7">7:00</option>
+                    <option value="8">8:00</option>
+                    <option value="9">9:00</option>
+                    <option value="10">10:00</option>
+                    <option value="11">11:00</option>
+                    <option value="12">12:00</option>
+                 </select>
+               </div>
+               <div class="col input-field s4">
+                  <select id="houroffset">
+                    <option value="0" selected>AM</option>
+                    <option value="12">PM</option>
+                 </select>
+               </div>
               <div class="col input-field s4">
                  <select id="restartday">
                    <option value="" selected>Daily</option>
@@ -298,7 +365,13 @@
         </div>
 
         <div class="row">
-          <div class="col s6">
+            <div class="col s12">
+              <h2><a name="save"></a>Save</h2>
+            </div>
+          </div>
+
+        <div class="row">
+          <div class="col s12">
             <p>
               <a href="#" class="black btn-large waves-effect" id="save">Save & Restart</a>
               <span style="margin:1em 0 0 3em;">
@@ -307,13 +380,15 @@
               </span>
             </p>
           </div>
-          <div class="col s6">
-              <p style='text-align:right'>
-                  <a href="#" class="black btn-large waves-effect" id="import-policy" style="margin-right:1em">Import Policy</a>
-                  <a href="#" class="black btn-large waves-effect" id="export-policy">Export Policy</a>
+          <div class="col s12">
+              <p>
+                  <a href="#" class="black btn waves-effect" id="import-policy" style="margin-right:1em">Import Policy</a>
+                  <a href="#" class="black btn waves-effect" id="export-policy">Export Policy</a>
               </p>
           </div>
         </div>
+
+
       </div>
   </body>
 </html>

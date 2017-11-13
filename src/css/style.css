@@ -1,0 +1,40 @@
+html body{
+    font-family:  'Helvetica', 'Arial', sans-serif; /*'Noto Sans',*/
+}
+h1, h2, h3, .header{
+    font-family: 'Helvetica', 'Arial', sans-serif; /* 'Bree', */
+    font-weight: 100;
+    color: #0067b1
+}
+
+ul.sidenav.sidenav-fixed li.logo{
+    border-bottom: 1px solid rgba(0,0,0,0.15);
+    margin: 0 0 20px 0;
+}
+
+#logo-container{
+    margin: 32px 0;
+    height: 87px;
+}
+
+nav.top-nav{
+    height: 152px;
+    padding-top: 20px;
+}
+
+.sidenav .collapsible-body>ul:not(.collapsible)>li.active, .sidenav.sidenav-fixed .collapsible-body>ul:not(.collapsible)>li.active{
+    background-color: #0067b1;
+}
+
+.sidenav .collapsible-body>ul:not(.collapsible)>li.active, .sidenav.sidenav-fixed .collapsible-body>ul:not(.collapsible)>li.active a{
+    font-weight: 800;
+}
+
+.waves-effect.waves-green .waves-ripple {
+    background-color: #0067b1;
+}
+
+.container .row{
+    margin-left:0;
+    margin-right:0;
+}

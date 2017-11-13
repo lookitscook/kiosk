@@ -15,6 +15,8 @@ cp -R lib/material-icons dist/www/css/material-icons
 cp node_modules/materialize-css/dist/css/materialize.min.css dist/www/css/materialize.min.css
 node-sass src/css/browser.scss --output-style compressed -o dist/css/
 node-sass src/www/css/shared.scss --output-style compressed -o dist/www/css/
+cp src/css/style.css dist/css/style.css
+cp src/css/ghpages-materialize.css dist/css/ghpages-materialize.css
 
 #build html
 htmlmin src/windows/browser.html > dist/windows/browser.html

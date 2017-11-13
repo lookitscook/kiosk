@@ -29,6 +29,7 @@ $(function() {
   var clearcookies = false;
   var allowPrint = false;
   var localAdmin = false;
+  var tokens = {};
 
   window.oncontextmenu = function() {
     return false;
@@ -50,6 +51,19 @@ $(function() {
       e.preventDefault();
     }
   };
+
+  function tokenizeUrl(url){
+    var findTokens = /{([^}]+)}/g;
+    var tokenizedUrl = url;
+    while( currentMatch = findTokens.exec(url) ) {
+      var token = currentMatch[1];
+      var value = _.get(tokens, token);
+      if(value){
+        tokenizedUrl = tokenizedUrl.replace(new RegExp('{'+token+'}', 'g'), value);
+      }
+    }
+    return tokenizedUrl;
+  }
   
   function onKeypress(e){
     //refresh on F3 or ctrl+r
@@ -198,6 +212,80 @@ $(function() {
     var data = {};
     _.defaults(data, res[0], res[1]);
 
+    //get tokens
+    var useTokens = true; //!!(data.url && data.url.indexOf('{') >= 0 && data.url.indexOf('}') >= 0);
+    async.parallel([
+      function(next){
+        if(!useTokens) {
+          next();
+          return;
+        }
+        chrome.instanceID.getID(function(instanceid){
+          if(!instanceid){
+            console.error('No instance id acquired.');
+            next();
+            return;
+          }
+          tokens.instanceid = instanceid;
+          next();
+        });
+      },
+      function(next){
+        if(!useTokens) {
+          next();
+          return;
+        }
+        chrome.system.network.getNetworkInterfaces(function(interfaces) {
+          interfaces.forEach(function(interface){
+            if(!interface.name || !interface.address){
+              console.error('Missing details for network interface:', interface);
+              return;
+            }
+            _.set(tokens, interface.name.toLowerCase()+'.ipaddress.'+(interface.address.indexOf(':')  ? 'ipv6' : 'ipv4'), interface.address);
+          });
+          next();
+        });
+      },
+      function(next){
+        if(!useTokens || !data.customtoken) {
+          next();
+          return;
+        }
+        try{
+          tokens = _.defaults(JSON.parse(data.customtoken), tokens);
+        }catch(error){
+          console.error('Error parsing custom token json:', error);
+        }
+        next();
+      },
+      function(next){
+        if(!useTokens || !data.tokenserver) {
+          next();
+          return;
+        }
+        $.getJSON(tokenizeUrl(data.tokenserver)).done(function(tokenServerTokens){
+          tokens = _.defaults(tokenServerTokens, tokens);
+          next();
+        }).fail(function(jqxhr, textStatus, error){
+          console.error('Error getting tokens from server:', error);
+          next();
+        });
+      },
+      function(next){
+        //do custom tokens twice to override tokenserver values
+        if(!useTokens || !data.customtoken) {
+          next();
+          return;
+        }
+        try{
+          tokens = _.defaults(JSON.parse(data.customtoken), tokens);
+        }catch(error){
+          console.error('Error parsing custom token json:', error);
+        }
+        next();
+      }
+    ], function(err,res){
+
     allowPrint = !!data.allowprint;
 
     if (data.shownav) {
@@ -267,7 +355,7 @@ $(function() {
     }
     if (data.remoteschedule && data.remotescheduleurl) {
       schedulepollinterval = data.schedulepollinterval ? data.schedulepollinterval : DEFAULT_SCHEDULE_POLL_INTERVAL;
-      scheduleURL = data.remotescheduleurl.indexOf('?') >= 0 ? data.remotescheduleurl + '&kiosk_t=' + Date.now() : data.remotescheduleurl + '?kiosk_t=' + Date.now();
+      scheduleURL = tokenizeURL(data.remotescheduleurl.indexOf('?') >= 0 ? data.remotescheduleurl + '&kiosk_t=' + Date.now() : data.remotescheduleurl + '?kiosk_t=' + Date.now());
       updateSchedule();
       setInterval(updateSchedule, schedulepollinterval * 60 * 1000);
       setInterval(checkSchedule, CHECK_SCHEDULE_DELAY);
@@ -285,13 +373,13 @@ $(function() {
 
     reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
     screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
-    screensaverURL = data.screensaverurl;
+    screensaverURL = tokenizeUrl(data.screensaverurl);
     useScreensaver = screensaverTime && screensaverURL ? true : false;
     clearcookies = data.clearcookiesreset ? true : false;
 
     if (reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
 
-    defaultURL = contentURL = Array.isArray(data.url) ? data.url : [data.url];
+    defaultURL = contentURL = Array.isArray(data.url) ? data.url.map(function(url){ return tokenizeUrl(url) }) : [tokenizeURL(data.url)];
     whitelist = Array.isArray(data.whitelist) ? data.whitelist : data.whitelist ? [data.whitelist] : [];
     useragent = data.useragent;
     authorization = data.authorization;
@@ -308,6 +396,8 @@ $(function() {
     } else {
       loadContent(true);
     }
+
+    });
   });
 
   window.addEventListener('message', function(e) {

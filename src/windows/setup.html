@@ -25,14 +25,17 @@
     </nav>
     <div class="container">
         <br><br><br>
+        <h4>Content</h4>
         <p class="caption">
             Multiple URLs must be seperated by a comma.
             If more than one URL is specified they can either be opened in tabs or rotated at defined rate.
-            <strong>URL must start with http:// or https://</strong>
+            <strong>URL must start with http:// or https://</strong> Tokens can be embedded in the URL and will be replaced with associated value. 
+            E.g.: 'https://www.mysite.com/content?device={instanceid}' will actually request 'https://https://www.mysite.com/content?device=12345' 
+            where '12345' is a identifier unique to this installtion of the application.
           </p> 
         <div class="row">
           <div class="input-field col s8">
-            <label class="active" for="url">Content</label>  
+            <label class="active" for="url">Content URL(s)</label>  
             <input id="url" type="text">
           </div>
           <div class="input-field col s4">
@@ -70,9 +73,25 @@
           </div>
         </div>
         <div class="row">
-          <div class="col s12">
-            <label class="active" for="whitelist">Domain Whitelist. Multiple values must be seperated by a comma.</label>
-            <input id="whitelist" type="text">
+          <div class="input-field col s4">
+            <label class="active" for="tokenserver">Token Service URL</label>  
+            <input id="tokenserver" type="text">
+          </div>
+          <div class="input-field col s4">
+              <label class="active" for="customtoken">Custom Token JSON</label>  
+              <input id="customtoken" type="text">
+          </div>
+          <div class="col s4">
+              <p class="caption">
+                System Tokens:
+              </p>
+              <ul id="tokens">
+                <li>{instanceid}</li>
+              </ul>
+          </div>
+          <div class="col s8">
+              <label class="active" for="whitelist">Domain Whitelist. Multiple values must be seperated by a comma.</label>
+              <input id="whitelist" type="text">
           </div>
         </div>
 

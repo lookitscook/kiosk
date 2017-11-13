@@ -19,6 +19,12 @@ $(function() {
         $('.multiple-url-mode').removeClass('disabled').show();
       }
     }
+    if(data.tokenserver){
+      $('#tokenserver').val(data.tokenserver);
+    }
+    if(data.customtoken){
+      $('#customtoken').val(data.customtoken);
+    }
     if (data.whitelist) {
       var whitelistDomains = [];
       if (Array.isArray(data.whitelist)) {
@@ -134,9 +140,6 @@ $(function() {
     if (data.authorization) $('#authorization').val(data.authorization);
 
     $('select').material_select();
-
-    Materialize.updateTextFields();
-
   }
 
   async.series([
@@ -173,6 +176,7 @@ $(function() {
       opt.value = networkInterface.address;
       opt.innerText = networkInterface.name + " - " + networkInterface.address;
       document.getElementById("host").appendChild(opt);
+      $('#tokens').append('<li>{'+networkInterface.name.toLowerCase()+'.ipaddress.'+( networkInterface.address.indexOf(':') >= 0 ? 'ipv6' : 'ipv4' ) +'}</li>');
     }
 
     function toggleMultipleMode(urls) {
@@ -182,6 +186,17 @@ $(function() {
         $('.multiple-url-mode').slideUp();
       }
     }
+
+    $('#customtoken').on('change', function() {
+      if(this && this.value){
+        try {
+          JSON.parse(this.value);
+        }
+        catch(e){
+          Materialize.toast('Could not parse Custom Token JSON', 4000);
+        }
+      }
+    });
 
     $('#url').on('change', function() {
       if (this.value && this.value.length) {
@@ -223,6 +238,10 @@ $(function() {
       chrome.fileSystem.chooseEntry({
         type: "openDirectory"
       }, function(entry, fileEntries) {
+        if(!entry){
+          Materialize.toast("No directory selected.", 4000);
+          return;
+        }
         var id = chrome.fileSystem.retainEntry(entry);
         chrome.fileSystem.isRestorable(id, function(isRestorable) {
           if (isRestorable) {
@@ -374,6 +393,8 @@ $(function() {
       var error = [];
       var updated = {};
       updated.url = parseURLs($('#url').val());
+      updated.tokenserver = $('#tokenserver').val();
+      updated.customtoken = $('#customtoken').val();
       updated.whitelist = parseURLs($('#whitelist').val());
       updated.multipleurlmode = $("#multiple-url-mode").val();
       updated.rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
@@ -461,9 +482,15 @@ $(function() {
         delete updated.url;
         error.push("Content URL is required.");
       }
+      if(updated.customtoken){
+        try {
+          JSON.parse(updated.customtoken);
+        }catch(e){
+          error.push('Could not parse Custom Token JSON.');
+        }
+      }
       if (updated.whitelist && Array.isArray(updated.whitelist) && updated.whitelist.length) {
         var whitelistDomains = [];
-        console.log('1111', updated.whitelist);
         for (var i = 0; i < updated.whitelist.length; i++) {
           if (updated.whitelist[i].indexOf('.') < 0) {
             error.push('Whitelist domain must be valid top-level domain.');
@@ -572,7 +599,7 @@ $(function() {
   });
 
   function validateURL(url) {
-    return url.indexOf("http://") >= 0 || url.indexOf("https://") >= 0 ? null : 'Invalid content URL';
+    return url.indexOf("http://") >= 0 || url.indexOf("https://") >= 0 ? null : 'Invalid URL';
   }
 
 });

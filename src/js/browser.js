@@ -241,7 +241,7 @@ $(function() {
               console.error('Missing details for network interface:', interface);
               return;
             }
-            _.set(tokens, interface.name.toLowerCase()+'.ipaddress.'+(interface.address.indexOf(':')  ? 'ipv6' : 'ipv4'), interface.address);
+            _.set(tokens, interface.name.toLowerCase()+'.ipaddress.'+(interface.address.indexOf(':') >= 0 ? 'ipv6' : 'ipv4'), interface.address);
           });
           next();
         });

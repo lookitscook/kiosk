@@ -25,7 +25,6 @@ $(function() {
   var useragent = '';
   var authorization = '';
   var resetcache = false;
-  var partition = null;
   var clearcookies = false;
 
   window.oncontextmenu = function() {
@@ -277,7 +276,6 @@ $(function() {
     disabletouchhighlight = data.disabletouchhighlight ? true : false;
     disableselection = data.disableselection ? true : false;
     resetcache = data.resetcache ? true : false;
-    partition = data.partition;
     allownewwindow = data.newwindow ? true : false;
 
     reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
@@ -352,10 +350,10 @@ $(function() {
         $('body').addClass('screensaverActive');
         if (clearcookies) {
           clearCache(function() {
-            loadContent(false);
+            refreshContent();
           });
         } else {
-          loadContent(false);
+          refreshContent();
         }
       }, screensaverTime * 60 * 1000);
     }
@@ -370,10 +368,10 @@ $(function() {
         }
         if (clearcookies) {
           clearCache(function() {
-            loadContent(false);
+            refreshContent();
           });
         } else {
-          loadContent(false);
+          refreshContent();
         }
       }, reset * 60 * 1000);
     }
@@ -435,7 +433,6 @@ $(function() {
         right: 0,
         bottom: 0
       })
-      .attr('partition', partition)
       .on('exit', onEnded)
       .on('unresponsive', onEnded)
       .on('loadabort', function(e) {
@@ -619,6 +616,12 @@ $(function() {
     }
   }
 
+  function refreshContent(){
+    $('#content webview').each(function(i, webview) {
+      webview.src = $(webview).data('src');
+    });
+  }
+
   function loadContent(alsoLoadScreensaver) {
     if (!$('body').hasClass('screensaverActive')) {
       startScreensaverTimeout();
@@ -692,20 +695,22 @@ $(function() {
 
   function clearCache(cb) {
     if (resetcache) { //set true when we're restarting once after saving from admin
-      chrome.storage.local.remove('resetcache');
+      if(chrome.storage){
+        chrome.storage.local.remove('resetcache');
+      }
       resetcache = false;
     }
     var clearDataType = {
-      appcache: true,
-      cache: true, //remove entire cache
+      appcache: false,
+      cache: false, //remove entire cache
       cookies: true,
-      fileSystems: true,
-      indexedDB: true,
-      localStorage: true,
-      webSQL: true,
+      fileSystems: false,
+      indexedDB: false,
+      localStorage: false,
+      webSQL: false,
     };
     deferredArray = [];
-    $('webview').each(function(i, webview) {
+    $('#content webview').each(function(i, webview) {
       var deferred = new $.Deferred();
       webview.clearData({
         since: 0
@@ -715,10 +720,6 @@ $(function() {
       deferredArray.push(deferred);
     });
     $.when.apply($, deferredArray).then(function() {
-      partition = "persist:kiosk" + (Date.now());
-      chrome.storage.local.set({
-        'partition': partition
-      });
       if (cb) {
         cb();
       }

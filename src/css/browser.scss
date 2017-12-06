@@ -21,6 +21,11 @@ body,#container{
 #screensaver{
   z-index:3;
   visibility: hidden;
+
+  webview{
+    pointer-events: none;
+  }
+
 }
 #content{
   z-index:1;

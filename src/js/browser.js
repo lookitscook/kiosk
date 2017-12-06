@@ -25,7 +25,6 @@ $(function() {
   var useragent = '';
   var authorization = '';
   var resetcache = false;
-  var partition = null;
   var clearcookies = false;
   var allowPrint = false;
   var localAdmin = false;
@@ -368,7 +367,6 @@ $(function() {
     disabletouchhighlight = data.disabletouchhighlight ? true : false;
     disableselection = data.disableselection ? true : false;
     resetcache = data.resetcache ? true : false;
-    partition = data.partition;
     allownewwindow = data.newwindow ? true : false;
 
     reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
@@ -423,7 +421,10 @@ $(function() {
   }
 
   function active() {
-    $('body').removeClass('screensaverActive');
+    if($('body').hasClass('screensaverActive')){
+      $('body').removeClass('screensaverActive');
+      refreshContent(true);
+    }
     if (resetTimeout) {
       clearTimeout(resetTimeout);
       resetTimeout = false;
@@ -448,10 +449,10 @@ $(function() {
         $('body').addClass('screensaverActive');
         if (clearcookies) {
           clearCache(function() {
-            loadContent(false);
+            refreshContent(false);
           });
         } else {
-          loadContent(false);
+          refreshContent(false);
         }
       }, screensaverTime * 60 * 1000);
     }
@@ -466,10 +467,10 @@ $(function() {
         }
         if (clearcookies) {
           clearCache(function() {
-            loadContent(false);
+            refreshContent(false);
           });
         } else {
-          loadContent(false);
+          refreshContent(false);
         }
       }, reset * 60 * 1000);
     }
@@ -531,7 +532,7 @@ $(function() {
         right: 0,
         bottom: 0
       })
-      .attr('partition', partition)
+      .attr('partition', 'persist:kiosk-afhcomalholahplbjhnmahkoekoijban')
       .on('exit', onEnded)
       .on('unresponsive', onEnded)
       .on('loadabort', function(e) {
@@ -723,6 +724,12 @@ $(function() {
     }
   }
 
+  function refreshContent(screensaver){
+    $('#'+(screensaver ? 'screensaver' : 'content')+' webview').each(function(i, webview) {
+      webview.src = $(webview).data('src');
+    });
+  }
+
   function loadContent(alsoLoadScreensaver) {
     if (!$('body').hasClass('screensaverActive')) {
       startScreensaverTimeout();
@@ -796,7 +803,9 @@ $(function() {
 
   function clearCache(cb) {
     if (resetcache) { //set true when we're restarting once after saving from admin
-      chrome.storage.local.remove('resetcache');
+      if(chrome.storage){
+        chrome.storage.local.remove('resetcache');
+      }
       resetcache = false;
     }
     var clearDataType = {
@@ -809,7 +818,7 @@ $(function() {
       webSQL: true,
     };
     deferredArray = [];
-    $('webview').each(function(i, webview) {
+    $('#content webview').each(function(i, webview) {
       var deferred = new $.Deferred();
       webview.clearData({
         since: 0
@@ -819,10 +828,6 @@ $(function() {
       deferredArray.push(deferred);
     });
     $.when.apply($, deferredArray).then(function() {
-      partition = "persist:kiosk" + (Date.now());
-      chrome.storage.local.set({
-        'partition': partition
-      });
       if (cb) {
         cb();
       }

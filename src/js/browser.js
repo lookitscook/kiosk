@@ -325,7 +325,10 @@ $(function() {
   }
 
   function active() {
-    $('body').removeClass('screensaverActive');
+    if($('body').hasClass('screensaverActive')){
+      $('body').removeClass('screensaverActive');
+      refreshContent(true);
+    }
     if (resetTimeout) {
       clearTimeout(resetTimeout);
       resetTimeout = false;
@@ -350,10 +353,10 @@ $(function() {
         $('body').addClass('screensaverActive');
         if (clearcookies) {
           clearCache(function() {
-            refreshContent();
+            refreshContent(false);
           });
         } else {
-          refreshContent();
+          refreshContent(false);
         }
       }, screensaverTime * 60 * 1000);
     }
@@ -368,10 +371,10 @@ $(function() {
         }
         if (clearcookies) {
           clearCache(function() {
-            refreshContent();
+            refreshContent(false);
           });
         } else {
-          refreshContent();
+          refreshContent(false);
         }
       }, reset * 60 * 1000);
     }
@@ -616,8 +619,8 @@ $(function() {
     }
   }
 
-  function refreshContent(){
-    $('#content webview').each(function(i, webview) {
+  function refreshContent(screensaver){
+    $('#'+(screensaver ? 'screensaver' : 'content')+' webview').each(function(i, webview) {
       webview.src = $(webview).data('src');
     });
   }

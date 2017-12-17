@@ -1,9 +1,9 @@
 {
-  "name": "Kiosk Professional v0.0.2-beta",
+  "name": "Kiosk v5.15.0-dev",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "0.0.2",
-  "version_name": "professional-0.0.2-beta",
+  "version": "5.15.0",
+  "version_name": "5.15.0-dev",
   "description": "Launch any URL as a full-screen kiosk.",
   "author": {
     "name": "Matt Cook",

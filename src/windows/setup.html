@@ -40,8 +40,6 @@
                 <ul>
                   <li class="active"><a href="#url">URL(s)</a></li>
                   <li><a href="#servelocal">Serve Local Content</a></li>
-                  <li><a href="#customtoken">Custom Tokens</a></li>
-                  <li><a href="#tokenserver">Token Service URL</a></li>
                   <li><a href="#whitelist">Domain Whitelist</a></li>
                 </ul>
               </div>
@@ -75,19 +73,9 @@
         <p class="caption">
             Multiple URLs must be seperated by a comma.
             If more than one URL is specified they can either be opened in tabs or rotated at defined rate.
-            <strong>URL must start with http:// or https://</strong> Tokens can be embedded in the URL and will be replaced with associated value. 
-            E.g.: 'https://www.mysite.com/content?device={instanceid}' will actually request 'https://https://www.mysite.com/content?device=12345' 
-            where '12345' is a identifier unique to this installtion of the application.
+            <strong>URL must start with http:// or https://</strong>.
           </p> 
         <div class="row">
-          <div class="col s12">
-              <p class="caption">
-                <strong>System Tokens:</strong>
-              </p>
-              <ul id="tokens">
-                <li>{instanceid}</li>
-              </ul>
-          </div>
           <div class="input-field col s12">
             <label class="active" for="url"><a name="url"></a>Content URL(s)</label>  
             <input id="url" type="text">
@@ -127,14 +115,6 @@
           </div>
         </div>
         <div class="row">
-          <div class="input-field col s12">
-            <label class="active" for="tokenserver"><a name="tokenserver"></a>Token Service URL</label>  
-            <input id="tokenserver" type="text">
-          </div>
-          <div class="input-field col s12">
-              <label class="active" for="customtoken"><a name="customtoken"></a>Custom Token JSON</label>  
-              <input id="customtoken" type="text">
-          </div>
           <div class="col s12">
               <label class="active" for="whitelist"><a name="whitelist"></a>Domain Whitelist. Multiple values must be seperated by a comma.</label>
               <input id="whitelist" type="text">
@@ -379,12 +359,6 @@
                 <label class="active" for="reset-cache">Clear Cache on Save</label>
               </span>
             </p>
-          </div>
-          <div class="col s12">
-              <p>
-                  <a href="#" class="black btn waves-effect" id="import-policy" style="margin-right:1em">Import Policy</a>
-                  <a href="#" class="black btn waves-effect" id="export-policy">Export Policy</a>
-              </p>
           </div>
         </div>
 

@@ -149,11 +149,6 @@ $(function() {
       });
     },
     function(next) {
-      chrome.storage.managed.get(null, function(res) {
-        next(null, res);
-      });
-    },
-    function(next) {
       chrome.storage.local.get(null, function(res) {
         next(null, res);
       });
@@ -167,8 +162,8 @@ $(function() {
 
     var schema = res[0];
     var data = {};
-    _.defaults(data, res[1], res[2]);
-    var networkInterfaces = res[3];
+    _.defaults(data, res[1]);
+    var networkInterfaces = res[2];
 
     for (var i in networkInterfaces) {
       var networkInterface = networkInterfaces[i];

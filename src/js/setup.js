@@ -386,6 +386,9 @@ $(function() {
     }
 
     function parseURLs(inputString){
+      if(!inputString){
+        return null;
+      }
       return inputString.split(',').map(function(v) { return v.trim(); }).filter(function(v) { return !!v; });
     }
 

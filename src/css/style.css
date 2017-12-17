@@ -21,6 +21,15 @@ nav.top-nav{
     padding-top: 20px;
 }
 
+#front-page-logo{
+    max-width:100%;
+}
+
+[type="checkbox"]:checked+label:before{
+    border-right: 2px solid #000;
+    border-bottom: 2px solid #000;
+}
+
 .sidenav .collapsible-body>ul:not(.collapsible)>li.active, .sidenav.sidenav-fixed .collapsible-body>ul:not(.collapsible)>li.active{
     background-color: #45d326;
 }

@@ -65,11 +65,9 @@ function init() {
         //serve files from local directory
         chrome.fileSystem.restoreEntry(data.servelocaldirectory, function(entry) {
           //if we can't get the directory (removed drive possibly)
-          //wait 15 seconds and reload the app
+          //wait 30 seconds and reload the app
           if (!entry) {
-            restartTimeout = setTimeout(function() {
-              chrome.runtime.sendMessage('reload');
-            }, 15 * 1000);
+            restartTimeout = setTimeout(restart, 30 * 1000);
             return;
           }
 
@@ -86,27 +84,6 @@ function init() {
     } else {
       //need to run setup
       openWindow("windows/setup.html");
-    }
-  });
-
-  chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    if (request == "reload") {
-      chrome.runtime.getPlatformInfo(function(p) {
-        if (p.os == "cros") {
-          //we're on ChromeOS, so `reload()` will always work
-          chrome.runtime.reload();
-        } else {
-          //we're OSX/Win/*nix so `reload()` may not work if Chrome is not
-          // running the background. Simply close all windows and reset.
-          if (directoryServer) directoryServer.stop();
-          if (adminServer) adminServer.stop();
-          var w = chrome.app.window.getAll();
-          for (var i = 0; i < w.length; i++) {
-            w[i].close();
-          }
-          init();
-        }
-      });
     }
   });
 
@@ -174,6 +151,11 @@ function init() {
   }
 }
 
+function restart() {
+  chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
+  chrome.runtime.reload();
+}
+
 function stopAutoRestart() {
   if (restartTimeout) {
     clearTimeout(restartTimeout);
@@ -192,7 +174,7 @@ _.extend(AdminDataHandler.prototype, {
     chrome.storage.local.get(null, function(data) {
 
       var saveData = {};
-      var restart = false;
+      var restartNow = false;
       for (var key in newData) {
         var value = newData[key];
         if (data.hasOwnProperty(key)) {
@@ -204,7 +186,7 @@ _.extend(AdminDataHandler.prototype, {
           saveData[key] = value;
         }
         if (key.toString() == "restart") {
-          restart = true;
+          restartNow = true;
         }
       }
       chrome.storage.local.set(saveData);
@@ -213,23 +195,8 @@ _.extend(AdminDataHandler.prototype, {
       this.write(buf);
       this.finish();
 
-      if (restart) setTimeout(function() {
-        chrome.runtime.getPlatformInfo(function(p) {
-          if (p.os == "cros") {
-            //we're on ChromeOS, so `reload()` will always work
-            chrome.runtime.reload();
-          } else {
-            //we're OSX/Win/*nix so `reload()` may not work if Chrome is not
-            // running the background. Simply close all windows and reset.
-            if (directoryServer) directoryServer.stop();
-            if (adminServer) adminServer.stop();
-            var w = chrome.app.window.getAll();
-            for (var i = 0; i < w.length; i++) {
-              w[i].close();
-            }
-            init();
-          }
-        });
+      if (restartNow) setTimeout(function() {
+        restart();
       }, 1000);
 
 

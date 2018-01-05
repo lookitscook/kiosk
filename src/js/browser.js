@@ -30,48 +30,29 @@ $(function() {
   var localAdmin = false;
   var tokens = {};
 
-  window.oncontextmenu = function() {
-    return false;
-  };
-  window.ondragstart = function() {
-    return false;
-  };
+  init();
 
-  $('.modal').not('#newWindow').modal();
-  $('#newWindow').modal({
-    complete: function() {
-      $('#newWindow webview').remove();
-    }
-  });
-
-  //prevent existing fullscreen on escape key press
-  window.onkeydown = window.onkeyup = function(e) {
-    if (e.keyCode == 27) {
-      e.preventDefault();
-    }
-  };
-
-  function tokenizeUrl(url){
+  function tokenizeUrl(url) {
     var findTokens = /{([^}]+)}/g;
     var tokenizedUrl = url;
-    while( currentMatch = findTokens.exec(url) ) {
+    while (currentMatch = findTokens.exec(url)) {
       var token = currentMatch[1];
       var value = _.get(tokens, token);
-      if(value){
-        tokenizedUrl = tokenizedUrl.replace(new RegExp('{'+token+'}', 'g'), value);
+      if (value) {
+        tokenizedUrl = tokenizedUrl.replace(new RegExp('{' + token + '}', 'g'), value);
       }
     }
     return tokenizedUrl;
   }
-  
-  function onKeypress(e){
+
+  function onKeypress(e) {
     //refresh on F3 or ctrl+r
-    if ((e.which == 168) || (e.which == 82 && e.ctrlKey)){
+    if ((e.which == 168) || (e.which == 82 && e.ctrlKey)) {
       loadContent(true);
       return;
     }
     //open admin login on ctrl+a
-    if(localAdmin && e.which == 65 && e.ctrlKey){
+    if (localAdmin && e.which == 65 && e.ctrlKey) {
       chrome.runtime.getBackgroundPage(function(backgroundPage) {
         backgroundPage.stopAutoRestart();
         $('#login').modal('open');
@@ -80,41 +61,11 @@ $(function() {
       });
     }
     //print on ctrl+p
-    if (allowPrint && e.which == 80 && e.ctrlKey){
+    if (allowPrint && e.which == 80 && e.ctrlKey) {
       var activeBrowserID = $('#tabs a.active').attr('href');
-      $(activeBrowserID+' webview').get(0).print();
+      $(activeBrowserID + ' webview').get(0).print();
     }
   }
-
-  $(document).keydown(onKeypress);
-
-  $('#nav .home').click(function(e) {
-    if ($('#nav .home').hasClass('inactive')) {
-      return;
-    }
-    var activeBrowserID = $('#tabs a.active').attr('href');
-    var $webview = $(activeBrowserID + ' webview');
-    var activeHomeURL = $webview.data('src');
-    $webview.attr('src', activeHomeURL);
-  });
-
-  $('#nav .back').click(function(e) {
-    if ($('#nav .back').hasClass('inactive')) {
-      return;
-    }
-    var activeBrowserID = $('#tabs a.active').attr('href');
-    var $webview = $(activeBrowserID + ' webview');
-    $webview.get(0).back();
-  });
-
-  $('#nav .refresh').click(function(e) {
-    if ($('#nav .refresh').hasClass('inactive')) {
-      return;
-    }
-    var activeBrowserID = $('#tabs a.active').attr('href');
-    var $webview = $(activeBrowserID + ' webview');
-    $webview.attr('src', $webview.attr('src'));
-  });
 
   function rotateURL() {
     if (contentURL.length > 1) {
@@ -195,218 +146,287 @@ $(function() {
     }
   }
 
-  async.series([
-    function(next) {
-      chrome.storage.managed.get(null, function(res) {
-        next(null, res);
-      });
-    },
-    function(next) {
-      chrome.storage.local.get(null, function(res) {
-        next(null, res);
-      });
-    }
-  ], function(err, res) {
+  function restart() {
+    chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
+    chrome.runtime.reload();
+  }
 
-    var data = {};
-    _.defaults(data, res[0], res[1]);
+  function initEventHandlers() {
+    //prevent existing fullscreen on escape key press
+    window.onkeydown = window.onkeyup = function(e) {
+      if (e.keyCode == 27) {
+        e.preventDefault();
+      }
+    };
 
-    //get tokens
-    var useTokens = true; //!!(data.url && data.url.indexOf('{') >= 0 && data.url.indexOf('}') >= 0);
-    async.parallel([
-      function(next){
-        if(!useTokens) {
-          next();
-          return;
-        }
-        chrome.instanceID.getID(function(instanceid){
-          if(!instanceid){
-            console.error('No instance id acquired.');
+    window.oncontextmenu = function() {
+      return false;
+    };
+    window.ondragstart = function() {
+      return false;
+    };
+
+    $(document).keydown(onKeypress);
+
+    $('#nav .home').click(function(e) {
+      if ($('#nav .home').hasClass('inactive')) {
+        return;
+      }
+      var activeBrowserID = $('#tabs a.active').attr('href');
+      var $webview = $(activeBrowserID + ' webview');
+      var activeHomeURL = $webview.data('src');
+      $webview.attr('src', activeHomeURL);
+    });
+
+    $('#nav .back').click(function(e) {
+      if ($('#nav .back').hasClass('inactive')) {
+        return;
+      }
+      var activeBrowserID = $('#tabs a.active').attr('href');
+      var $webview = $(activeBrowserID + ' webview');
+      $webview.get(0).back();
+    });
+
+    $('#nav .refresh').click(function(e) {
+      if ($('#nav .refresh').hasClass('inactive')) {
+        return;
+      }
+      var activeBrowserID = $('#tabs a.active').attr('href');
+      var $webview = $(activeBrowserID + ' webview');
+      $webview.attr('src', $webview.attr('src'));
+    });
+  }
+
+  function initModals() {
+    $('.modal').not('#newWindow').modal();
+    $('#newWindow').modal({
+      complete: function() {
+        $('#newWindow webview').remove();
+      }
+    });
+  }
+
+  function init() {
+
+    initEventHandlers();
+
+    initModals();
+
+    async.series([
+      function(next) {
+        chrome.storage.managed.get(null, function(res) {
+          next(null, res);
+        });
+      },
+      function(next) {
+        chrome.storage.local.get(null, function(res) {
+          next(null, res);
+        });
+      }
+    ], function(err, res) {
+
+      var data = {};
+      _.defaults(data, res[0], res[1]);
+
+      //get tokens
+      var useTokens = false; //!!(data.url && data.url.indexOf('{') >= 0 && data.url.indexOf('}') >= 0);
+      async.parallel([
+        function(next) {
+          if (!useTokens) {
             next();
             return;
           }
-          tokens.instanceid = instanceid;
-          next();
-        });
-      },
-      function(next){
-        if(!useTokens) {
-          next();
-          return;
-        }
-        chrome.system.network.getNetworkInterfaces(function(interfaces) {
-          interfaces.forEach(function(interface){
-            if(!interface.name || !interface.address){
-              console.error('Missing details for network interface:', interface);
+          chrome.instanceID.getID(function(instanceid) {
+            if (!instanceid) {
+              console.error('No instance id acquired.');
+              next();
               return;
             }
-            _.set(tokens, interface.name.toLowerCase()+'.ipaddress.'+(interface.address.indexOf(':') >= 0 ? 'ipv6' : 'ipv4'), interface.address);
+            tokens.instanceid = instanceid;
+            next();
           });
+        },
+        function(next) {
+          if (!useTokens) {
+            next();
+            return;
+          }
+          chrome.system.network.getNetworkInterfaces(function(interfaces) {
+            interfaces.forEach(function(interface) {
+              if (!interface.name || !interface.address) {
+                console.error('Missing details for network interface:', interface);
+                return;
+              }
+              _.set(tokens, interface.name.toLowerCase() + '.ipaddress.' + (interface.address.indexOf(':') >= 0 ? 'ipv6' : 'ipv4'), interface.address);
+            });
+            next();
+          });
+        },
+        function(next) {
+          if (!useTokens || !data.customtoken) {
+            next();
+            return;
+          }
+          try {
+            tokens = _.defaults(JSON.parse(data.customtoken), tokens);
+          } catch (error) {
+            console.error('Error parsing custom token json:', error);
+          }
           next();
-        });
-      },
-      function(next){
-        if(!useTokens || !data.customtoken) {
+        },
+        function(next) {
+          if (!useTokens || !data.tokenserver) {
+            next();
+            return;
+          }
+          $.getJSON(tokenizeUrl(data.tokenserver)).done(function(tokenServerTokens) {
+            tokens = _.defaults(tokenServerTokens, tokens);
+            next();
+          }).fail(function(jqxhr, textStatus, error) {
+            console.error('Error getting tokens from server:', error);
+            next();
+          });
+        },
+        function(next) {
+          //do custom tokens twice to override tokenserver values
+          if (!useTokens || !data.customtoken) {
+            next();
+            return;
+          }
+          try {
+            tokens = _.defaults(JSON.parse(data.customtoken), tokens);
+          } catch (error) {
+            console.error('Error parsing custom token json:', error);
+          }
           next();
-          return;
         }
-        try{
-          tokens = _.defaults(JSON.parse(data.customtoken), tokens);
-        }catch(error){
-          console.error('Error parsing custom token json:', error);
+      ], function(err, res) {
+
+        allowPrint = !!data.allowprint;
+
+        if (data.shownav) {
+          $('body').addClass('show-nav');
         }
-        next();
-      },
-      function(next){
-        if(!useTokens || !data.tokenserver) {
-          next();
-          return;
+
+        if (data.local) {
+          localAdmin = true;
+
+          var submitLoginForm = function submitLoginForm(e) {
+            e.preventDefault();
+            var username = $('#username').val();
+            var password = $("#password").val();
+            if (username == data.username && password == data.password) {
+              $('#login').modal('close');
+              $('#username').val('');
+              $("#password").val('');
+              openWindow("windows/setup.html");
+            } else {
+              Materialize.toast('Invalid login.', 4000);
+            }
+          };
+
+          // UX: Pressing enter within the username field will focus the password field
+          $('#username').on('keydown', function(e) {
+            if (e.which == 13 || e.key == 'Enter') {
+              $('#password').focus();
+            }
+          });
+
+          // UX: Pressing enter within the password field will submit the login form
+          $('#password').on('keydown', function(e) {
+            if (e.which == 13 || e.key == 'Enter') {
+              submitLoginForm(e);
+            }
+          });
+
+          $('#submit').on('click', submitLoginForm);
         }
-        $.getJSON(tokenizeUrl(data.tokenserver)).done(function(tokenServerTokens){
-          tokens = _.defaults(tokenServerTokens, tokens);
-          next();
-        }).fail(function(jqxhr, textStatus, error){
-          console.error('Error getting tokens from server:', error);
-          next();
-        });
-      },
-      function(next){
-        //do custom tokens twice to override tokenserver values
-        if(!useTokens || !data.customtoken) {
-          next();
-          return;
+
+        if (data.restart && parseInt(data.restart)) {
+          var hour = parseInt(data.restart) - 1;
+          var now = moment();
+          restart = moment();
+          if (data.restartday) {
+            restart.day(data.restartday);
+          }
+          restart.hour(hour + 1).set({
+            'minute': 0,
+            'second': 0,
+            'millisecond': 0
+          });
+          if (now.isAfter(restart)) {
+            if (data.restartday) {
+              restart.add(1, 'w'); //if we're past the time today, do it next week
+            } else {
+              restart.add(1, 'd'); //if we're past the time today, do it tomorrow
+            }
+          }
+          setInterval(function() {
+            var now = moment();
+            if (now.isAfter(restart)) {
+              restart();
+            }
+          }, 60 * 1000);
         }
-        try{
-          tokens = _.defaults(JSON.parse(data.customtoken), tokens);
-        }catch(error){
-          console.error('Error parsing custom token json:', error);
+        if (data.remoteschedule && data.remotescheduleurl) {
+          schedulepollinterval = data.schedulepollinterval ? data.schedulepollinterval : DEFAULT_SCHEDULE_POLL_INTERVAL;
+          scheduleURL = tokenizeURL(data.remotescheduleurl.indexOf('?') >= 0 ? data.remotescheduleurl + '&kiosk_t=' + Date.now() : data.remotescheduleurl + '?kiosk_t=' + Date.now());
+          updateSchedule();
+          setInterval(updateSchedule, schedulepollinterval * 60 * 1000);
+          setInterval(checkSchedule, CHECK_SCHEDULE_DELAY);
         }
-        next();
-      }
-    ], function(err,res){
 
-    allowPrint = !!data.allowprint;
+        hidegslidescontrols = data.hidegslidescontrols ? true : false;
+        hidecursor = data.hidecursor ? true : false;
+        disablecontextmenu = data.disablecontextmenu ? true : false;
+        disabledrag = data.disabledrag ? true : false;
+        disabletouchhighlight = data.disabletouchhighlight ? true : false;
+        disableselection = data.disableselection ? true : false;
+        resetcache = data.resetcache ? true : false;
+        allownewwindow = data.newwindow ? true : false;
 
-    if (data.shownav) {
-      $('body').addClass('show-nav');
-    }
+        reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
+        screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
+        screensaverURL = tokenizeUrl(data.screensaverurl);
+        useScreensaver = screensaverTime && screensaverURL ? true : false;
+        clearcookies = data.clearcookiesreset ? true : false;
 
-    if (data.local) {
-      localAdmin = true;
+        if (reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
 
-      var submitLoginForm = function submitLoginForm(e) {
-        e.preventDefault();
-        var username = $('#username').val();
-        var password = $("#password").val();
-        if (username == data.username && password == data.password) {
-          $('#login').modal('close');
-          $('#username').val('');
-          $("#password").val('');
-          openWindow("windows/setup.html");
-        } else {
-          Materialize.toast('Invalid login.', 4000);
+        defaultURL = contentURL = Array.isArray(data.url) ? data.url.map(function(url) {
+          return tokenizeUrl(url)
+        }) : [tokenizeURL(data.url)];
+        whitelist = Array.isArray(data.whitelist) ? data.whitelist : data.whitelist ? [data.whitelist] : [];
+        useragent = data.useragent;
+        authorization = data.authorization;
+        if (data.multipleurlmode == 'rotate') {
+          defaultURL = contentURL[urlrotateindex];
+          rotaterate = data.rotaterate ? data.rotaterate : DEFAULT_ROTATE_RATE;
+          setInterval(rotateURL, rotaterate * 1000);
         }
-      };
-
-      // UX: Pressing enter within the username field will focus the password field
-      $('#username').on('keydown', function(e) {
-        if (e.which == 13 || e.key == 'Enter') {
-          $('#password').focus();
-        }
-      });
-
-      // UX: Pressing enter within the password field will submit the login form
-      $('#password').on('keydown', function(e) {
-        if (e.which == 13 || e.key == 'Enter') {
-          submitLoginForm(e);
-        }
-      });
-
-      $('#submit').on('click', submitLoginForm);
-    }
-
-    if (data.restart && parseInt(data.restart)) {
-      var hour = parseInt(data.restart) - 1;
-      var now = moment();
-      restart = moment();
-      if (data.restartday) {
-        restart.day(data.restartday);
-      }
-      restart.hour(hour + 1).set({
-        'minute': 0,
-        'second': 0,
-        'millisecond': 0
-      });
-      if (now.isAfter(restart)) {
-        if (data.restartday) {
-          restart.add(1, 'w'); //if we're past the time today, do it next week
-        } else {
-          restart.add(1, 'd'); //if we're past the time today, do it tomorrow
-        }
-      }
-      setInterval(function() {
-        var now = moment();
-        if (now.isAfter(restart)) {
-          chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
-          chrome.runtime.sendMessage('reload'); //all other systems
-        }
-      }, 60 * 1000);
-    }
-    if (data.remoteschedule && data.remotescheduleurl) {
-      schedulepollinterval = data.schedulepollinterval ? data.schedulepollinterval : DEFAULT_SCHEDULE_POLL_INTERVAL;
-      scheduleURL = tokenizeURL(data.remotescheduleurl.indexOf('?') >= 0 ? data.remotescheduleurl + '&kiosk_t=' + Date.now() : data.remotescheduleurl + '?kiosk_t=' + Date.now());
-      updateSchedule();
-      setInterval(updateSchedule, schedulepollinterval * 60 * 1000);
-      setInterval(checkSchedule, CHECK_SCHEDULE_DELAY);
-    }
-
-    hidegslidescontrols = data.hidegslidescontrols ? true : false;
-    hidecursor = data.hidecursor ? true : false;
-    disablecontextmenu = data.disablecontextmenu ? true : false;
-    disabledrag = data.disabledrag ? true : false;
-    disabletouchhighlight = data.disabletouchhighlight ? true : false;
-    disableselection = data.disableselection ? true : false;
-    resetcache = data.resetcache ? true : false;
-    allownewwindow = data.newwindow ? true : false;
-
-    reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
-    screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
-    screensaverURL = tokenizeUrl(data.screensaverurl);
-    useScreensaver = screensaverTime && screensaverURL ? true : false;
-    clearcookies = data.clearcookiesreset ? true : false;
-
-    if (reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
-
-    defaultURL = contentURL = Array.isArray(data.url) ? data.url.map(function(url){ return tokenizeUrl(url) }) : [tokenizeURL(data.url)];
-    whitelist = Array.isArray(data.whitelist) ? data.whitelist : data.whitelist ? [data.whitelist] : [];
-    useragent = data.useragent;
-    authorization = data.authorization;
-    if (data.multipleurlmode == 'rotate') {
-      defaultURL = contentURL[urlrotateindex];
-      rotaterate = data.rotaterate ? data.rotaterate : DEFAULT_ROTATE_RATE;
-      setInterval(rotateURL, rotaterate * 1000);
-    }
-    currentURL = defaultURL;
-    if (resetcache) {
-      clearCache(function() {
+        currentURL = defaultURL;
         loadContent(true);
+        if (resetcache) {
+          setTimeout(function() {
+            clearCache(function() {
+              restart();
+            });
+          }, 1000);
+        }
+
       });
-    } else {
-      loadContent(true);
-    }
-
     });
-  });
 
-  window.addEventListener('message', function(e) {
-    var data = e.data;
-    if(data.command == 'title' && data.title && data.id){
-      $('#tabs .tab.' + data.id + ' a').text(data.title);
-    }
-    if(data.command == 'keypress' && data.event){
-      onKeypress(data.event);
-    }
-  });
+    window.addEventListener('message', function(e) {
+      var data = e.data;
+      if (data.command == 'title' && data.title && data.id) {
+        $('#tabs .tab.' + data.id + ' a').text(data.title);
+      }
+      if (data.command == 'keypress' && data.event) {
+        onKeypress(data.event);
+      }
+    });
+  }
 
   function hasURL(url) {
     if (Array.isArray(url)) {
@@ -421,7 +441,7 @@ $(function() {
   }
 
   function active() {
-    if($('body').hasClass('screensaverActive')){
+    if ($('body').hasClass('screensaverActive')) {
       $('body').removeClass('screensaverActive');
       refreshContent(true);
     }
@@ -570,19 +590,18 @@ $(function() {
       .on('contentload', function(e) {
         var browser = e.target;
         browser.executeScript({
-          code: 
-          "var kioskAppWindow = null;"
-          + "var kioskAppOrigin = null;"
-          + "window.addEventListener('message', function(e){"
-          + "  if (!kioskAppWindow || !kioskAppOrigin) {"
-          + "    kioskAppWindow = event.source;"
-          + "    kioskAppOrigin = event.origin;"
-          + "  }"
-          + "  if(e.data.command == 'kioskGetTitle'){"
-          + "    kioskAppWindow.postMessage({ command: 'title', title: document.title, id: e.data.id }, kioskAppOrigin);"
-          + "  }"
-          + "});"
-          + "window.onkeydown = function(e){ kioskAppWindow.postMessage({ command:'keypress', event: { keyCode: e.keyCode || e.which, which: e.which || e.keyCode, ctrlKey: e.ctrlKey, metaKey: e.metaKey, altKey: e.altKey } }, kioskAppOrigin); }"
+          code: "var kioskAppWindow = null;" +
+            "var kioskAppOrigin = null;" +
+            "window.addEventListener('message', function(e){" +
+            "  if (!kioskAppWindow || !kioskAppOrigin) {" +
+            "    kioskAppWindow = event.source;" +
+            "    kioskAppOrigin = event.origin;" +
+            "  }" +
+            "  if(e.data.command == 'kioskGetTitle'){" +
+            "    kioskAppWindow.postMessage({ command: 'title', title: document.title, id: e.data.id }, kioskAppOrigin);" +
+            "  }" +
+            "});" +
+            "window.onkeydown = function(e){ kioskAppWindow.postMessage({ command:'keypress', event: { keyCode: e.keyCode || e.which, which: e.which || e.keyCode, ctrlKey: e.ctrlKey, metaKey: e.metaKey, altKey: e.altKey } }, kioskAppOrigin); }"
         });
         browser.contentWindow.postMessage({
           command: 'kioskGetTitle',
@@ -724,8 +743,8 @@ $(function() {
     }
   }
 
-  function refreshContent(screensaver){
-    $('#'+(screensaver ? 'screensaver' : 'content')+' webview').each(function(i, webview) {
+  function refreshContent(screensaver) {
+    $('#' + (screensaver ? 'screensaver' : 'content') + ' webview').each(function(i, webview) {
       webview.src = $(webview).data('src');
     });
   }
@@ -803,7 +822,7 @@ $(function() {
 
   function clearCache(cb) {
     if (resetcache) { //set true when we're restarting once after saving from admin
-      if(chrome.storage){
+      if (chrome.storage) {
         chrome.storage.local.remove('resetcache');
       }
       resetcache = false;

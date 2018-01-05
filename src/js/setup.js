@@ -19,10 +19,10 @@ $(function() {
         $('.multiple-url-mode').removeClass('disabled').show();
       }
     }
-    if(data.tokenserver){
+    if (data.tokenserver) {
       $('#tokenserver').val(data.tokenserver);
     }
-    if(data.customtoken){
+    if (data.customtoken) {
       $('#customtoken').val(data.customtoken);
     }
     if (data.whitelist) {
@@ -171,7 +171,7 @@ $(function() {
       opt.value = networkInterface.address;
       opt.innerText = networkInterface.name + " - " + networkInterface.address;
       document.getElementById("host").appendChild(opt);
-      $('#tokens').append('<li>{'+networkInterface.name.toLowerCase()+'.ipaddress.'+( networkInterface.address.indexOf(':') >= 0 ? 'ipv6' : 'ipv4' ) +'}</li>');
+      $('#tokens').append('<li>{' + networkInterface.name.toLowerCase() + '.ipaddress.' + (networkInterface.address.indexOf(':') >= 0 ? 'ipv6' : 'ipv4') + '}</li>');
     }
 
     function toggleMultipleMode(urls) {
@@ -183,11 +183,10 @@ $(function() {
     }
 
     $('#customtoken').on('change', function() {
-      if(this && this.value){
+      if (this && this.value) {
         try {
           JSON.parse(this.value);
-        }
-        catch(e){
+        } catch (e) {
           Materialize.toast('Could not parse Custom Token JSON', 4000);
         }
       }
@@ -196,7 +195,7 @@ $(function() {
     $('#url').on('change', function() {
       if (this.value && this.value.length) {
         var urls = parseURLs(this.value);
-        urls.forEach(function(url, i){
+        urls.forEach(function(url, i) {
           var err = validateURL(url);
           if (err) {
             Materialize.toast(err, 4000);
@@ -209,7 +208,7 @@ $(function() {
     $('#whitelist').on('change', function() {
       if (this.value && this.value.length) {
         var urls = parseURLs(this.value);
-        urls.forEach(function(url, i){
+        urls.forEach(function(url, i) {
           if (url.indexOf('.') < 0) {
             Materialize.toast('Whitelist domain must be valid top-level domain.', 4000);
           }
@@ -233,7 +232,7 @@ $(function() {
       chrome.fileSystem.chooseEntry({
         type: "openDirectory"
       }, function(entry, fileEntries) {
-        if(!entry){
+        if (!entry) {
           Materialize.toast("No directory selected.", 4000);
           return;
         }
@@ -380,11 +379,15 @@ $(function() {
       document.body.removeChild(element);
     }
 
-    function parseURLs(inputString){
-      if(!inputString){
+    function parseURLs(inputString) {
+      if (!inputString) {
         return null;
       }
-      return inputString.split(',').map(function(v) { return v.trim(); }).filter(function(v) { return !!v; });
+      return inputString.split(',').map(function(v) {
+        return v.trim();
+      }).filter(function(v) {
+        return !!v;
+      });
     }
 
     function validateData() {
@@ -474,16 +477,16 @@ $(function() {
         if (err) {
           delete updated.url;
         } else {
-            updated.url = contentURL;
-          }
+          updated.url = contentURL;
+        }
       } else {
         delete updated.url;
         error.push("Content URL is required.");
       }
-      if(updated.customtoken){
+      if (updated.customtoken) {
         try {
           JSON.parse(updated.customtoken);
-        }catch(e){
+        } catch (e) {
           error.push('Could not parse Custom Token JSON.');
         }
       }
@@ -592,7 +595,8 @@ $(function() {
       }
       chrome.storage.local.remove(remove);
       chrome.storage.local.set(updated);
-      chrome.runtime.sendMessage('reload');
+      chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
+      chrome.runtime.reload();
     });
   });
 

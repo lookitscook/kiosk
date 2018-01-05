@@ -35,6 +35,7 @@
             </li>
           </ul>
         </li>
+        <li class="bold"><a href="#systemInformation" class="waves-effect waves-green">System Information</a></li>
         <li class="no-padding">
           <ul class="collapsible collapsible-accordion">
             <li class="bold"><a class="collapsible-header waves-effect waves-green">Browser</a>
@@ -112,6 +113,29 @@
 
         <div class="row">
           <div class="col s12">
+            <h2><a name="systemInformation"></a>System Information</h2>
+          </div>
+          <div class="row">
+            <div class="col s12">
+              <label class="active" for="displaySystemInfo">Display System Information</label>
+              <select id="displaySystemInfo" class="browser-default">
+                <option value="admin">In admin only</option>
+                <option value="keypress">On keypress (ctrl + i)</option>
+                <option value="always">Always on</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s12">
+              <label>Instance ID: </label> <span id="displayInstanceID"></span>
+              <br>
+              <label>Content: </label> <span id="displayContentURL"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col s12">
             <h2><a name="ui"></a>Browser</h2>
           </div>
         </div>
@@ -153,7 +177,7 @@
         <div class="row">
           <div class="col s12">
             <input type="checkbox" id="allowprint" />
-            <label class="active" for="allowprint"><a name="printing"></a>Enable Printing (CTRL+P)</label>
+            <label class="active" for="allowprint"><a name="printing"></a>Enable Printing (ctrl+p)</label>
           </div>
         </div>
         <div class="row">
@@ -181,7 +205,7 @@
             <input type="checkbox" id="local" checked/>
             <label class="active" for="local">Local Administration</label>
             <div class="row local">
-              <div class="col s12"><p>Press <strong>CTRL + A</strong> to activate after setup.</p></div>
+              <div class="col s12"><p>Press <strong>ctrl + a</strong> to activate after setup.</p></div>
             </div>
           </div>
           <div class="col s6">

@@ -28,6 +28,7 @@ $(function() {
   var clearcookies = false;
   var allowPrint = false;
   var localAdmin = false;
+  var displaySystemInfoOnKeypress = false;
   var tokens = {};
 
   init();
@@ -65,6 +66,16 @@ $(function() {
       var activeBrowserID = $('#tabs a.active').attr('href');
       $(activeBrowserID + ' webview').get(0).print();
     }
+    //show system informaton on crl+i
+    if (displaySystemInfoOnKeypress && e.which == 73 && e.ctrlKey) {
+      showSystemInformation(5000);
+    }
+  }
+
+  function showSystemInformation(duration) {
+    chrome.instanceID.getID(function(instanceID) {
+      Materialize.toast('InstanceID: ' + instanceID + '<br>Content: ' + contentURL.join(','), duration);
+    });
   }
 
   function rotateURL() {
@@ -306,6 +317,15 @@ $(function() {
 
         if (data.shownav) {
           $('body').addClass('show-nav');
+        }
+
+        if (data.displaysysteminfo) {
+          if (data.displaysysteminfo === 'always') {
+            showSystemInformation();
+          }
+          if (data.displaysysteminfo === 'keypress') {
+            displaySystemInfoOnKeypress = true;
+          }
         }
 
         if (data.local) {

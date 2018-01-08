@@ -240,7 +240,9 @@ $(function() {
       _.defaults(data, res[0], res[1]);
 
       //get tokens
-      var useTokens = false; //!!(data.url && data.url.indexOf('{') >= 0 && data.url.indexOf('}') >= 0);
+      var useTokens = (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
+        return url.indexOf('{') >= 0 && url.indexOf('}') >= 0;
+      });
       async.parallel([
         function(next) {
           if (!useTokens) {

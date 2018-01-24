@@ -243,7 +243,7 @@ $(function() {
       var useTokens = (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
         return url.indexOf('{') >= 0 && url.indexOf('}') >= 0;
       });
-      async.parallel([
+      async.series([
         function(next) {
           if (!useTokens) {
             next();
@@ -394,7 +394,7 @@ $(function() {
         }
         if (data.remoteschedule && data.remotescheduleurl) {
           schedulepollinterval = data.schedulepollinterval ? data.schedulepollinterval : DEFAULT_SCHEDULE_POLL_INTERVAL;
-          scheduleURL = tokenizeURL(data.remotescheduleurl.indexOf('?') >= 0 ? data.remotescheduleurl + '&kiosk_t=' + Date.now() : data.remotescheduleurl + '?kiosk_t=' + Date.now());
+          scheduleURL = tokenizeUrl(data.remotescheduleurl.indexOf('?') >= 0 ? data.remotescheduleurl + '&kiosk_t=' + Date.now() : data.remotescheduleurl + '?kiosk_t=' + Date.now());
           updateSchedule();
           setInterval(updateSchedule, schedulepollinterval * 60 * 1000);
           setInterval(checkSchedule, CHECK_SCHEDULE_DELAY);
@@ -419,7 +419,7 @@ $(function() {
 
         defaultURL = contentURL = Array.isArray(data.url) ? data.url.map(function(url) {
           return tokenizeUrl(url)
-        }) : [tokenizeURL(data.url)];
+        }) : [tokenizeUrl(data.url)];
         whitelist = Array.isArray(data.whitelist) ? data.whitelist : data.whitelist ? [data.whitelist] : [];
         useragent = data.useragent;
         authorization = data.authorization;

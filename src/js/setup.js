@@ -40,6 +40,9 @@ $(function() {
     if (data.rotaterate) {
       $("#rotate-rate").val(data.rotaterate);
     }
+    if (data.startupdelay) {
+      $("#startup-delay").val(data.startupdelay);
+    }
     if (data.multipleurlmode) {
       $('#multiple-url-mode').children("[value='" + data.multipleurlmode + "']").prop('selected', true);
       if (data.multipleurlmode == 'rotate') {
@@ -415,6 +418,7 @@ $(function() {
       updated.customtoken = $('#customtoken').val();
       updated.whitelist = parseURLs($('#whitelist').val());
       updated.multipleurlmode = $("#multiple-url-mode").val();
+      updated.startupdelay = parseFloat($("#startup-delay").val()) ? parseFloat($("#startup-delay").val()) : 0;
       updated.rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
       updated.host = $('#host').val();
       updated.remote = $("#remote").is(':checked');

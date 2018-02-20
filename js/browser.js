@@ -42,6 +42,7 @@ $(function(){
   var disableselection = false;
   var useragent = '';
   var authorization = '';
+  var headers = {};
   var resetcache = false;
   var partition = null;
   var clearcookies = false;
@@ -285,7 +286,7 @@ $(function(){
      defaultURL = contentURL = Array.isArray(data.url) ? data.url : [data.url];
      whitelist = Array.isArray(data.whitelist) ? data.whitelist : [data.whitelist];
      useragent = data.useragent;
-     authorization = data.authorization;
+     headers = data.headers;
      if(data.multipleurlmode == 'rotate'){
         defaultURL = contentURL[urlrotateindex];
         rotaterate = data.rotaterate ? data.rotaterate : DEFAULT_ROTATE_RATE;
@@ -534,8 +535,10 @@ $(function(){
      });
      $webview[0].request.onBeforeSendHeaders.addListener(
         function(details) {
-          if (authorization) {
-            details.requestHeaders.push({name: 'Authorization', value: authorization})
+          if (headers){
+            headers.forEach(function(header) {
+              details.requestHeaders.push(header);
+            });
           }
           return {requestHeaders: details.requestHeaders};
         },

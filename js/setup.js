@@ -96,6 +96,9 @@ $(function(){
       }));
     }
   });
+  $('#add_header').on('click', function(header) {
+    addHeader({name: '', value: ''});
+  });
 
   if(data.url) {
     var urlTags = [];
@@ -230,6 +233,11 @@ $(function(){
   if(data.servelocalport) $("#servelocalport").val(data.servelocalport);
   if(data.useragent) $('#useragent').val(data.useragent).siblings('label').addClass('active');
   if(data.authorization) $('#authorization').val(data.authorization).siblings('label').addClass('active');
+  if(data.headers){
+    data.headers.forEach(function(header){
+      addHeader(header);
+    });  
+  }
 
   $('select').material_select();
 
@@ -558,6 +566,7 @@ $(function(){
       else chrome.storage.local.remove('rotaterate');
       chrome.storage.local.set({'useragent':useragent});
       chrome.storage.local.set({'authorization':authorization});
+      chrome.storage.local.set({'headers': getHeaders()});
       chrome.storage.local.set({'sleepmode':sleepmode});
       chrome.runtime.sendMessage('reload');
     }
@@ -570,4 +579,22 @@ $(function(){
     return url.indexOf("http://") >= 0 || url.indexOf("https://") >= 0 ? null : 'Invalid content URL';
   };
 
+  function getHeaders(){
+    let headers = []
+    $(".header-element" ).each( function( index, element ){
+      let headerName = $( this ).find("#header-name").val();
+      let headerValue = $( this ).find("#header-value").val();
+      if (headerName && headerValue){
+        headers.push({name: headerName, value: headerValue});
+      }
+    });
+    return headers;
+  }
+
+  function addHeader(header){
+    $('#headers').append(`<li class="header-element">
+    <input id="header-name" value="${header.name}" class="input-field col s5" type="text" placeholder="Header name"/>
+    <input id="header-value" value="${header.value}" class="input-field col offset-s1 s5" type="text" placeholder="Value"/>
+    <br/></li>`);
+  }
 });

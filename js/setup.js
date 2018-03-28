@@ -18,17 +18,25 @@
 
 var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
 
+function validIpAddress(ipaddress) {  
+  if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
+    return true; 
+  }  
+  return false;
+}  
+
 $(function(){
   chrome.storage.local.get(null,function(data){
     chrome.system.network.getNetworkInterfaces(function(interfaces) {
 
-
   for(var i in interfaces) {
     var interface = interfaces[i];
+    if (validIpAddress(interface.address)){
     var opt = document.createElement("option");
     opt.value = interface.address;
     opt.innerText = interface.name + " - " + interface.address;
     document.getElementById("host").appendChild(opt);
+  }
   }
 
   if(data.newwindow) {
@@ -151,10 +159,10 @@ $(function(){
   if(data.shownav) {
     $("#shownav").prop("checked",true);
   }
-  if(data.remote) {
+  
     $("#remote").prop("checked",true);
     $('.remote, .settings-detail').removeClass('disabled');
-  }
+
   if(data.username) $("#username").val(data.username).siblings('label').addClass('active');
   if(data.password) {
     $("#password").val(data.password).siblings('label').addClass('active');

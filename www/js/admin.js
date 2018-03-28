@@ -16,6 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+function addHeader(header){
+  $('#headers').append(`<li class="header-element">
+  <input id="header-name" value="${header.name}" class="input-field col s5" type="text" placeholder="Header name"/>
+  <input id="header-value" value="${header.value}" class="input-field col offset-s1 s5" type="text" placeholder="Value"/>
+  <br/></li>`);
+}
+
+function getHeaders(){
+  let headers = []
+  $(".header-element" ).each( function( index, element ){
+    let headerName = $( this ).find("#header-name").val();
+    let headerValue = $( this ).find("#header-value").val();
+    if (headerName && headerValue){
+      headers.push({name: headerName, value: headerValue});
+    }
+  });
+  return headers;
+}
+
 $(function(){
   var address = location.hostname+(location.port ? ':'+location.port: '');
   var data;
@@ -32,6 +51,11 @@ $(function(){
     $('#url').val(data.url).siblings('label, i').addClass('active');
     $('#username').val(data.username).siblings('label, i').addClass('active');
     $('body').removeClass('loading');
+    if(data.headers){
+      data.headers.forEach(function(header){
+        addHeader(header);
+      });  
+    }
   });
 
   $('.tooltip').tooltip();
@@ -43,9 +67,13 @@ $(function(){
     $.ajax({
       url: "http://"+address+'/data',
       type: 'PUT',
-      data: {'restart': true},
+      data: JSON.stringify({'restart': true}),
       success: reload
     })
+  });
+
+  $('#add_header').on('click', function(header) {
+    addHeader({name: '', value: ''});
   });
 
   $('#save').click(function(e){
@@ -69,7 +97,7 @@ $(function(){
 
     if(error.length){
       for(var i = 0; i < error.length; i++){
-        toast(error[i], 4000);
+        Materialize.toast(error[i], 4000);
       }
       return false;
     }else{
@@ -80,10 +108,14 @@ $(function(){
       if(username != data.username) newData['username'] = username;
       if(password && password != data.password) newData['password'] = password;
       if(url != data.url) newData['url'] = url;
+      newData['headers'] = getHeaders();
+      console.log(JSON.stringify(newData));
       $.ajax({
         url: "http://"+address+'/data',
         type: 'PUT',
-        data: newData,
+        contentType:"application/json; charset=utf-8",
+        dataType:"json",
+        data: JSON.stringify(newData),
         success: reload
       })
     }

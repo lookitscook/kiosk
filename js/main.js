@@ -180,14 +180,12 @@ function AdminDataHandler(request) {
 var app = this;
 _.extend(AdminDataHandler.prototype, {
   put: function() {
-    var newData = this.request.bodyparams
-
+    var newData = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(this.request.body)));
     chrome.storage.local.get(null, function(data) {
-
       var saveData = {}
       var restart = false;
       for(var key in newData){
-        var value = newData[key]
+        var value = newData[key];
         if(data.hasOwnProperty(key)){
           if(key == 'url' && !Array.isArray(value)){
             value = value.split(',');

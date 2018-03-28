@@ -1,11 +1,11 @@
 {
-  "name": "Kiosk",
+  "name": "Picnic Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.14.1",
+  "version": "1.0.0",
   "author": {
-    "name": "Matt Cook",
-    "email": "matt@lookitscook.com"
+    "name": "Pablo Musumeci",
+    "email": "pablo.musumeci@teampicnic.com"
   },
   "kiosk_enabled": true,
   "offline_enabled": true,

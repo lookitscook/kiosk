@@ -19,12 +19,29 @@
 chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);
 
-var directoryServer, adminServer, restartTimeout;
+let directoryServer, adminServer, restartTimeout;
+const DEFAULT_PORT = 8080;
+
+validIpAddress = (ipaddress) => {  
+  if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
+    return true; 
+  }  
+  return false;
+}  
 
 function init() {
 
-  var win, basePath, socketInfo, data;
-  var filesMap = {};
+  let win, basePath, socketInfo, data;
+  let filesMap = {};
+  
+  chrome.system.network.getNetworkInterfaces(function(interfaces) {
+    for(let i in interfaces) {
+      let interface = interfaces[i];
+      if (validIpAddress(interface.address) && interface.name.startsWith("wl")){
+        startWebserver(interface.address, DEFAULT_PORT, 'www', {username: 'admin', password: 'admin'});
+      }
+    }
+  });
 
   /*
   LOG PERMISSION WARNINGS
@@ -79,14 +96,10 @@ function init() {
           startWebserverDirectoryEntry(host,port,entry);
         });
       }
-      if(data.host && data.port){
-        //make setup page available remotely via HTTP
-        startWebserver(data.host,data.port,'www',data);
-      }
       openWindow("windows/browser.html");
     }else{
       //need to run setup
-      openWindow("windows/setup.html");
+      openWindow("windows/landing.html");
     }
   });
 
@@ -150,6 +163,7 @@ function init() {
   function startWebserver(host,port,directory,settings){
     chrome.runtime.getPackageDirectoryEntry(function(packageDirectory){
       packageDirectory.getDirectory(directory,{create: false},function(webroot){
+        console.log("Starting WebServer on " + host + ":" + port);
         var fs = new WSC.FileSystem(webroot)
         var handlers = [['/data.*', AdminDataHandler],
                         ['.*', WSC.DirectoryEntryHandler.bind(null, fs)]]
@@ -181,26 +195,23 @@ var app = this;
 _.extend(AdminDataHandler.prototype, {
   put: function() {
     var newData = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(this.request.body)));
-    chrome.storage.local.get(null, function(data) {
       var saveData = {}
       var restart = false;
       for(var key in newData){
         var value = newData[key];
-        if(data.hasOwnProperty(key)){
-          if(key == 'url' && !Array.isArray(value)){
-            value = value.split(',');
-            restart = true;
-          }
-          data[key] = value;
-          saveData[key] = value;
+        if(key == 'url' && !Array.isArray(value)){
+          value = value.split(',');
+          restart = true;
         }
+        saveData[key] = value;
         if(key.toString() == "restart"){
           restart = true;
         }
       }
+      console.log(saveData);
       chrome.storage.local.set(saveData);
       this.setHeader('content-type','text/json')
-      var buf = new TextEncoder('utf-8').encode(JSON.stringify(data)).buffer
+      var buf = new TextEncoder('utf-8').encode(JSON.stringify(saveData)).buffer
       this.write(buf)
       this.finish()
 
@@ -221,11 +232,7 @@ _.extend(AdminDataHandler.prototype, {
         init();
       }
     });
-      }, 1000 )
-                              
-      
-    }.bind(this))
-
+      }, 1000 );
   },
   get: function() {
     chrome.storage.local.get(null, function(data) {

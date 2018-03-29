@@ -17,91 +17,116 @@
 -->
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Kiosk: Administration</title>
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
-    <link type="text/css" rel="stylesheet" href="./material-icons/material-icons.css" media="screen,projection">
-    <link type="text/css" rel="stylesheet" href="./css/materialize.min.css"  media="screen,projection"/>
-    <link type="text/css" rel="stylesheet" href="./css/shared.css"  media="screen,projection"/>
-    <script language="javascript" type="text/javascript" src="./js/jquery.min.js"></script>
-    <script language="javascript" type="text/javascript" src="./js/materialize.min.js"></script>
-    <script language="javascript" type="text/javascript" src="./js/admin.js"></script>
-  </head>
-  <body class="">
-    <nav role="navigation">
-      <div class="container">
-        <div class="nav-wrapper"><a id="logo-container" href="https://chrome.google.com/webstore/detail/kiosk/afhcomalholahplbjhnmahkoekoijban" target="_blank" class="brand-logo">Kiosk</a>
-          <ul id="nav-mobile" class="right side-nav">
-            <li><a href="#" id="logout">Log out</a></li>
-          </ul><a href="#" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
-        </div>
-      </div>
-    </nav>
+
+<head>
+  <title>Kiosk: Administration</title>
+  <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
+  <link rel="icon" href="./favicon.ico" type="image/x-icon">
+  <link type="text/css" rel="stylesheet" href="./material-icons/material-icons.css" media="screen,projection">
+  <link type="text/css" rel="stylesheet" href="./css/materialize.min.css" media="screen,projection" />
+  <link type="text/css" rel="stylesheet" href="./css/shared.css" media="screen,projection" />
+  <script language="javascript" type="text/javascript" src="./js/jquery.min.js"></script>
+  <script language="javascript" type="text/javascript" src="./js/materialize.min.js"></script>
+  <script language="javascript" type="text/javascript" src="./js/admin.js"></script>
+</head>
+
+<body class="">
+  <nav role="navigation">
     <div class="container">
-      <div id="loading" style="text-align:center;padding:4em 0 0 0;">
-        <div class="preloader-wrapper big active">
-          <div class="spinner-layer spinner-blue">
-            <div class="circle-clipper left">
-              <div class="circle"></div>
-            </div><div class="gap-patch">
-              <div class="circle"></div>
-            </div><div class="circle-clipper right">
-              <div class="circle"></div>
-            </div>
-          </div>
-        </div>
-        <h4>Loading...</h4>
-      </div>
-      <div id="settings">
-
-          <p>
-            <strong>Content:</strong><br>
-
-            <div class="row">
-              <div class="input-field col s12">
-                <input id="url" type="text">
-                <label for="url">URL (must start with http:// or https://)</label>
-              </div>
-            </div>
-
-          </p>
-          <p>
-            <strong>Remote Administration:</strong><br>
-
-            <div class="row">
-              <div class="input-field col s12">
-                <input id="username" type="text">
-                <label for="username">Username</label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="input-field col s6">
-                <input id="password" type="password">
-                <label for="password">Change Password</label>
-              </div>
-              <div class="input-field col s6">
-                <input id="confirm_password" type="password">
-                <label for="confirm_password">Confirm Password</label>
-              </div>
-            </div>
-            
-            <div class="row">
-              <div class="input-field col s12">
-              <h4>Custom headers <button class="btn waves-effect" id="add_header">Add header</button></h4>
-              <ul id="headers"></ul>
-              </div>
-            </div>
-
-          <div class="row">
-            <a class="btn waves-effect" id="save">Save</a>
-
-            <a class="btn waves-effect red tooltip" id="restart" style="float:right" data-position="left">Restart</a>
-          </div>
-
-          </p>
-
+      <div class="nav-wrapper">
+        <a id="logo-container" href="https://chrome.google.com/webstore/detail/kiosk/afhcomalholahplbjhnmahkoekoijban" target="_blank"
+          class="brand-logo">Kiosk</a>
+        <ul id="nav-mobile" class="right side-nav">
+          <li>
+            <a href="#" id="logout">Log out</a>
+          </li>
+        </ul>
+        <a href="#" data-activates="nav-mobile" class="button-collapse">
+          <i class="mdi-navigation-menu"></i>
+        </a>
       </div>
     </div>
-  </body>
+  </nav>
+  <div class="container">
+    <div id="loading" style="text-align:center;padding:4em 0 0 0;">
+      <div class="preloader-wrapper big active">
+        <div class="spinner-layer spinner-blue">
+          <div class="circle-clipper left">
+            <div class="circle"></div>
+          </div>
+          <div class="gap-patch">
+            <div class="circle"></div>
+          </div>
+          <div class="circle-clipper right">
+            <div class="circle"></div>
+          </div>
+        </div>
+      </div>
+      <h4>Loading...</h4>
+    </div>
+    <div id="settings">
+      <p>
+        <strong>Content:</strong>
+        <br>
+
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="url" type="text">
+            <label for="url">URL (must start with http:// or https://)</label>
+          </div>
+        </div>
+
+      </p>
+      <p>
+
+        <div class="row">
+          <div class="input-field col s12">
+            <h4>Custom headers
+              <button class="btn waves-effect" id="add_header">Add header</button>
+            </h4>
+            <ul id="headers"></ul>
+          </div>
+        </div>
+
+        <div class="row">
+            <div class="input-field col s12">
+              <h4>Whitelisted Picnic Domains
+                <button class="btn waves-effect" id="add_picnic_domain">Add domain</button>
+              </h4>
+              <ul id="picnic-domains"></ul>
+            </div>
+          </div>
+
+        <div class="row">
+          <div class="col s12">
+            <input type="checkbox" id="remote-schedule" />
+            <label for="remote-schedule">Remote Schedule Server</label>
+          </div>
+        </div>
+        <div class="row remote-schedule-detail disabled">
+          <div class="input-field col s12">
+            <input id="remote-schedule-url" type="text">
+            <label for="remote-schedule-url">Schedule URL (must start with http:// or https://)</label>
+          </div>
+          <div class="col input-field s2">
+            <input id="schedule-poll-interval" type="number" step="0.1" value="15">
+            <label for="schedule-poll-interval">Schedule Poll Interval</label>
+          </div>
+          <div class="col input-field s2">
+            <label>minutes</label>
+          </div>
+        </div>
+
+        <div class="row">
+          <a class="btn waves-effect" id="save">Save</a>
+
+          <a class="btn waves-effect red tooltip" id="restart" style="float:right" data-position="left">Restart</a>
+        </div>
+
+      </p>
+
+    </div>
+  </div>
+</body>
+
 </html>

@@ -17,37 +17,38 @@
 */
 
 $(function(){
-
-  var RESTART_DELAY = 1000;
-  var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
-  var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
-  var DEFAULT_ROTATE_RATE = 30; //seconds
-  var ACTIVE_EVENTS = "click mousedown mouseup mousemove touch touchstart touchend keypress keydown";
-
-  var restarting = false;
-  var reset = false;
-  var useScreensaver, screensaverTime, screensaverURL;
-  var win = window;
-  var resetTimeout, screensaverTimeout;
-  var restart;
-  var urlrotateindex = 0;
-  var rotaterate;
-  var whitelist;
-  var schedule,scheduleURL,contentURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
-  var hidegslidescontrols = false;
-  var hidecursor = false;
-  var disablecontextmenu = false;
-  var disabledrag = false;
-  var disabletouchhighlight = false;
-  var disableselection = false;
-  var useragent = '';
-  var authorization = '';
-  var headers = {};
-  var resetcache = false;
-  var partition = null;
-  var clearcookies = false;
-  var allowPrint = false;
-  var localAdmin = false;
+  let PICNIC_APIKEY_HEADER = "X-Picnic-ApiKey";
+  let RESTART_DELAY = 1000;
+  let CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
+  let DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
+  let DEFAULT_ROTATE_RATE = 30; //seconds
+  let ACTIVE_EVENTS = "click mousedown mouseup mousemove touch touchstart touchend keypress keydown";
+  let picnicDomains = ['picnic.nl', 'picnicinternational.com']; 
+  let URL_REGEX = "https?:\/\/(www\.)?.*\.";
+  let restarting = false;
+  let reset = false;
+  let useScreensaver, screensaverTime, screensaverURL;
+  let win = window;
+  let resetTimeout, screensaverTimeout;
+  let restart;
+  let urlrotateindex = 0;
+  let rotaterate;
+  let whitelist;
+  let schedule,scheduleURL,contentURL,defaultURL,currentURL,updateScheduleTimeout,checkScheduleTimeout,schedulepollinterval;
+  let hidegslidescontrols = false;
+  let hidecursor = false;
+  let disablecontextmenu = false;
+  let disabledrag = false;
+  let disabletouchhighlight = false;
+  let disableselection = false;
+  let useragent = '';
+  let authorization = '';
+  let headers = {};
+  let resetcache = false;
+  let partition = null;
+  let clearcookies = false;
+  let allowPrint = false;
+  let localAdmin = false;
 
   window.oncontextmenu = function(){return false};
   window.ondragstart = function(){return false};
@@ -287,6 +288,9 @@ $(function(){
      whitelist = Array.isArray(data.whitelist) ? data.whitelist : [data.whitelist];
      useragent = data.useragent;
      headers = data.headers;
+     if (data.picnicDomains){
+       picnicDomains = data.picnicDomains;
+     }
      if(data.multipleurlmode == 'rotate'){
         defaultURL = contentURL[urlrotateindex];
         rotaterate = data.rotaterate ? data.rotaterate : DEFAULT_ROTATE_RATE;
@@ -514,16 +518,6 @@ $(function(){
         setNavStatus();
      })
      .on('loadcommit',function(e){
-        if(e.originalEvent.isTopLevel && $webview.parent().attr('id').indexOf('screensaver') < 0){
-          var err = getDomainWhiteListError(e.originalEvent.url);
-          if(err){
-            var webview = $webview.get(0);
-            webview.stop();
-            webview.back();
-            Materialize.toast(err, 4000);
-            return;
-          }
-        }
 	      if(useragent) e.target.setUserAgentOverride(useragent);
         if(reset){
           ACTIVE_EVENTS.split(' ').forEach(function(type,i){
@@ -535,9 +529,18 @@ $(function(){
      });
      $webview[0].request.onBeforeSendHeaders.addListener(
         function(details) {
-          if (headers){
+          if (headers) {
             headers.forEach(function(header) {
-              details.requestHeaders.push(header);
+              if (header.name === PICNIC_APIKEY_HEADER) {
+                picnicDomains.forEach( picnicUrl => {
+                  if (new RegExp(URL_REGEX + picnicUrl).test(details.url)) {
+                    details.requestHeaders.push(header);
+                    return true;
+                  }
+                });
+              } else {
+                details.requestHeaders.push(header);
+              }
             });
           }
           return {requestHeaders: details.requestHeaders};

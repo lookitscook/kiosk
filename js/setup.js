@@ -168,11 +168,6 @@ $(function(){
     $("#password").val(data.password).siblings('label').addClass('active');
     $("#confirm_password").val(data.password).siblings('label').addClass('active');
   }
-  if(data.host){
-    $('#host').children("[value='"+data.host+"']").prop('selected',true);
-  }
-  if(data.port) $("#port").val(data.port);
-
   if(data.remoteschedule){
     $("#remote-schedule").prop("checked",true);
     $('.remote-schedule-detail').removeClass('disabled');

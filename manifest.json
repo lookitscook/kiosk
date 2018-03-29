@@ -2,7 +2,7 @@
   "name": "Picnic Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Pablo Musumeci",
     "email": "pablo.musumeci@teampicnic.com"
@@ -15,7 +15,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/js/jquery.min.js","js/lib/wsc-chrome.js","js/main.js"],
+      "scripts": ["www/js/jquery.min.js","js/lib/wsc-chrome.js", "js/main.js"],
       "persistent": false
     }
   },

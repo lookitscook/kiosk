@@ -45,7 +45,6 @@ function getHeaders(){
 function getPicnicDomains(){
   let domains = []
   $(".picnic-domain" ).each( function( index, element ){
-    console.log(element.value)
     let domain = element.value;
     if (domain) {
       domains.push(domain);
@@ -157,8 +156,7 @@ $(function(){
       if(url != data.url) newData['url'] = url;
       newData['headers'] = getHeaders();
       newData['picnicDomains'] = getPicnicDomains();
-
-      console.log(JSON.stringify(newData));
+      newData['restart'] = true;
       $.ajax({
         url: "http://"+address+'/data',
         type: 'PUT',

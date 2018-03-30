@@ -19,7 +19,7 @@
 chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);
 
-let directoryServer, adminServer, restartTimeout;
+let adminServer, restartTimeout;
 const DEFAULT_PORT = 8080;
 
 validIpAddress = (ipaddress) => {  
@@ -65,39 +65,8 @@ function init() {
   chrome.storage.local.get(null,function(data){
     if(('url' in data)){
       //setup has been completed
-
-      // Sleepmode may not have been selected by user in setup because it
-      // is a new config param, so assume the previous hard-coded value as
-      // default.
-      if (!data.sleepmode) {
-        chrome.storage.local.set({'sleepmode': 'display'});
-        data.sleepmode = 'display';
-      }
-      if (data.sleepmode == 'none') {
-        chrome.power.releaseKeepAwake();
-      } else {
-        chrome.power.requestKeepAwake(data.sleepmode);
-      }
-
-      if(data.servelocaldirectory && data.servelocalhost && data.servelocalport){
-        //serve files from local directory
-        chrome.fileSystem.restoreEntry(data.servelocaldirectory,function(entry){
-          //if we can't get the directory (removed drive possibly)
-          //wait 15 seconds and reload the app
-          if(!entry){
-            restartTimeout = setTimeout(function(){
-              chrome.runtime.sendMessage('reload');
-            }, 15*1000);
-            return
-          }
-
-          var host = data.servelocalhost;
-          var port = data.servelocalport;
-          startWebserverDirectoryEntry(host,port,entry);
-        });
-      }
       openWindow("windows/browser.html");
-    }else{
+    } else {
       //need to run setup
       openWindow("windows/landing.html");
     }
@@ -112,7 +81,6 @@ function init() {
          }else{
            //we're OSX/Win/*nix so `reload()` may not work if Chrome is not
            // running the background. Simply close all windows and reset.
-           if(directoryServer) directoryServer.stop();
            if(adminServer) adminServer.stop();
            var w = chrome.app.window.getAll();
            for(var i = 0; i < w.length; i++){
@@ -147,16 +115,6 @@ function init() {
         }
       });
     });
-  }
-
-  function startWebserverDirectoryEntry(host,port,entry) {
-    directoryServer = new WSC.WebApplication({host:host,
-                                              port:port,
-                                              renderIndex:true,
-                                              optRenderIndex:true,
-                                              entry:entry
-                                             })
-    directoryServer.start()
   }
 
   //directory must be a subdirectory of the package
@@ -208,7 +166,6 @@ _.extend(AdminDataHandler.prototype, {
           restart = true;
         }
       }
-      console.log(saveData);
       chrome.storage.local.set(saveData);
       this.setHeader('content-type','text/json')
       var buf = new TextEncoder('utf-8').encode(JSON.stringify(saveData)).buffer
@@ -223,7 +180,6 @@ _.extend(AdminDataHandler.prototype, {
       }else{
         //we're OSX/Win/*nix so `reload()` may not work if Chrome is not
         // running the background. Simply close all windows and reset.
-        if(directoryServer) directoryServer.stop();
         if(adminServer) adminServer.stop();
         var w = chrome.app.window.getAll();
         for(var i = 0; i < w.length; i++){

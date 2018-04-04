@@ -82,6 +82,9 @@ $(function(){
       });  
     }
 
+    $("#username").val(data.username).siblings('label').addClass('active');
+    $("#password").val(data.password).siblings('label').addClass('active');
+
     if(!data.picnicDomains){
       data.picnicDomains = DEFAULT_PICNIC_DOMAINS;
     }
@@ -126,12 +129,14 @@ $(function(){
 
   $('#save').click(function(e){
     e.preventDefault();
-    var error = [];
-    var url = $('#url').val();
-    var remoteschedule = $("#remote-schedule").is(':checked');
-    var remotescheduleurl = $("#remote-schedule-url").val();
-    var schedulepollinterval = parseFloat($('#schedule-poll-interval').val()) ? parseFloat($('#schedule-poll-interval').val()) : DEFAULT_SCHEDULE_POLL_INTERVAL;
-  
+    let error = [];
+    let url = $('#url').val();
+    let remoteschedule = $("#remote-schedule").is(':checked');
+    let remotescheduleurl = $("#remote-schedule-url").val();
+    let schedulepollinterval = parseFloat($('#schedule-poll-interval').val()) ? parseFloat($('#schedule-poll-interval').val()) : DEFAULT_SCHEDULE_POLL_INTERVAL;
+    let username = $("#username").val();
+    let password = $("#password").val();
+
     if(url && (url.indexOf("http://") >= 0 || url.indexOf("https://") >= 0 )){
       //url is valid
     }else{
@@ -157,6 +162,9 @@ $(function(){
       newData['headers'] = getHeaders();
       newData['picnicDomains'] = getPicnicDomains();
       newData['restart'] = true;
+      newData['username'] = username;
+      newData['password'] = password;
+
       $.ajax({
         url: "http://"+address+'/data',
         type: 'PUT',

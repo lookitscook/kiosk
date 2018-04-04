@@ -42,7 +42,6 @@ $(function(){
   let disabletouchhighlight = false;
   let disableselection = false;
   let useragent = '';
-  let authorization = '';
   let headers = {};
   let resetcache = false;
   let partition = null;
@@ -486,7 +485,6 @@ $(function(){
               }
             });
           }
-        console.log(details.requestHeaders);
         return { requestHeaders: details.requestHeaders };
         },
       { urls: ["<all_urls>"] },

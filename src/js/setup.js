@@ -40,6 +40,9 @@ $(function() {
     if (data.rotaterate) {
       $("#rotate-rate").val(data.rotaterate);
     }
+    if (data.startupdelay) {
+      $("#startup-delay").val(data.startupdelay);
+    }
     if (data.multipleurlmode) {
       $('#multiple-url-mode').children("[value='" + data.multipleurlmode + "']").prop('selected', true);
       if (data.multipleurlmode == 'rotate') {
@@ -359,11 +362,11 @@ $(function() {
       if (!updated) {
         return;
       }
-      var policy = encodeURIComponent(JSON.stringify(_.mapValues(updated, function(v) {
+      var policy = JSON.stringify(_.mapValues(updated, function(v) {
         return {
           "Value": v
         };
-      }), null, 2));
+      }), null, 2);
       download("kiosk-policy.json", policy);
     });
 
@@ -387,13 +390,18 @@ $(function() {
     }
 
     function download(filename, text) {
-      var element = document.createElement('a');
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + text);
-      element.setAttribute('download', filename);
-      element.style.display = 'none';
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
+      var errorHandler = function(err){
+        console.error('Error downloading file:', err);
+      };
+      chrome.fileSystem.chooseEntry({
+        type: 'saveFile',
+        suggestedName: filename
+      }, function(writableFileEntry) {
+          writableFileEntry.createWriter(function(writer) {
+            writer.onerror = errorHandler;
+            writer.write(new Blob([text], {type: 'text/plain'}));
+          }, errorHandler);
+      });
     }
 
     function parseURLs(inputString) {
@@ -415,6 +423,7 @@ $(function() {
       updated.customtoken = $('#customtoken').val();
       updated.whitelist = parseURLs($('#whitelist').val());
       updated.multipleurlmode = $("#multiple-url-mode").val();
+      updated.startupdelay = parseFloat($("#startup-delay").val()) ? parseFloat($("#startup-delay").val()) : 0;
       updated.rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
       updated.host = $('#host').val();
       updated.remote = $("#remote").is(':checked');

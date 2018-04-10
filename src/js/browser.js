@@ -13,6 +13,7 @@ $(function() {
   var resetTimeout, screensaverTimeout;
   var restart;
   var urlrotateindex = 0;
+  var startupdelay = 0;
   var rotaterate;
   var whitelist;
   var schedule, scheduleURL, contentURL, defaultURL, currentURL, updateScheduleTimeout, checkScheduleTimeout, schedulepollinterval;
@@ -222,23 +223,22 @@ $(function() {
     initEventHandlers();
 
     initModals();
-
+    var data = {};
     async.series([
       function(next) {
-        chrome.storage.managed.get(null, function(res) {
-          next(null, res);
+        chrome.storage.managed.get(null, function(managedSettings) {
+          // managed settings override local
+          _.defaults(data, managedSettings);
+          next();
         });
       },
       function(next) {
-        chrome.storage.local.get(null, function(res) {
-          next(null, res);
+        chrome.storage.local.get(null, function(localSettings) {
+          _.defaults(data, localSettings);
+          next();
         });
       }
-    ], function(err, res) {
-
-      var data = {};
-      _.defaults(data, res[0], res[1]);
-
+    ], function(err) {
       //get tokens
       var useTokens = (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
         return url.indexOf('{') >= 0 && url.indexOf('}') >= 0;

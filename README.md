@@ -2,6 +2,10 @@ This is a customer-specific branch of the [Kiosk application](https://github.com
 
 ## Changelog
 
+-v5.17.1
+  - Move startup delay earlier in process
+  - Update export to work with current Chrome version
+
 - v5.17.0
   - Add support for startup delay
 

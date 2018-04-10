@@ -223,31 +223,22 @@ $(function() {
     initEventHandlers();
 
     initModals();
-
     var data = {};
-
     async.series([
       function(next) {
-        chrome.storage.local.get(null, function(localSettings) {
-          _.defaults(data, localSettings);
-          var startupDelay = parseFloat(localSettings.startupdelay) || 0;
-          setTimeout(next, startupDelay * 1000);
+        chrome.storage.managed.get(null, function(managedSettings) {
+          // managed settings override local
+          _.defaults(data, managedSettings);
+          next();
         });
       },
       function(next) {
-        chrome.storage.managed.get(null, function(managedSettings) {
-          var localSettings = data;
-          data = {};
-          // manageed settings override local
-          _.defaults(data, managedSettings, localSettings);
-          var startupDelay = parseFloat(managedSettings.startupdelay) || 0;
-          // note it is possible to delay twice if both local and managed
-          // startup delays are set
-          setTimeout(next, startupDelay * 1000);
+        chrome.storage.local.get(null, function(localSettings) {
+          _.defaults(data, localSettings);
+          next();
         });
       }
-    ], function(err, res) {
-
+    ], function(err) {
       //get tokens
       var useTokens = (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
         return url.indexOf('{') >= 0 && url.indexOf('}') >= 0;

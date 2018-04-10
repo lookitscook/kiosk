@@ -362,11 +362,11 @@ $(function() {
       if (!updated) {
         return;
       }
-      var policy = encodeURIComponent(JSON.stringify(_.mapValues(updated, function(v) {
+      var policy = JSON.stringify(_.mapValues(updated, function(v) {
         return {
           "Value": v
         };
-      }), null, 2));
+      }), null, 2);
       download("kiosk-policy.json", policy);
     });
 
@@ -390,13 +390,18 @@ $(function() {
     }
 
     function download(filename, text) {
-      var element = document.createElement('a');
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + text);
-      element.setAttribute('download', filename);
-      element.style.display = 'none';
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
+      var errorHandler = function(err){
+        console.error('Error downloading file:', err);
+      };
+      chrome.fileSystem.chooseEntry({
+        type: 'saveFile',
+        suggestedName: filename
+      }, function(writableFileEntry) {
+          writableFileEntry.createWriter(function(writer) {
+            writer.onerror = errorHandler;
+            writer.write(new Blob([text], {type: 'text/plain'}));
+          }, errorHandler);
+      });
     }
 
     function parseURLs(inputString) {

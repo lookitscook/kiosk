@@ -1,9 +1,9 @@
 {
-  "name": "Kiosk Professional v5.17.0",
+  "name": "Kiosk Professional v5.17.1",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.17.0",
-  "version_name": "professional-5.17.0",
+  "version": "5.17.1",
+  "version_name": "professional-5.17.1",
   "description": "Launch any URL as a full-screen kiosk.",
   "author": {
     "name": "Matt Cook",
@@ -40,7 +40,7 @@
     "app.window.fullscreen",
     "app.window.fullscreen.overrideEsc",
     "gcm",
-    {"fileSystem": ["directory","retainEntries"]}
+    {"fileSystem": ["write", "directory","retainEntries"]}
   ],
   "optional_permissions": [ "audioCapture", "videoCapture" ],
   "storage": {

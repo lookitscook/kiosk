@@ -1,6 +1,11 @@
+var LICENSED = true;
 var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
 
 $(function() {
+
+  if (LICENSED) {
+    $('body').removeClass('unlicensed').addClass('licensed');
+  }
 
   function updateData(data) {
     if (data.newwindow) {
@@ -160,6 +165,10 @@ $(function() {
       });
     },
     function(next) {
+      if (!LICENSED) {
+        next(null, {});
+        return;
+      }
       chrome.storage.managed.get(null, function(res) {
         next(null, res);
       });
@@ -390,17 +399,19 @@ $(function() {
     }
 
     function download(filename, text) {
-      var errorHandler = function(err){
+      var errorHandler = function(err) {
         console.error('Error downloading file:', err);
       };
       chrome.fileSystem.chooseEntry({
         type: 'saveFile',
         suggestedName: filename
       }, function(writableFileEntry) {
-          writableFileEntry.createWriter(function(writer) {
-            writer.onerror = errorHandler;
-            writer.write(new Blob([text], {type: 'text/plain'}));
-          }, errorHandler);
+        writableFileEntry.createWriter(function(writer) {
+          writer.onerror = errorHandler;
+          writer.write(new Blob([text], {
+            type: 'text/plain'
+          }));
+        }, errorHandler);
       });
     }
 

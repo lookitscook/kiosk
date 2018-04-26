@@ -1,3 +1,5 @@
+var LICENSED = true;
+
 chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);
 
@@ -29,6 +31,10 @@ function init() {
   );*/
   async.series([
     function(next) {
+      if (!LICENSED) {
+        next();
+        return;
+      }
       chrome.storage.managed.get(null, function(managedSettings) {
         // managed settings override local
         _.defaults(data, managedSettings);
@@ -38,10 +44,10 @@ function init() {
     function(next) {
       chrome.storage.local.get(null, function(localSettings) {
         _.defaults(data, localSettings);
-        next(); 
+        next();
       });
     },
-    function(next){
+    function(next) {
       var startupDelay = parseFloat(data.startupdelay) || 0;
       setTimeout(next, startupDelay * 1000);
     }
@@ -155,7 +161,7 @@ function init() {
   }
 }
 
-function restart() {
+function restartApplication() {
   chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
   chrome.runtime.reload();
 }
@@ -200,7 +206,7 @@ _.extend(AdminDataHandler.prototype, {
       this.finish();
 
       if (restartNow) setTimeout(function() {
-        restart();
+        restartApplication();
       }, 1000);
 
 

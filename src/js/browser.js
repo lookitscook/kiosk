@@ -1,3 +1,5 @@
+var LICENSED = true;
+
 $(function() {
 
   var RESTART_DELAY = 1000;
@@ -158,7 +160,7 @@ $(function() {
     }
   }
 
-  function restart() {
+  function restartApplication() {
     chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
     chrome.runtime.reload();
   }
@@ -220,12 +222,20 @@ $(function() {
 
   function init() {
 
+    if (LICENSED) {
+      $('body').removeClass('unlicensed').addClass('licensed');
+    }
+
     initEventHandlers();
 
     initModals();
     var data = {};
     async.series([
       function(next) {
+        if (!LICENSED) {
+          next();
+          return;
+        }
         chrome.storage.managed.get(null, function(managedSettings) {
           // managed settings override local
           _.defaults(data, managedSettings);
@@ -239,10 +249,20 @@ $(function() {
         });
       }
     ], function(err) {
+
+      if (!LICENSED) {
+        //disable pro features
+        data.tokenserver = null;
+        data.customtoken = null;
+        data.remoteschedule = null;
+        data.remotescheduleurl = null;
+      }
+
       //get tokens
-      var useTokens = (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
+      var useTokens = LICENSED && (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
         return url.indexOf('{') >= 0 && url.indexOf('}') >= 0;
       });
+
       async.series([
         function(next) {
           if (!useTokens) {
@@ -386,7 +406,7 @@ $(function() {
           setInterval(function() {
             var now = moment();
             if (now.isAfter(restart)) {
-              restart();
+              restartApplication();
             }
           }, 60 * 1000);
         }
@@ -416,7 +436,7 @@ $(function() {
         if (reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
 
         defaultURL = contentURL = Array.isArray(data.url) ? data.url.map(function(url) {
-          return tokenizeUrl(url)
+          return tokenizeUrl(url);
         }) : [tokenizeUrl(data.url)];
         whitelist = Array.isArray(data.whitelist) ? data.whitelist : data.whitelist ? [data.whitelist] : [];
         useragent = data.useragent;
@@ -431,7 +451,7 @@ $(function() {
         if (resetcache) {
           setTimeout(function() {
             clearCache(function() {
-              restart();
+              restartApplication();
             });
           }, 1000);
         }

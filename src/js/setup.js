@@ -1,6 +1,11 @@
+var LICENSED = false;
 var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
 
 $(function() {
+
+  if (LICENSED) {
+    $('body').removeClass('unlicensed').addClass('licensed');
+  }
 
   function updateData(data) {
     if (data.newwindow) {
@@ -160,6 +165,15 @@ $(function() {
       });
     },
     function(next) {
+      if (!LICENSED) {
+        next(null, {});
+        return;
+      }
+      chrome.storage.managed.get(null, function(res) {
+        next(null, res);
+      });
+    },
+    function(next) {
       chrome.storage.local.get(null, function(res) {
         next(null, res);
       });
@@ -173,8 +187,8 @@ $(function() {
 
     var schema = res[0];
     var data = {};
-    _.defaults(data, res[1]);
-    var networkInterfaces = res[2];
+    _.defaults(data, res[1], res[2]);
+    var networkInterfaces = res[3];
 
     for (var i in networkInterfaces) {
       var networkInterface = networkInterfaces[i];
@@ -357,11 +371,11 @@ $(function() {
       if (!updated) {
         return;
       }
-      var policy = encodeURIComponent(JSON.stringify(_.mapValues(updated, function(v) {
+      var policy = JSON.stringify(_.mapValues(updated, function(v) {
         return {
           "Value": v
         };
-      }), null, 2));
+      }), null, 2);
       download("kiosk-policy.json", policy);
     });
 
@@ -385,13 +399,20 @@ $(function() {
     }
 
     function download(filename, text) {
-      var element = document.createElement('a');
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + text);
-      element.setAttribute('download', filename);
-      element.style.display = 'none';
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
+      var errorHandler = function(err) {
+        console.error('Error downloading file:', err);
+      };
+      chrome.fileSystem.chooseEntry({
+        type: 'saveFile',
+        suggestedName: filename
+      }, function(writableFileEntry) {
+        writableFileEntry.createWriter(function(writer) {
+          writer.onerror = errorHandler;
+          writer.write(new Blob([text], {
+            type: 'text/plain'
+          }));
+        }, errorHandler);
+      });
     }
 
     function parseURLs(inputString) {

@@ -1,3 +1,5 @@
+var LICENSED = false;
+
 chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);
 
@@ -5,7 +7,8 @@ var directoryServer, adminServer, restartTimeout;
 
 function init() {
 
-  var win, basePath, socketInfo, data;
+  var win, basePath, socketInfo;
+  var data = {};
   var filesMap = {};
 
   /*
@@ -26,22 +29,29 @@ function init() {
       console.log("PERMISSION WARNINGS",warning);
     }
   );*/
-
   async.series([
     function(next) {
-      chrome.storage.managed.get(null, function(res) {
-        next(null, res);
+      if (!LICENSED) {
+        next();
+        return;
+      }
+      chrome.storage.managed.get(null, function(managedSettings) {
+        // managed settings override local
+        _.defaults(data, managedSettings);
+        next();
       });
     },
     function(next) {
-      chrome.storage.local.get(null, function(res) {
-        next(null, res);
+      chrome.storage.local.get(null, function(localSettings) {
+        _.defaults(data, localSettings);
+        next();
       });
+    },
+    function(next) {
+      var startupDelay = parseFloat(data.startupdelay) || 0;
+      setTimeout(next, startupDelay * 1000);
     }
-  ], function(err, res) {
-
-    var data = {};
-    _.defaults(data, res[0], res[1]);
+  ], function(err) {
 
     if (('url' in data)) {
       //setup has been completed
@@ -151,7 +161,7 @@ function init() {
   }
 }
 
-function restart() {
+function restartApplication() {
   chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
   chrome.runtime.reload();
 }
@@ -196,7 +206,7 @@ _.extend(AdminDataHandler.prototype, {
       this.finish();
 
       if (restartNow) setTimeout(function() {
-        restart();
+        restartApplication();
       }, 1000);
 
 

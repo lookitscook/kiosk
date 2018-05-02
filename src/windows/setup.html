@@ -16,7 +16,7 @@
     <script language="javascript" type="text/javascript" src="../js/setup.min.js"></script></head>
     <style type="text/css">body,html{overflow:auto}</style>
   </head>
-  <body>
+  <body class="unlicensed">
     <header>
       <div class="container"><a href="https://chrome.google.com/webstore/detail/kiosk/afhcomalholahplbjhnmahkoekoijban" data-target="nav-mobile" class="button-collapse top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a></div>
       <ul id="nav-mobile" class="sidenav sidenav-fixed">
@@ -29,6 +29,8 @@
                 <ul>
                   <li class="active"><a href="#url">URL(s)</a></li>
                   <li><a href="#servelocal">Serve Local Content</a></li>
+                  <li class="pro-feature"><a href="#customtoken">Custom Tokens</a></li>
+                  <li class="pro-feature"><a href="#tokenserver">Token Service URL</a></li>
                   <li><a href="#whitelist">Domain Whitelist</a></li>
                 </ul>
               </div>
@@ -63,9 +65,19 @@
         <p class="caption">
             Multiple URLs must be seperated by a comma.
             If more than one URL is specified they can either be opened in tabs or rotated at defined rate.
-            <strong>URL must start with http:// or https://</strong>.
+            <strong>URL must start with http:// or https://</strong> <span class="pro-feature"> Tokens can be embedded in the URL and will be replaced with associated value. 
+            E.g.: 'https://www.mysite.com/content?device={instanceid}' will actually request 'https://https://www.mysite.com/content?device=12345' 
+            where '12345' is a identifier unique to this installtion of the application.</span>
           </p> 
         <div class="row">
+          <div class="col s12 pro-feature">
+              <p class="caption">
+                <strong>System Tokens:</strong>
+              </p>
+              <ul id="tokens">
+                <li>{instanceid}</li>
+              </ul>
+          </div>
           <div class="input-field col s12">
             <label class="active" for="url"><a name="url"></a>Content URL(s)</label>  
             <input id="url" type="text">
@@ -105,6 +117,14 @@
           </div>
         </div>
         <div class="row">
+          <div class="input-field col s12 pro-feature">
+            <label class="active" for="tokenserver"><a name="tokenserver"></a>Token Service URL</label>  
+            <input id="tokenserver" type="text">
+          </div>
+          <div class="input-field col s12 pro-feature">
+              <label class="active" for="customtoken"><a name="customtoken"></a>Custom Token JSON</label>  
+              <input id="customtoken" type="text">
+          </div>
           <div class="col s12">
               <label class="active" for="whitelist"><a name="whitelist"></a>Domain Whitelist. Multiple values must be seperated by a comma.</label>
               <input id="whitelist" type="text">
@@ -327,13 +347,13 @@
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row pro-feature">
           <div class="col s12">
             <input type="checkbox" id="remote-schedule" />
             <label class="active" for="remote-schedule">Remote Schedule Server</label>
           </div>
         </div>
-        <div class="row remote-schedule-detail disabled">
+        <div class="row remote-schedule-detail disabled pro-feature">
           <div class="input-field col s12">
             <input id="remote-schedule-url" type="text">
             <label class="active" for="remote-schedule-url">Schedule URL (must start with http:// or https://)</label>
@@ -358,7 +378,7 @@
         </div>
         <div class="row">
           <div class="col s5">
-            <label class="active" for="startup-delay">Statup Delay (seconds)</label>
+            <label class="active" for="startup-delay">Startup Delay (seconds)</label>
             <input id="startup-delay" type="text" value="0">
           </div>
         </div>
@@ -378,6 +398,12 @@
                 <label class="active" for="reset-cache">Clear Cache on Save</label>
               </span>
             </p>
+          </div>
+          <div class="col s12 pro-feature">
+              <p>
+                  <a href="#" class="black btn waves-effect" id="import-policy" style="margin-right:1em">Import Policy</a>
+                  <a href="#" class="black btn waves-effect" id="export-policy">Export Policy</a>
+              </p>
           </div>
         </div>
 

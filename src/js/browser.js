@@ -1,3 +1,5 @@
+var LICENSED = false;
+
 $(function() {
 
   var RESTART_DELAY = 1000;
@@ -158,7 +160,7 @@ $(function() {
     }
   }
 
-  function restart() {
+  function restartApplication() {
     chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
     chrome.runtime.reload();
   }
@@ -220,37 +222,48 @@ $(function() {
 
   function init() {
 
+    if (LICENSED) {
+      $('body').removeClass('unlicensed').addClass('licensed');
+    }
+
     initEventHandlers();
 
     initModals();
-
     var data = {};
-
     async.series([
       function(next) {
-        chrome.storage.local.get(null, function(localSettings) {
-          _.defaults(data, localSettings);
-          var startupDelay = parseFloat(localSettings.startupdelay) || 0;
-          setTimeout(next, startupDelay * 1000);
+        if (!LICENSED) {
+          next();
+          return;
+        }
+        chrome.storage.managed.get(null, function(managedSettings) {
+          // managed settings override local
+          _.defaults(data, managedSettings);
+          next();
         });
       },
       function(next) {
-        chrome.storage.managed.get(null, function(managedSettings) {
-          var localSettings = data;
-          data = {};
-          // manageed settings override local
-          _.defaults(data, managedSettings, localSettings);
-          var startupDelay = parseFloat(managedSettings.startupdelay) || 0;
-          // note it is possible to delay twice if both local and managed
-          // startup delays are set
-          setTimeout(next, startupDelay * 1000);
+        chrome.storage.local.get(null, function(localSettings) {
+          _.defaults(data, localSettings);
+          next();
         });
       }
-    ], function(err, res) {
+    ], function(err) {
+
+      if (!LICENSED) {
+        //disable pro features
+        data.tokenserver = null;
+        data.customtoken = null;
+        data.remoteschedule = null;
+        data.remotescheduleurl = null;
+      }
 
       //get tokens
-      var useTokens = false; //!!(data.url && data.url.indexOf('{') >= 0 && data.url.indexOf('}') >= 0);
-      async.parallel([
+      var useTokens = LICENSED && (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
+        return url.indexOf('{') >= 0 && url.indexOf('}') >= 0;
+      });
+
+      async.series([
         function(next) {
           if (!useTokens) {
             next();
@@ -393,13 +406,13 @@ $(function() {
           setInterval(function() {
             var now = moment();
             if (now.isAfter(restart)) {
-              restart();
+              restartApplication();
             }
           }, 60 * 1000);
         }
         if (data.remoteschedule && data.remotescheduleurl) {
           schedulepollinterval = data.schedulepollinterval ? data.schedulepollinterval : DEFAULT_SCHEDULE_POLL_INTERVAL;
-          scheduleURL = tokenizeURL(data.remotescheduleurl.indexOf('?') >= 0 ? data.remotescheduleurl + '&kiosk_t=' + Date.now() : data.remotescheduleurl + '?kiosk_t=' + Date.now());
+          scheduleURL = tokenizeUrl(data.remotescheduleurl.indexOf('?') >= 0 ? data.remotescheduleurl + '&kiosk_t=' + Date.now() : data.remotescheduleurl + '?kiosk_t=' + Date.now());
           updateSchedule();
           setInterval(updateSchedule, schedulepollinterval * 60 * 1000);
           setInterval(checkSchedule, CHECK_SCHEDULE_DELAY);
@@ -423,8 +436,8 @@ $(function() {
         if (reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
 
         defaultURL = contentURL = Array.isArray(data.url) ? data.url.map(function(url) {
-          return tokenizeUrl(url)
-        }) : [tokenizeURL(data.url)];
+          return tokenizeUrl(url);
+        }) : [tokenizeUrl(data.url)];
         whitelist = Array.isArray(data.whitelist) ? data.whitelist : data.whitelist ? [data.whitelist] : [];
         useragent = data.useragent;
         authorization = data.authorization;
@@ -438,7 +451,7 @@ $(function() {
         if (resetcache) {
           setTimeout(function() {
             clearCache(function() {
-              restart();
+              restartApplication();
             });
           }, 1000);
         }

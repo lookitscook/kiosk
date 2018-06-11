@@ -34,6 +34,9 @@ function init() {
   let win, basePath, socketInfo, data;
   let filesMap = {};
 
+  // Prevent the system from sleeping
+  chrome.power.requestKeepAwake('display');
+
   chrome.storage.local.get(null, function (data) {
 
     let username = 'admin';

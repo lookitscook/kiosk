@@ -62,6 +62,16 @@ $(function(){
   //prevent existing fullscreen on escape key press
   window.onkeydown = window.onkeyup = function (e) { if (e.keyCode == 27) { e.preventDefault(); } };
 
+  function onKeypress(e){
+    //print on ctrl+p
+    if (allowPrint && e.which == 80 && e.ctrlKey){
+      var activeBrowserID = $('#tabs a.active').attr('href');
+      $(activeBrowserID+' webview').get(0).print();
+    }
+  }
+
+  $(document).keydown(onKeypress);
+
   $('#nav .home').click(function (e) {
     if ($('#nav .home').hasClass('inactive')) {
       return;

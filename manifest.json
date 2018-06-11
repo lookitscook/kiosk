@@ -2,7 +2,7 @@
   "name": "Picnic Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "1.0.4",
+  "version": "1.0.6",
   "author": {
     "name": "Pablo Musumeci",
     "email": "pablo.musumeci@teampicnic.com"

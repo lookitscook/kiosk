@@ -4,7 +4,7 @@ html body{
 h1, h2, h3, .header{
     font-family: 'Helvetica', 'Arial', sans-serif; /* 'Bree', */
     font-weight: 100;
-    color: #45d326
+    color: #1f6b7a
 }
 
 ul.sidenav.sidenav-fixed li.logo{
@@ -31,7 +31,7 @@ nav.top-nav{
 }
 
 .sidenav .collapsible-body>ul:not(.collapsible)>li.active, .sidenav.sidenav-fixed .collapsible-body>ul:not(.collapsible)>li.active{
-    background-color: #45d326;
+    background-color: #1f6b7a;
 }
 
 .sidenav .collapsible-body>ul:not(.collapsible)>li.active, .sidenav.sidenav-fixed .collapsible-body>ul:not(.collapsible)>li.active a{
@@ -39,7 +39,7 @@ nav.top-nav{
 }
 
 .waves-effect.waves-green .waves-ripple {
-    background-color: rgba(69, 211, 38, 1.0);
+    background-color: #1f6b7a;
 }
 
 .container .row{

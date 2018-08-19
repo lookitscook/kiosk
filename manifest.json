@@ -1,9 +1,9 @@
 {
-  "name": "Kiosk Enterprise v5.18.0-dev",
+  "name": "Atlo",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.18.0",
-  "version_name": "enterprise-5.18.0-dev",
+  "version": "0.0.1",
+  "version_name": "atlo-0.0.1-dev",
   "author": {
     "name": "The Cook Company",
     "email": "support@cook.company"

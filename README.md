@@ -4,6 +4,12 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
 
 ## Changelog
 
+-v5.19.0
+  - Add optional toggle to disable iframes
+  - Add optional toggle to disable file upload fields
+  - Add optional toggle to "disable" printing
+  - Optionally open new windows in tabs
+
 - v5.18.0
   - Migrate Free application version to Enterprise code base
 

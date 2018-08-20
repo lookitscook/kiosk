@@ -468,7 +468,7 @@ $(function() {
     window.addEventListener('message', function(e) {
       var data = e.data;
       if (data.command == 'title' && data.title && data.id) {
-        $('#tabs .tab a[href="#'+ data.id+'"] .title').text(data.title);
+        $('#tabs .tab a[href="#' + data.id + '"] .title').text(data.title);
       }
       if (data.command == 'keypress' && data.event) {
         onKeypress(data.event);
@@ -671,12 +671,12 @@ $(function() {
             });
           }, 10);
         }
-        if(!allowPrint){
+        if (!allowPrint) {
           browser.insertCSS({
             code: "@media print{ body {display:none;} }"
           });
         }
-        if (disallowUpload){
+        if (disallowUpload) {
           browser.executeScript({
             code: "document.querySelectorAll('input[type=file]').forEach(function(f){ f.disabled = true });"
           });
@@ -704,7 +704,7 @@ $(function() {
         browser.focus();
       })
       .on('loadstop', function(e) {
-        if(disallowIframes){
+        if (disallowIframes) {
           e.target.executeScript({
             code: "(function () { var iframes =  document.getElementsByTagName('iframe'); for (i = 0; i < iframes.length; ++i) { iframes[i].outerHTML = ''; } })();"
           });
@@ -755,8 +755,10 @@ $(function() {
           }
 
           // open the window in a new tab if selected
-          if(newWindowMode === 'tab'){
-            var id = loadURL(e.originalEvent.targetUrl, { type: 'newwindow' });
+          if (newWindowMode === 'tab') {
+            var id = loadURL(e.originalEvent.targetUrl, {
+              type: 'newwindow'
+            });
             return;
           }
 
@@ -828,7 +830,9 @@ $(function() {
     }
     if (alsoLoadScreensaver && screensaverURL) {
       $('#screensaver .browser').remove();
-      loadURL(screensaverURL, { type: 'screensaver' });
+      loadURL(screensaverURL, {
+        type: 'screensaver'
+      });
     }
     if (!currentURL) return;
     if (!Array.isArray(currentURL)) currentURL = [currentURL];
@@ -837,71 +841,71 @@ $(function() {
     currentURL.forEach(loadURL);
   }
 
-  function updateTabs(selectId){
+  function updateTabs(selectId) {
     var $tabs = $('#tabs > ul.tabs');
     var numTabs = $tabs.children('.tab').length;
     var colClass = 's1';
-      switch (numTabs) {
-        case 1:
-          colClass = 's12';
-          break;
-        case 2:
-          colClass = 's6';
-          break;
-        case 3:
-          colClass = 's4';
-          break;
-        case 4:
-          colClass = 's3';
-          break;
-        case 5:
-          colClass = 's2';
-          break;
-        case 6:
-          colClass = 's2';
-          break;
+    switch (numTabs) {
+      case 1:
+        colClass = 's12';
+        break;
+      case 2:
+        colClass = 's6';
+        break;
+      case 3:
+        colClass = 's4';
+        break;
+      case 4:
+        colClass = 's3';
+        break;
+      case 5:
+        colClass = 's2';
+        break;
+      case 6:
+        colClass = 's2';
+        break;
+    }
+    $tabs.children().removeAttr('style');
+    $('#content').children().removeAttr('style');
+    $tabs.children('.tab').attr('class', 'tab col ' + colClass);
+    if (numTabs > 1) {
+      $('body').addClass('tabbed');
+    } else {
+      $('body').removeClass('tabbed');
+    }
+    if (numTabs > 12) {
+      $tabs.addClass('scroll');
+    } else {
+      $tabs.removeClass('scroll');
+    }
+    if (showNav || $tabs.children('.tab > .newwindow').length) {
+      $('body').addClass('show-nav');
+    } else {
+      $('body').removeClass('show-nav');
+    }
+    if (!$tabs.find('.active').length) {
+      $tabs.first('li > a').addClass('active');
+    }
+    $tabs.tabs({
+      onShow: function(tab) {
+        setNavStatus();
       }
-      $tabs.children().removeAttr('style');
-      $('#content').children().removeAttr('style');
-      $tabs.children('.tab').attr('class', 'tab col ' + colClass);
-      if (numTabs > 1) {
-        $('body').addClass('tabbed');
-      } else {
-        $('body').removeClass('tabbed');
-      }
-      if (numTabs > 12) {
-        $tabs.addClass('scroll');
-      } else {
-        $tabs.removeClass('scroll');
-      }
-      if(showNav || $tabs.children('.tab > .newwindow').length){
-        $('body').addClass('show-nav');
-      }else{
-        $('body').removeClass('show-nav');
-      }
-      if(!$tabs.find('.active').length){
-        $tabs.first('li > a').addClass('active');
-      }
-      $tabs.tabs({
-        onShow: function(tab) {
-          setNavStatus();
-        }
-      });
-      if(selectId){
-        $tabs.find('.active').removeClass('active');
-        $tabs.tabs('select_tab', selectId);
-      }
+    });
+    if (selectId) {
+      $tabs.find('.active').removeClass('active');
+      $tabs.tabs('select_tab', selectId);
+    }
   }
 
-  function closeTab(e){
+  function closeTab(e) {
     var id = $(e.target).parent().attr('href').substring(1);
-    $('#'+id+'.browser').remove();
+    $('#' + id + '.browser').remove();
     $(e.target).parents('.tab').remove();
     updateTabs();
   }
 
   function loadURL(url, options) {
-    
+
     var type = (options && options.type) || 'content';
     var isScreensaver = (type === 'screensaver');
     var isNewWindow = (type === 'newwindow');
@@ -912,16 +916,16 @@ $(function() {
     var id = isScreensaver ? "screensaver" : ('browser' + (++numTabs));
     var $webviewContainer = $('<div id="' + id + '" class="browser" style="display: none"/>');
     if (!isScreensaver) {
-       var $tab = $('<li class="tab"><a class="content type-' + type + '" href="#' + id + '"><span class="title">' + url + '</span></a></li>');
-       // allow closing of new window pop-ups
-       if(isNewWindow){
+      var $tab = $('<li class="tab"><a class="content type-' + type + '" href="#' + id + '"><span class="title">' + url + '</span></a></li>');
+      // allow closing of new window pop-ups
+      if (isNewWindow) {
         var $close = $('<i class="material-icons close">close</i>');
         $tab.children('a').append($close);
         $close.click(closeTab);
-       }
-       $tab.appendTo($tabs);
+      }
+      $tab.appendTo($tabs);
     }
-    
+
     // add the associated webview
     $webviewContainer.appendTo(isScreensaver ? '#screensaver' : '#content');
     var $webview = $('<webview />');

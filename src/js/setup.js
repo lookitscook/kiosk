@@ -534,7 +534,7 @@ $(function() {
         delete updated.url;
         error.push("Content URL is required.");
       }
-      if(updated.newwindowmode === 'tab' && updated.multipleurlmode !== 'tabs'){
+      if (updated.newwindowmode === 'tab' && updated.multipleurlmode !== 'tabs') {
         delete updated.newwindowmode;
         error.push('Tabbed mode for new windows requires tabs mode for multiple URLs')
       }

@@ -468,7 +468,7 @@ $(function() {
     window.addEventListener('message', function(e) {
       var data = e.data;
       if (data.command == 'title' && data.title && data.id) {
-        $('#tabs .tab a[href="#'+ data.id+'"]').text(data.title);
+        $('#tabs .tab a[href="#'+ data.id+'"] .title').text(data.title);
       }
       if (data.command == 'keypress' && data.event) {
         onKeypress(data.event);
@@ -888,6 +888,7 @@ $(function() {
         }
       });
       if(selectId){
+        $tabs.find('.active').removeClass('active');
         $tabs.tabs('select_tab', selectId);
       }
   }
@@ -902,8 +903,8 @@ $(function() {
   function loadURL(url, options) {
     
     var type = (options && options.type) || 'content';
-    var isScreensaver = type === 'screensaver';
-    var isNewWindow = type === 'newwindow';
+    var isScreensaver = (type === 'screensaver');
+    var isNewWindow = (type === 'newwindow');
 
     // add a tab, if not the screensaver
     var $tabs = $('#tabs > ul.tabs');
@@ -911,7 +912,7 @@ $(function() {
     var id = isScreensaver ? "screensaver" : ('browser' + (++numTabs));
     var $webviewContainer = $('<div id="' + id + '" class="browser" style="display: none"/>');
     if (!isScreensaver) {
-       var $tab = $('<li class="tab"><a class="content type-' + type + '" href="#' + id + '">' + url + '</a></li>');
+       var $tab = $('<li class="tab"><a class="content type-' + type + '" href="#' + id + '"><span class="title">' + url + '</span></a></li>');
        // allow closing of new window pop-ups
        if(isNewWindow){
         var $close = $('<i class="material-icons close">close</i>');

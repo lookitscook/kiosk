@@ -193,11 +193,26 @@
             <input type="checkbox" id="hidegslidescontrols" />
             <label class="active" for="hidegslidescontrols">Hide Google Slides Controls</label>
           </div>
+          <div class="col s6">
+              <input type="checkbox" id="allowprint" />
+              <label class="active" for="allowprint"><a name="printing"></a>Enable Printing (ctrl+p)</label>
+          </div>
+          <div class="col s6">
+            <input type="checkbox" id="disallowupload" />
+            <label class="active" for="disallowupload">Disable File Upload</label>
+          </div>
+          <div class="col s6">
+              <input type="checkbox" id="disallowiframes" />
+              <label class="active" for="disallowiframes">Disable Iframes</label>
+            </div>
         </div>
         <div class="row">
           <div class="col s12">
-            <input type="checkbox" id="allowprint" />
-            <label class="active" for="allowprint"><a name="printing"></a>Enable Printing (ctrl+p)</label>
+              <label class="active" for="newwindow-mode">New Window Mode</label>
+              <select id="newwindow-mode">
+                  <option value="modal">Modal Window</option>
+                  <option value="tab">New Tab</option>
+              </select>
           </div>
         </div>
         <div class="row">

@@ -11,6 +11,13 @@ $(function() {
     if (data.newwindow) {
       $("#newwindow").prop("checked", true);
     }
+    if (data.disallowupload) {
+      $("#disallowupload").prop("checked", true);
+    }
+
+    if (data.disallowiframes) {
+      $("#disallowiframes").prop("checked", true);
+    }
     if (data.url) {
       var urls = [];
       if (Array.isArray(data.url)) {
@@ -53,6 +60,9 @@ $(function() {
       if (data.multipleurlmode == 'rotate') {
         $('.rotate-rate').removeClass('disabled');
       }
+    }
+    if (data.newwindowmode) {
+      $('#newwindow-mode').children("[value='" + data.newwindowmode + "']").prop('selected', true);
     }
     if (data.allowprint) {
       $("#allowprint").prop("checked", true);
@@ -433,7 +443,8 @@ $(function() {
       updated.tokenserver = $('#tokenserver').val();
       updated.customtoken = $('#customtoken').val();
       updated.whitelist = parseURLs($('#whitelist').val());
-      updated.multipleurlmode = $("#multiple-url-mode").val();
+      updated.multipleurlmode = $("#multiple-url-mode").val() || 'tabs';
+      updated.newwindowmode = $("#newwindow-mode").val();
       updated.startupdelay = parseFloat($("#startup-delay").val()) ? parseFloat($("#startup-delay").val()) : 0;
       updated.rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
       updated.host = $('#host').val();
@@ -457,6 +468,8 @@ $(function() {
       updated.disabletouchhighlight = $("#disabletouchhighlight").is(':checked');
       updated.disableselection = $("#disableselection").is(':checked');
       updated.newwindow = $("#newwindow").is(':checked');
+      updated.disallowupload = $("#disallowupload").is(':checked');
+      updated.disallowiframes = $("#disallowiframes").is(':checked');
       updated.useragent = $('#useragent').val();
       updated.authorization = $('#authorization').val();
       updated.username = $("#username").val();
@@ -521,6 +534,11 @@ $(function() {
         delete updated.url;
         error.push("Content URL is required.");
       }
+      if(updated.newwindowmode === 'tab' && updated.multipleurlmode !== 'tabs'){
+        delete updated.newwindowmode;
+        error.push('Tabbed mode for new windows requires tabs mode for multiple URLs')
+      }
+
       if (updated.customtoken) {
         try {
           JSON.parse(updated.customtoken);

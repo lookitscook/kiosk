@@ -15,10 +15,9 @@ $(function() {
   var resetTimeout, screensaverTimeout;
   var restart;
   var urlrotateindex = 0;
-  var startupdelay = 0;
   var rotaterate;
   var whitelist;
-  var schedule, scheduleURL, contentURL, defaultURL, currentURL, updateScheduleTimeout, checkScheduleTimeout, schedulepollinterval;
+  var schedule, scheduleURL, contentURL, defaultURL, currentURL, schedulepollinterval;
   var hidegslidescontrols = false;
   var hidecursor = false;
   var disablecontextmenu = false;
@@ -30,9 +29,13 @@ $(function() {
   var resetcache = false;
   var clearcookies = false;
   var allowPrint = false;
+  var disallowUpload = false;
+  var disallowIframes = false;
   var localAdmin = false;
+  var showNav = false;
   var displaySystemInfoOnKeypress = false;
   var tokens = {};
+  var allowNewWindow, newWindowMode;
 
   init();
 
@@ -336,8 +339,10 @@ $(function() {
       ], function(err, res) {
 
         allowPrint = !!data.allowprint;
-
-        if (data.shownav) {
+        disallowUpload = !!data.disallowupload;
+        disallowIframes = !!data.disallowiframes;
+        showNav = !!data.shownav;
+        if (showNav) {
           $('body').addClass('show-nav');
         }
 
@@ -425,7 +430,8 @@ $(function() {
         disabletouchhighlight = data.disabletouchhighlight ? true : false;
         disableselection = data.disableselection ? true : false;
         resetcache = data.resetcache ? true : false;
-        allownewwindow = data.newwindow ? true : false;
+        allowNewWindow = data.newwindow ? true : false;
+        newWindowMode = data.newwindowmode;
 
         reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
         screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
@@ -462,7 +468,7 @@ $(function() {
     window.addEventListener('message', function(e) {
       var data = e.data;
       if (data.command == 'title' && data.title && data.id) {
-        $('#tabs .tab.' + data.id + ' a').text(data.title);
+        $('#tabs .tab a[href="#'+ data.id+'"]').text(data.title);
       }
       if (data.command == 'keypress' && data.event) {
         onKeypress(data.event);
@@ -577,7 +583,7 @@ $(function() {
     } else {
       $('#nav .home').removeClass('inactive');
     }
-    if ($webview.get(0).canGoBack()) {
+    if ($webview.length && $webview.get(0).canGoBack()) {
       $('#nav .back').removeClass('inactive');
     } else {
       $('#nav .back').addClass('inactive');
@@ -665,6 +671,16 @@ $(function() {
             });
           }, 10);
         }
+        if(!allowPrint){
+          browser.insertCSS({
+            code: "@media print{ body {display:none;} }"
+          });
+        }
+        if (disallowUpload){
+          browser.executeScript({
+            code: "document.querySelectorAll('input[type=file]').forEach(function(f){ f.disabled = true });"
+          });
+        }
         if (hidecursor)
           browser.insertCSS({
             code: "*{cursor:none;}"
@@ -688,6 +704,11 @@ $(function() {
         browser.focus();
       })
       .on('loadstop', function(e) {
+        if(disallowIframes){
+          e.target.executeScript({
+            code: "(function () { var iframes =  document.getElementsByTagName('iframe'); for (i = 0; i < iframes.length; ++i) { iframes[i].outerHTML = ''; } })();"
+          });
+        }
         setNavStatus();
       })
       .on('loadcommit', function(e) {
@@ -724,13 +745,22 @@ $(function() {
       }, {
         urls: ["<all_urls>"]
       }, ["blocking", "requestHeaders"]);
-    if (allownewwindow) {
+    if (allowNewWindow) {
       $webview.on('newwindow', function(e) {
+          // check if the pop-up URL is allowed
           var err = getDomainWhiteListError(e.originalEvent.targetUrl);
           if (err) {
             Materialize.toast(err, 4000);
             return;
           }
+
+          // open the window in a new tab if selected
+          if(newWindowMode === 'tab'){
+            var id = loadURL(e.originalEvent.targetUrl, { type: 'newwindow' });
+            return;
+          }
+
+          //otherwise open in a modal, by default
           $('#newWindow webview').remove();
           var $newWebview = $('<webview/>');
           initWebview($newWebview);
@@ -798,60 +828,100 @@ $(function() {
     }
     if (alsoLoadScreensaver && screensaverURL) {
       $('#screensaver .browser').remove();
-      loadURL(screensaverURL, 0, null, true);
+      loadURL(screensaverURL, { type: 'screensaver' });
     }
     if (!currentURL) return;
     if (!Array.isArray(currentURL)) currentURL = [currentURL];
     $('#content .browser').remove();
     $('#tabs .tab').remove();
-    if (Array.isArray(currentURL) && currentURL.length > 1) {
-      $('body').addClass('tabbed');
-    } else {
-      $('body').removeClass('tabbed');
-    }
-    var colClass = 's1';
-    switch (currentURL.length) {
-      case 1:
-        colClass = 's12';
-        break;
-      case 2:
-        colClass = 's6';
-        break;
-      case 3:
-        colClass = 's4';
-        break;
-      case 4:
-        colClass = 's3';
-        break;
-      case 5:
-        colClass = 's2';
-        break;
-      case 6:
-        colClass = 's2';
-        break;
-    }
-    for (var i = 0; i < currentURL.length; i++) {
-      loadURL(currentURL[i], i, colClass);
-    }
-    var $tabs = $('ul.tabs');
-    if (currentURL.length > 12) {
-      $tabs.addClass('scroll');
-    } else {
-      $tabs.removeClass('scroll');
-    }
-    $tabs.tabs({
-      onShow: function(tab) {
-        setNavStatus();
-      }
-    });
+    currentURL.forEach(loadURL);
   }
 
-  function loadURL(url, i, colClass, isScreensaver) {
-    var id = (isScreensaver ? "screensaver" : "browser") + i;
+  function updateTabs(selectId){
+    var $tabs = $('#tabs > ul.tabs');
+    var numTabs = $tabs.children('.tab').length;
+    var colClass = 's1';
+      switch (numTabs) {
+        case 1:
+          colClass = 's12';
+          break;
+        case 2:
+          colClass = 's6';
+          break;
+        case 3:
+          colClass = 's4';
+          break;
+        case 4:
+          colClass = 's3';
+          break;
+        case 5:
+          colClass = 's2';
+          break;
+        case 6:
+          colClass = 's2';
+          break;
+      }
+      $tabs.children().removeAttr('style');
+      $('#content').children().removeAttr('style');
+      $tabs.children('.tab').attr('class', 'tab col ' + colClass);
+      if (numTabs > 1) {
+        $('body').addClass('tabbed');
+      } else {
+        $('body').removeClass('tabbed');
+      }
+      if (numTabs > 12) {
+        $tabs.addClass('scroll');
+      } else {
+        $tabs.removeClass('scroll');
+      }
+      if(showNav || $tabs.children('.tab > .newwindow').length){
+        $('body').addClass('show-nav');
+      }else{
+        $('body').removeClass('show-nav');
+      }
+      if(!$tabs.find('.active').length){
+        $tabs.first('li > a').addClass('active');
+      }
+      $tabs.tabs({
+        onShow: function(tab) {
+          setNavStatus();
+        }
+      });
+      if(selectId){
+        $tabs.tabs('select_tab', selectId);
+      }
+  }
+
+  function closeTab(e){
+    var id = $(e.target).parent().attr('href').substring(1);
+    $('#'+id+'.browser').remove();
+    $(e.target).parents('.tab').remove();
+    updateTabs();
+  }
+
+  function loadURL(url, options) {
+    
+    var type = (options && options.type) || 'content';
+    var isScreensaver = type === 'screensaver';
+    var isNewWindow = type === 'newwindow';
+
+    // add a tab, if not the screensaver
+    var $tabs = $('#tabs > ul.tabs');
+    var numTabs = $tabs.children('.tab').length;
+    var id = isScreensaver ? "screensaver" : ('browser' + (++numTabs));
+    var $webviewContainer = $('<div id="' + id + '" class="browser" style="display: none"/>');
     if (!isScreensaver) {
-      var $tab = $('<li class="tab col ' + colClass + ' ' + id + '"><a href="#' + id + '">' + url + '</a></li>').appendTo('#tabs .tabs');
+       var $tab = $('<li class="tab"><a class="content type-' + type + '" href="#' + id + '">' + url + '</a></li>');
+       // allow closing of new window pop-ups
+       if(isNewWindow){
+        var $close = $('<i class="material-icons close">close</i>');
+        $tab.children('a').append($close);
+        $close.click(closeTab);
+       }
+       $tab.appendTo($tabs);
     }
-    var $webviewContainer = $('<div id="' + id + '" class="browser"/>');
+    
+    // add the associated webview
     $webviewContainer.appendTo(isScreensaver ? '#screensaver' : '#content');
     var $webview = $('<webview />');
     initWebview($webview);
@@ -860,6 +930,9 @@ $(function() {
       .data('src', url)
       .attr('src', url)
       .appendTo($webviewContainer);
+
+    updateTabs(isNewWindow ? id : null);
+    return id;
   }
 
   function clearCache(cb) {

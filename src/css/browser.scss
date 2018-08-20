@@ -117,13 +117,21 @@ body.show-nav #nav{
 }
 .tabs .tab{
   float:none;
+  position:relative;
 }
 .tabs .tab a{
     color:rgba(255,255,255,0.7);
 }
+
+.tabs .tab .close{
+  position: absolute;
+  right: 0.5em;
+  top: 0.5em;
+}
+
 .tabs .tab a.active, .tabs .tab a:hover{
     color:rgba(255,255,255,1.0);
 }
-.tabs .indicator {
-   background-color: rgb(255,255,255) !important;
-}
+
+.tabs .indicator { display: none; }
+.tabs .tab a.active { border-bottom: 2px solid #fff; }

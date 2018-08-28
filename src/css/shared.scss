@@ -8,19 +8,6 @@
   display:none;
   visibility:hidden;
 }
-
-#loading{
-  display:none;
-  visibility:hidden;
-}
-body.loading #loading{
-  display:block;
-  visibility:visible;
-}
-body.loading #settings{
-  display:none;
-  visibility:hidden;
-}
 nav{
   background-color:#45d326;
 }

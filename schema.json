@@ -36,21 +36,6 @@
       "description": "",
       "type": "boolean"
     },
-    "remote": {
-      "title": "",
-      "description": "",
-      "type": "boolean"
-    },
-    "host": {
-      "title": "",
-      "description": "",
-      "type": "string"
-    },
-    "port": {
-      "title": "",
-      "description": "",
-      "type": "number"
-    },
     "username": {
       "title": "",
       "description": "",

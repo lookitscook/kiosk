@@ -80,10 +80,6 @@ $(function() {
     if (data.showbattery) {
       $("#showbattery").prop("checked", true);
     }
-    if (data.remote) {
-      $("#remote").prop("checked", true);
-      $('.remote, .settings-detail').removeClass('disabled');
-    }
     if (data.username) $("#username").val(data.username);
     if (data.password) {
       $("#password").val(data.password);
@@ -92,10 +88,6 @@ $(function() {
     if (data.displaysysteminfo) {
       $('#displaySystemInfo').children("[value='" + data.displaysysteminfo + "']").prop('selected', true);
     }
-    if (data.host) {
-      $('#host').children("[value='" + data.host + "']").prop('selected', true);
-    }
-    if (data.port) $("#port").val(data.port);
 
     if (data.remoteschedule) {
       $("#remote-schedule").prop("checked", true);
@@ -191,26 +183,11 @@ $(function() {
         next(null, res);
       });
     },
-    function(next) {
-      chrome.system.network.getNetworkInterfaces(function(res) {
-        next(null, res);
-      });
-    },
   ], function(err, res) {
 
     var schema = res[0];
     var data = {};
     _.defaults(data, res[1], res[2]);
-    var networkInterfaces = res[3];
-
-    for (var i in networkInterfaces) {
-      var networkInterface = networkInterfaces[i];
-      var opt = document.createElement("option");
-      opt.value = networkInterface.address;
-      opt.innerText = networkInterface.name + " - " + networkInterface.address;
-      document.getElementById("host").appendChild(opt);
-      $('#tokens').append('<li>{' + networkInterface.name.toLowerCase() + '.ipaddress.' + (networkInterface.address.indexOf(':') >= 0 ? 'ipv6' : 'ipv4') + '}</li>');
-    }
 
     function toggleMultipleMode(urls) {
       if (urls.length == 2) {
@@ -320,22 +297,10 @@ $(function() {
     $("#local").on('change', function() {
       if ($("#local").is(':checked')) {
         $('.local').hide().removeClass('disabled').slideDown();
-        if (!$("#remote").is(':checked')) $('.settings-detail').hide().removeClass('disabled').slideDown();
       } else {
         $('.local').slideUp();
-        if (!$("#remote").is(':checked')) $('.settings-detail').slideUp();
       }
     });
-    $("#remote").on('change', function() {
-      if ($("#remote").is(':checked')) {
-        $('.remote').hide().removeClass('disabled').slideDown();
-        if (!$("#local").is(':checked')) $('.settings-detail').hide().removeClass('disabled').slideDown();
-      } else {
-        $('.remote').slideUp();
-        if (!$("#local").is(':checked')) $('.settings-detail').slideUp();
-      }
-    });
-
     $("#remote-schedule").on('change', function() {
       if ($("#remote-schedule").is(':checked')) {
         $('.remote-schedule-detail').hide().removeClass('disabled').slideDown();
@@ -450,16 +415,12 @@ $(function() {
       updated.newwindowmode = $("#newwindow-mode").val();
       updated.startupdelay = parseFloat($("#startup-delay").val()) ? parseFloat($("#startup-delay").val()) : 0;
       updated.rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
-      updated.host = $('#host').val();
-      updated.remote = $("#remote").is(':checked');
       updated.displaysysteminfo = $('#displaySystemInfo').val();
       updated.allowprint = $("#allowprint").is(':checked');
       updated.hidegslidescontrols = $("#hidegslidescontrols").is(':checked');
       updated.local = $("#local").is(':checked');
       updated.restart = $("#restart").is(':checked');
       updated.restartday = $('#restartday').val();
-      updated.port = parseInt($('#port').val());
-      updated.port = updated.port < 0 ? 0 : updated.port;
       updated.reset = $("#reset").is(':checked');
       updated.clearcookiesreset = $('#clear-cookies-reset').is(':checked') || $('#screensaver-reset').is(':checked');
       var useScreensaver = $('#use-screensaver').is(':checked');
@@ -567,7 +528,7 @@ $(function() {
       } else {
         delete updated.whitelist;
       }
-      if ((updated.remote || updated.local)) {
+      if (updated.local) {
         if (!updated.username) {
           error.push("Username is required.");
         }
@@ -576,22 +537,7 @@ $(function() {
         } else if (updated.password != passwordConfirm) {
           error.push("Passwords must match.");
         }
-        if (updated.remote) {
-          if (!updated.port) {
-            error.push("Port is required.");
-          } else if (updated.port < 1024) {
-            error.push("Remote admin. port must be above 1024");
-          }
-          if (!updated.host) {
-            error.push("Host is required.");
-          }
-        } else {
-          delete updated.port;
-          delete updated.host;
-        }
       } else {
-        delete updated.port;
-        delete updated.host;
         delete updated.username;
         delete updated.password;
       }

@@ -4,7 +4,8 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
 
 ## Changelog
 
--v5.19.0
+-v6.0.0
+  - BREAKING CHANGE: Removed support for remote admin
   - New feature: disable iframes
   - New feature: disable file upload fields
   - New feature: "disable" printing

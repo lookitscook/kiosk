@@ -228,41 +228,41 @@ $(function() {
   function updateBatteryUI(battery) {
     var text = Math.floor(battery.level * 100) + '%';
     var icon = 'battery_';
-    if(battery.charging){
+    if (battery.charging) {
       icon += 'charging_'
     }
     var level = Math.ceil(battery.level * 10) * 10;
-    if(level = 100){
+    if (level = 100) {
       icon += 'full';
-    }else if(level === 40){
-      if(battery.level >= 0.375){
+    } else if (level === 40) {
+      if (battery.level >= 0.375) {
         icon += '50';
-      }else{
+      } else {
         icon += '30';
       }
-    }else if(level === 70){
-      if(battery.level >= 0.675){
+    } else if (level === 70) {
+      if (battery.level >= 0.675) {
         icon += '80';
-      }else{
+      } else {
         icon += '50';
       }
-    }else if(level < 10){
-      if(battery.charging){
+    } else if (level < 10) {
+      if (battery.charging) {
         icon += '20'
-      }else{
+      } else {
         icon += 'alert'
       }
-    }else{
+    } else {
       icon += level;
     }
     $('#battery-status .text').text(text);
     $('#battery-status i').text(icon);
   }
-  
+
   function monitorBattery(battery) {
     // Update the initial UI.
     updateBatteryUI(battery);
-  
+
     // Monitor for futher updates.
     battery.addEventListener('levelchange',
       updateBatteryUI.bind(null, battery));
@@ -396,15 +396,15 @@ $(function() {
         showBattery = !!data.showbattery;
         showTopBar = showNav || showBattery;
 
-        if(showTopBar){
+        if (showTopBar) {
           $('body').addClass('show-top-bar');
         }
 
-        if(showBattery){
-          if('getBattery' in navigator){
+        if (showBattery) {
+          if ('getBattery' in navigator) {
             $('body').addClass('show-battery');
             navigator.getBattery().then(monitorBattery);
-          }else{
+          } else {
             console.error('getBattery not found in navigator');
           }
         }

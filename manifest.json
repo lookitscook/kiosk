@@ -1,9 +1,9 @@
 {
-  "name": "Kiosk Enterprise v5.19.0-dev",
+  "name": "Kiosk Enterprise",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.19.0",
-  "version_name": "enterprise-5.19.0-dev",
+  "version": "6.0.0",
+  "version_name": "enterprise-6.0.0",
   "author": {
     "name": "The Cook Company",
     "email": "support@cook.company"
@@ -19,7 +19,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/js/async.min.js","www/js/jquery.min.js","www/js/lodash.min.js","js/lib/wsc-chrome.js","js/main.min.js"],
+      "scripts": ["js/async.min.js","js/jquery.min.js","js/lodash.min.js","js/lib/wsc-chrome.js","js/main.min.js"],
       "persistent": false
     }
   },

@@ -2,8 +2,8 @@
   "name": "ATLO",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "0.0.1",
-  "version_name": "atlo-0.0.1-dev",
+  "version": "0.0.2",
+  "version_name": "atlo-0.0.2",
   "author": {
     "name": "The Cook Company",
     "email": "support@cook.company"

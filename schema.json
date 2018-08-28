@@ -6,6 +6,11 @@
       "description": "",
       "type": "boolean"
    },
+   "showbattery": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+   },
    "allowprint": {
       "title": "",
       "description": "",

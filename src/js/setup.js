@@ -77,6 +77,9 @@ $(function() {
     if (data.shownav) {
       $("#shownav").prop("checked", true);
     }
+    if (data.showbattery) {
+      $("#showbattery").prop("checked", true);
+    }
     if (data.remote) {
       $("#remote").prop("checked", true);
       $('.remote, .settings-detail').removeClass('disabled');
@@ -481,6 +484,7 @@ $(function() {
       updated.sleepmode = $("#sleep-mode").val();
       updated.resetcache = $('#reset-cache').is(':checked');
       updated.shownav = $('#shownav').is(':checked');
+      updated.showbattery = $('#showbattery').is(':checked');
 
       var servelocal = $("#servelocal").is(':checked');
       updated.servelocaldirectory = $('#servelocaldirectory').data('directory');

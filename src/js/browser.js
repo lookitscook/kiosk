@@ -33,6 +33,8 @@ $(function() {
   var disallowIframes = false;
   var localAdmin = false;
   var showNav = false;
+  var showBattery = false;
+  var showTopBar = false;
   var displaySystemInfoOnKeypress = false;
   var tokens = {};
   var allowNewWindow, newWindowMode;
@@ -223,6 +225,55 @@ $(function() {
     });
   }
 
+  function updateBatteryUI(battery) {
+    var text = Math.floor(battery.level * 100) + '%';
+    var icon = 'battery_';
+    if(battery.charging){
+      icon += 'charging_'
+    }
+    var level = Math.ceil(battery.level * 10) * 10;
+    if(level = 100){
+      icon += 'full';
+    }else if(level === 40){
+      if(battery.level >= 0.375){
+        icon += '50';
+      }else{
+        icon += '30';
+      }
+    }else if(level === 70){
+      if(battery.level >= 0.675){
+        icon += '80';
+      }else{
+        icon += '50';
+      }
+    }else if(level < 10){
+      if(battery.charging){
+        icon += '20'
+      }else{
+        icon += 'alert'
+      }
+    }else{
+      icon += level;
+    }
+    $('#battery-status .text').text(text);
+    $('#battery-status i').text(icon);
+  }
+  
+  function monitorBattery(battery) {
+    // Update the initial UI.
+    updateBatteryUI(battery);
+  
+    // Monitor for futher updates.
+    battery.addEventListener('levelchange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('chargingchange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('dischargingtimechange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('chargingtimechange',
+      updateBatteryUI.bind(null, battery));
+  }
+
   function init() {
 
     if (LICENSED) {
@@ -342,6 +393,22 @@ $(function() {
         disallowUpload = !!data.disallowupload;
         disallowIframes = !!data.disallowiframes;
         showNav = !!data.shownav;
+        showBattery = !!data.showbattery;
+        showTopBar = showNav || showBattery;
+
+        if(showTopBar){
+          $('body').addClass('show-top-bar');
+        }
+
+        if(showBattery){
+          if('getBattery' in navigator){
+            $('body').addClass('show-battery');
+            navigator.getBattery().then(monitorBattery);
+          }else{
+            console.error('getBattery not found in navigator');
+          }
+        }
+
         if (showNav) {
           $('body').addClass('show-nav');
         }
@@ -709,6 +776,13 @@ $(function() {
             code: "(function () { var iframes =  document.getElementsByTagName('iframe'); for (i = 0; i < iframes.length; ++i) { iframes[i].outerHTML = ''; } })();"
           });
         }
+        if (reset) {
+          ACTIVE_EVENTS.split(' ').forEach(function(type, i) {
+            e.target.executeScript({
+              code: "document.addEventListener('" + type + "',function(){console.log('kiosk:active')},false)"
+            });
+          });
+        }
         setNavStatus();
       })
       .on('loadcommit', function(e) {
@@ -723,13 +797,6 @@ $(function() {
           }
         }
         if (useragent) e.target.setUserAgentOverride(useragent);
-        if (reset) {
-          ACTIVE_EVENTS.split(' ').forEach(function(type, i) {
-            $webview[0].executeScript({
-              code: "document.addEventListener('" + type + "',function(){console.log('kiosk:active')},false)"
-            });
-          });
-        }
       });
     $webview[0].request.onBeforeSendHeaders.addListener(
       function(details) {
@@ -878,10 +945,10 @@ $(function() {
     } else {
       $tabs.removeClass('scroll');
     }
-    if (showNav || $tabs.children('.tab > .newwindow').length) {
-      $('body').addClass('show-nav');
+    if (showTopBar || $tabs.children('.tab > .newwindow').length) {
+      $('body').addClass('show-top-bar');
     } else {
-      $('body').removeClass('show-nav');
+      $('body').removeClass('show-top-bar');
     }
     if (!$tabs.find('.active').length) {
       $tabs.first('li > a').addClass('active');

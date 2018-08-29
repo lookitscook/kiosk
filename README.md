@@ -12,6 +12,7 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
   - New feature: open new windows in tabs
   - New feature: show battery status
   - Bug fix: console error
+  - Bug fix: show multiple URL mode on edit
 
 - v5.18.0
   - Migrate Free application version to Enterprise code base

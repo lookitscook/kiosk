@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+npm run beautify
+
 rm -rf dist;
 mkdir dist;
 mkdir dist/js;

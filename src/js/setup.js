@@ -190,7 +190,7 @@ $(function() {
     _.defaults(data, res[1], res[2]);
 
     function toggleMultipleMode(urls) {
-      if (urls.length == 2) {
+      if (urls.length >= 2) {
         $('.multiple-url-mode').hide().removeClass('disabled').slideDown();
       } else if (urls.length <= 1) {
         $('.multiple-url-mode').slideUp();
@@ -221,6 +221,8 @@ $(function() {
           $('#displayContentURL').text(urls.join(','));
         }
         toggleMultipleMode(urls);
+      } else {
+        $('.multiple-url-mode').slideUp();
       }
     });
 

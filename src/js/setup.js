@@ -1,10 +1,22 @@
+var LICENSED = true;
 var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
 
 $(function() {
 
+  if (LICENSED) {
+    $('body').removeClass('unlicensed').addClass('licensed');
+  }
+
   function updateData(data) {
     if (data.newwindow) {
       $("#newwindow").prop("checked", true);
+    }
+    if (data.disallowupload) {
+      $("#disallowupload").prop("checked", true);
+    }
+
+    if (data.disallowiframes) {
+      $("#disallowiframes").prop("checked", true);
     }
     if (data.url) {
       var urls = [];
@@ -49,6 +61,9 @@ $(function() {
         $('.rotate-rate').removeClass('disabled');
       }
     }
+    if (data.newwindowmode) {
+      $('#newwindow-mode').children("[value='" + data.newwindowmode + "']").prop('selected', true);
+    }
     if (data.allowprint) {
       $("#allowprint").prop("checked", true);
     }
@@ -62,9 +77,8 @@ $(function() {
     if (data.shownav) {
       $("#shownav").prop("checked", true);
     }
-    if (data.remote) {
-      $("#remote").prop("checked", true);
-      $('.remote, .settings-detail').removeClass('disabled');
+    if (data.showbattery) {
+      $("#showbattery").prop("checked", true);
     }
     if (data.username) $("#username").val(data.username);
     if (data.password) {
@@ -74,10 +88,6 @@ $(function() {
     if (data.displaysysteminfo) {
       $('#displaySystemInfo').children("[value='" + data.displaysysteminfo + "']").prop('selected', true);
     }
-    if (data.host) {
-      $('#host').children("[value='" + data.host + "']").prop('selected', true);
-    }
-    if (data.port) $("#port").val(data.port);
 
     if (data.remoteschedule) {
       $("#remote-schedule").prop("checked", true);
@@ -160,6 +170,10 @@ $(function() {
       });
     },
     function(next) {
+      if (!LICENSED) {
+        next(null, {});
+        return;
+      }
       chrome.storage.managed.get(null, function(res) {
         next(null, res);
       });
@@ -169,29 +183,14 @@ $(function() {
         next(null, res);
       });
     },
-    function(next) {
-      chrome.system.network.getNetworkInterfaces(function(res) {
-        next(null, res);
-      });
-    },
   ], function(err, res) {
 
     var schema = res[0];
     var data = {};
     _.defaults(data, res[1], res[2]);
-    var networkInterfaces = res[3];
-
-    for (var i in networkInterfaces) {
-      var networkInterface = networkInterfaces[i];
-      var opt = document.createElement("option");
-      opt.value = networkInterface.address;
-      opt.innerText = networkInterface.name + " - " + networkInterface.address;
-      document.getElementById("host").appendChild(opt);
-      $('#tokens').append('<li>{' + networkInterface.name.toLowerCase() + '.ipaddress.' + (networkInterface.address.indexOf(':') >= 0 ? 'ipv6' : 'ipv4') + '}</li>');
-    }
 
     function toggleMultipleMode(urls) {
-      if (urls.length == 2) {
+      if (urls.length >= 2) {
         $('.multiple-url-mode').hide().removeClass('disabled').slideDown();
       } else if (urls.length <= 1) {
         $('.multiple-url-mode').slideUp();
@@ -222,6 +221,8 @@ $(function() {
           $('#displayContentURL').text(urls.join(','));
         }
         toggleMultipleMode(urls);
+      } else {
+        $('.multiple-url-mode').slideUp();
       }
     });
 
@@ -298,22 +299,10 @@ $(function() {
     $("#local").on('change', function() {
       if ($("#local").is(':checked')) {
         $('.local').hide().removeClass('disabled').slideDown();
-        if (!$("#remote").is(':checked')) $('.settings-detail').hide().removeClass('disabled').slideDown();
       } else {
         $('.local').slideUp();
-        if (!$("#remote").is(':checked')) $('.settings-detail').slideUp();
       }
     });
-    $("#remote").on('change', function() {
-      if ($("#remote").is(':checked')) {
-        $('.remote').hide().removeClass('disabled').slideDown();
-        if (!$("#local").is(':checked')) $('.settings-detail').hide().removeClass('disabled').slideDown();
-      } else {
-        $('.remote').slideUp();
-        if (!$("#local").is(':checked')) $('.settings-detail').slideUp();
-      }
-    });
-
     $("#remote-schedule").on('change', function() {
       if ($("#remote-schedule").is(':checked')) {
         $('.remote-schedule-detail').hide().removeClass('disabled').slideDown();
@@ -390,17 +379,19 @@ $(function() {
     }
 
     function download(filename, text) {
-      var errorHandler = function(err){
+      var errorHandler = function(err) {
         console.error('Error downloading file:', err);
       };
       chrome.fileSystem.chooseEntry({
         type: 'saveFile',
         suggestedName: filename
       }, function(writableFileEntry) {
-          writableFileEntry.createWriter(function(writer) {
-            writer.onerror = errorHandler;
-            writer.write(new Blob([text], {type: 'text/plain'}));
-          }, errorHandler);
+        writableFileEntry.createWriter(function(writer) {
+          writer.onerror = errorHandler;
+          writer.write(new Blob([text], {
+            type: 'text/plain'
+          }));
+        }, errorHandler);
       });
     }
 
@@ -422,19 +413,16 @@ $(function() {
       updated.tokenserver = $('#tokenserver').val();
       updated.customtoken = $('#customtoken').val();
       updated.whitelist = parseURLs($('#whitelist').val());
-      updated.multipleurlmode = $("#multiple-url-mode").val();
+      updated.multipleurlmode = $("#multiple-url-mode").val() || 'tabs';
+      updated.newwindowmode = $("#newwindow-mode").val();
       updated.startupdelay = parseFloat($("#startup-delay").val()) ? parseFloat($("#startup-delay").val()) : 0;
       updated.rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
-      updated.host = $('#host').val();
-      updated.remote = $("#remote").is(':checked');
       updated.displaysysteminfo = $('#displaySystemInfo').val();
       updated.allowprint = $("#allowprint").is(':checked');
       updated.hidegslidescontrols = $("#hidegslidescontrols").is(':checked');
       updated.local = $("#local").is(':checked');
       updated.restart = $("#restart").is(':checked');
       updated.restartday = $('#restartday').val();
-      updated.port = parseInt($('#port').val());
-      updated.port = updated.port < 0 ? 0 : updated.port;
       updated.reset = $("#reset").is(':checked');
       updated.clearcookiesreset = $('#clear-cookies-reset').is(':checked') || $('#screensaver-reset').is(':checked');
       var useScreensaver = $('#use-screensaver').is(':checked');
@@ -446,6 +434,8 @@ $(function() {
       updated.disabletouchhighlight = $("#disabletouchhighlight").is(':checked');
       updated.disableselection = $("#disableselection").is(':checked');
       updated.newwindow = $("#newwindow").is(':checked');
+      updated.disallowupload = $("#disallowupload").is(':checked');
+      updated.disallowiframes = $("#disallowiframes").is(':checked');
       updated.useragent = $('#useragent').val();
       updated.authorization = $('#authorization').val();
       updated.username = $("#username").val();
@@ -457,6 +447,7 @@ $(function() {
       updated.sleepmode = $("#sleep-mode").val();
       updated.resetcache = $('#reset-cache').is(':checked');
       updated.shownav = $('#shownav').is(':checked');
+      updated.showbattery = $('#showbattery').is(':checked');
 
       var servelocal = $("#servelocal").is(':checked');
       updated.servelocaldirectory = $('#servelocaldirectory').data('directory');
@@ -510,6 +501,11 @@ $(function() {
         delete updated.url;
         error.push("Content URL is required.");
       }
+      if (updated.newwindowmode === 'tab' && updated.multipleurlmode !== 'tabs') {
+        delete updated.newwindowmode;
+        error.push('Tabbed mode for new windows requires tabs mode for multiple URLs')
+      }
+
       if (updated.customtoken) {
         try {
           JSON.parse(updated.customtoken);
@@ -534,7 +530,7 @@ $(function() {
       } else {
         delete updated.whitelist;
       }
-      if ((updated.remote || updated.local)) {
+      if (updated.local) {
         if (!updated.username) {
           error.push("Username is required.");
         }
@@ -543,22 +539,7 @@ $(function() {
         } else if (updated.password != passwordConfirm) {
           error.push("Passwords must match.");
         }
-        if (updated.remote) {
-          if (!updated.port) {
-            error.push("Port is required.");
-          } else if (updated.port < 1024) {
-            error.push("Remote admin. port must be above 1024");
-          }
-          if (!updated.host) {
-            error.push("Host is required.");
-          }
-        } else {
-          delete updated.port;
-          delete updated.host;
-        }
       } else {
-        delete updated.port;
-        delete updated.host;
         delete updated.username;
         delete updated.password;
       }

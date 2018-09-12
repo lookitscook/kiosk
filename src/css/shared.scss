@@ -4,19 +4,7 @@
   -webkit-tap-highlight-color: rgba(0,0,0,0); 
   -webkit-touch-callout: none;
 }
-.disabled{
-  display:none;
-  visibility:hidden;
-}
-#loading{
-  display:none;
-  visibility:hidden;
-}
-body.loading #loading{
-  display:block;
-  visibility:visible;
-}
-body.loading #settings{
+.disabled, body.unlicensed .pro-feature{
   display:none;
   visibility:hidden;
 }

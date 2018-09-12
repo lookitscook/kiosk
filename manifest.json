@@ -1,17 +1,16 @@
 {
-  "name": "Kiosk Professional v5.17.1-demo",
+  "name": "Kiosk Enterprise Demo",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.17.1",
-  "version_name": "professional-5.17.1-demo",
-  "description": "Launch any URL as a full-screen kiosk.",
+  "version": "6.0.0",
+  "version_name": "enterprise-demo-6.0.0",
   "author": {
-    "name": "Matt Cook",
-    "email": "matt@cook.company"
+    "name": "The Cook Company",
+    "email": "support@cook.company"
   },
   "kiosk_enabled": true,
   "kiosk": { 
-    "required_platform_version": "9592.96.0"
+    "required_platform_version": "10718.71.2"
   },
   "offline_enabled": true,
   "icons": {
@@ -20,7 +19,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/js/async.min.js","www/js/jquery.min.js","www/js/lodash.min.js","js/lib/wsc-chrome.js","js/main.min.js"],
+      "scripts": ["js/async.min.js","js/jquery.min.js","js/lodash.min.js","js/lib/wsc-chrome.js","js/main.min.js"],
       "persistent": false
     }
   },

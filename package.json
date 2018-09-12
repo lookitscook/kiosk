@@ -1,11 +1,11 @@
 {
   "name": "kiosk",
-  "version": "5.17.1",
+  "version": "6.0.0",
   "description": "Kiosk",
   "main": "main.js",
   "scripts": {
     "lint": "jshint src/js/**.js",
-    "beautify": "glob-run js-beautify -r 'src/js/**.js' && js-beautify -r 'src/www/js/admin.js'",
+    "beautify": "glob-run js-beautify -r 'src/js/**.js'",
     "test": "mocha test/",
     "build": "./build.sh"
   },

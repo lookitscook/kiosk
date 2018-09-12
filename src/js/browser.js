@@ -1,3 +1,5 @@
+var LICENSED = true;
+
 $(function() {
 
   var RESTART_DELAY = 1000;
@@ -13,10 +15,9 @@ $(function() {
   var resetTimeout, screensaverTimeout;
   var restart;
   var urlrotateindex = 0;
-  var startupdelay = 0;
   var rotaterate;
   var whitelist;
-  var schedule, scheduleURL, contentURL, defaultURL, currentURL, updateScheduleTimeout, checkScheduleTimeout, schedulepollinterval;
+  var schedule, scheduleURL, contentURL, defaultURL, currentURL, schedulepollinterval;
   var hidegslidescontrols = false;
   var hidecursor = false;
   var disablecontextmenu = false;
@@ -28,9 +29,15 @@ $(function() {
   var resetcache = false;
   var clearcookies = false;
   var allowPrint = false;
+  var disallowUpload = false;
+  var disallowIframes = false;
   var localAdmin = false;
+  var showNav = false;
+  var showBattery = false;
+  var showTopBar = false;
   var displaySystemInfoOnKeypress = false;
   var tokens = {};
+  var allowNewWindow, newWindowMode;
 
   init();
 
@@ -158,7 +165,7 @@ $(function() {
     }
   }
 
-  function restart() {
+  function restartApplication() {
     chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
     chrome.runtime.reload();
   }
@@ -218,7 +225,60 @@ $(function() {
     });
   }
 
+  function updateBatteryUI(battery) {
+    var text = Math.floor(battery.level * 100) + '%';
+    var icon = 'battery_';
+    if (battery.charging) {
+      icon += 'charging_'
+    }
+    var level = Math.ceil(battery.level * 10) * 10;
+    if (level = 100) {
+      icon += 'full';
+    } else if (level === 40) {
+      if (battery.level >= 0.375) {
+        icon += '50';
+      } else {
+        icon += '30';
+      }
+    } else if (level === 70) {
+      if (battery.level >= 0.675) {
+        icon += '80';
+      } else {
+        icon += '50';
+      }
+    } else if (level < 10) {
+      if (battery.charging) {
+        icon += '20'
+      } else {
+        icon += 'alert'
+      }
+    } else {
+      icon += level;
+    }
+    $('#battery-status .text').text(text);
+    $('#battery-status i').text(icon);
+  }
+
+  function monitorBattery(battery) {
+    // Update the initial UI.
+    updateBatteryUI(battery);
+
+    // Monitor for futher updates.
+    battery.addEventListener('levelchange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('chargingchange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('dischargingtimechange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('chargingtimechange',
+      updateBatteryUI.bind(null, battery));
+  }
+
   function init() {
+
+    if (LICENSED) {
+      $('body').removeClass('unlicensed').addClass('licensed');
+    }
 
     initEventHandlers();
 
@@ -226,6 +286,10 @@ $(function() {
     var data = {};
     async.series([
       function(next) {
+        if (!LICENSED) {
+          next();
+          return;
+        }
         chrome.storage.managed.get(null, function(managedSettings) {
           // managed settings override local
           _.defaults(data, managedSettings);
@@ -239,10 +303,20 @@ $(function() {
         });
       }
     ], function(err) {
+
+      if (!LICENSED) {
+        //disable pro features
+        data.tokenserver = null;
+        data.customtoken = null;
+        data.remoteschedule = null;
+        data.remotescheduleurl = null;
+      }
+
       //get tokens
-      var useTokens = (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
+      var useTokens = LICENSED && (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
         return url.indexOf('{') >= 0 && url.indexOf('}') >= 0;
       });
+
       async.series([
         function(next) {
           if (!useTokens) {
@@ -316,8 +390,26 @@ $(function() {
       ], function(err, res) {
 
         allowPrint = !!data.allowprint;
+        disallowUpload = !!data.disallowupload;
+        disallowIframes = !!data.disallowiframes;
+        showNav = !!data.shownav;
+        showBattery = !!data.showbattery;
+        showTopBar = showNav || showBattery;
 
-        if (data.shownav) {
+        if (showTopBar) {
+          $('body').addClass('show-top-bar');
+        }
+
+        if (showBattery) {
+          if ('getBattery' in navigator) {
+            $('body').addClass('show-battery');
+            navigator.getBattery().then(monitorBattery);
+          } else {
+            console.error('getBattery not found in navigator');
+          }
+        }
+
+        if (showNav) {
           $('body').addClass('show-nav');
         }
 
@@ -388,7 +480,7 @@ $(function() {
           setInterval(function() {
             var now = moment();
             if (now.isAfter(restart)) {
-              restart();
+              restartApplication();
             }
           }, 60 * 1000);
         }
@@ -407,7 +499,8 @@ $(function() {
         disabletouchhighlight = data.disabletouchhighlight ? true : false;
         disableselection = data.disableselection ? true : false;
         resetcache = data.resetcache ? true : false;
-        allownewwindow = data.newwindow ? true : false;
+        allowNewWindow = data.newwindow ? true : false;
+        newWindowMode = data.newwindowmode;
 
         reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
         screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
@@ -418,7 +511,7 @@ $(function() {
         if (reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
 
         defaultURL = contentURL = Array.isArray(data.url) ? data.url.map(function(url) {
-          return tokenizeUrl(url)
+          return tokenizeUrl(url);
         }) : [tokenizeUrl(data.url)];
         whitelist = Array.isArray(data.whitelist) ? data.whitelist : data.whitelist ? [data.whitelist] : [];
         useragent = data.useragent;
@@ -433,7 +526,7 @@ $(function() {
         if (resetcache) {
           setTimeout(function() {
             clearCache(function() {
-              restart();
+              restartApplication();
             });
           }, 1000);
         }
@@ -444,7 +537,7 @@ $(function() {
     window.addEventListener('message', function(e) {
       var data = e.data;
       if (data.command == 'title' && data.title && data.id) {
-        $('#tabs .tab.' + data.id + ' a').text(data.title);
+        $('#tabs .tab a[href="#' + data.id + '"] .title').text(data.title);
       }
       if (data.command == 'keypress' && data.event) {
         onKeypress(data.event);
@@ -559,7 +652,7 @@ $(function() {
     } else {
       $('#nav .home').removeClass('inactive');
     }
-    if ($webview.get(0).canGoBack()) {
+    if ($webview.length && $webview.get(0).canGoBack()) {
       $('#nav .back').removeClass('inactive');
     } else {
       $('#nav .back').addClass('inactive');
@@ -647,6 +740,16 @@ $(function() {
             });
           }, 10);
         }
+        if (!allowPrint) {
+          browser.insertCSS({
+            code: "@media print{ body {display:none;} }"
+          });
+        }
+        if (disallowUpload) {
+          browser.executeScript({
+            code: "document.querySelectorAll('input[type=file]').forEach(function(f){ f.disabled = true });"
+          });
+        }
         if (hidecursor)
           browser.insertCSS({
             code: "*{cursor:none;}"
@@ -670,6 +773,18 @@ $(function() {
         browser.focus();
       })
       .on('loadstop', function(e) {
+        if (disallowIframes) {
+          e.target.executeScript({
+            code: "(function () { var iframes =  document.getElementsByTagName('iframe'); for (i = 0; i < iframes.length; ++i) { iframes[i].outerHTML = ''; } })();"
+          });
+        }
+        if (reset) {
+          ACTIVE_EVENTS.split(' ').forEach(function(type, i) {
+            e.target.executeScript({
+              code: "document.addEventListener('" + type + "',function(){console.log('kiosk:active')},false)"
+            });
+          });
+        }
         setNavStatus();
       })
       .on('loadcommit', function(e) {
@@ -684,13 +799,6 @@ $(function() {
           }
         }
         if (useragent) e.target.setUserAgentOverride(useragent);
-        if (reset) {
-          ACTIVE_EVENTS.split(' ').forEach(function(type, i) {
-            $webview[0].executeScript({
-              code: "document.addEventListener('" + type + "',function(){console.log('kiosk:active')},false)"
-            });
-          });
-        }
       });
     $webview[0].request.onBeforeSendHeaders.addListener(
       function(details) {
@@ -706,13 +814,24 @@ $(function() {
       }, {
         urls: ["<all_urls>"]
       }, ["blocking", "requestHeaders"]);
-    if (allownewwindow) {
+    if (allowNewWindow) {
       $webview.on('newwindow', function(e) {
+          // check if the pop-up URL is allowed
           var err = getDomainWhiteListError(e.originalEvent.targetUrl);
           if (err) {
             Materialize.toast(err, 4000);
             return;
           }
+
+          // open the window in a new tab if selected
+          if (newWindowMode === 'tab') {
+            var id = loadURL(e.originalEvent.targetUrl, {
+              type: 'newwindow'
+            });
+            return;
+          }
+
+          //otherwise open in a modal, by default
           $('#newWindow webview').remove();
           var $newWebview = $('<webview/>');
           initWebview($newWebview);
@@ -780,19 +899,22 @@ $(function() {
     }
     if (alsoLoadScreensaver && screensaverURL) {
       $('#screensaver .browser').remove();
-      loadURL(screensaverURL, 0, null, true);
+      loadURL(screensaverURL, {
+        type: 'screensaver'
+      });
     }
     if (!currentURL) return;
     if (!Array.isArray(currentURL)) currentURL = [currentURL];
     $('#content .browser').remove();
     $('#tabs .tab').remove();
-    if (Array.isArray(currentURL) && currentURL.length > 1) {
-      $('body').addClass('tabbed');
-    } else {
-      $('body').removeClass('tabbed');
-    }
+    currentURL.forEach(loadURL);
+  }
+
+  function updateTabs(selectId) {
+    var $tabs = $('#tabs > ul.tabs');
+    var numTabs = $tabs.children('.tab').length;
     var colClass = 's1';
-    switch (currentURL.length) {
+    switch (numTabs) {
       case 1:
         colClass = 's12';
         break;
@@ -812,28 +934,68 @@ $(function() {
         colClass = 's2';
         break;
     }
-    for (var i = 0; i < currentURL.length; i++) {
-      loadURL(currentURL[i], i, colClass);
+    $tabs.children().removeAttr('style');
+    $('#content').children().removeAttr('style');
+    $tabs.children('.tab').attr('class', 'tab col ' + colClass);
+    if (numTabs > 1) {
+      $('body').addClass('tabbed');
+    } else {
+      $('body').removeClass('tabbed');
     }
-    var $tabs = $('ul.tabs');
-    if (currentURL.length > 12) {
+    if (numTabs > 12) {
       $tabs.addClass('scroll');
     } else {
       $tabs.removeClass('scroll');
+    }
+    if (showTopBar || $tabs.children('.tab > .newwindow').length) {
+      $('body').addClass('show-top-bar');
+    } else {
+      $('body').removeClass('show-top-bar');
+    }
+    if (!$tabs.find('.active').length) {
+      $tabs.first('li > a').addClass('active');
     }
     $tabs.tabs({
       onShow: function(tab) {
         setNavStatus();
       }
     });
+    if (selectId) {
+      $tabs.find('.active').removeClass('active');
+      $tabs.tabs('select_tab', selectId);
+    }
   }
 
-  function loadURL(url, i, colClass, isScreensaver) {
-    var id = (isScreensaver ? "screensaver" : "browser") + i;
+  function closeTab(e) {
+    var id = $(e.target).parent().attr('href').substring(1);
+    $('#' + id + '.browser').remove();
+    $(e.target).parents('.tab').remove();
+    updateTabs();
+  }
+
+  function loadURL(url, options) {
+
+    var type = (options && options.type) || 'content';
+    var isScreensaver = (type === 'screensaver');
+    var isNewWindow = (type === 'newwindow');
+
+    // add a tab, if not the screensaver
+    var $tabs = $('#tabs > ul.tabs');
+    var numTabs = $tabs.children('.tab').length;
+    var id = isScreensaver ? "screensaver" : ('browser' + (++numTabs));
+    var $webviewContainer = $('<div id="' + id + '" class="browser" style="display: none"/>');
     if (!isScreensaver) {
-      var $tab = $('<li class="tab col ' + colClass + ' ' + id + '"><a href="#' + id + '">' + url + '</a></li>').appendTo('#tabs .tabs');
+      var $tab = $('<li class="tab"><a class="content type-' + type + '" href="#' + id + '"><span class="title">' + url + '</span></a></li>');
+      // allow closing of new window pop-ups
+      if (isNewWindow) {
+        var $close = $('<i class="material-icons close">close</i>');
+        $tab.children('a').append($close);
+        $close.click(closeTab);
+      }
+      $tab.appendTo($tabs);
     }
-    var $webviewContainer = $('<div id="' + id + '" class="browser"/>');
+
+    // add the associated webview
     $webviewContainer.appendTo(isScreensaver ? '#screensaver' : '#content');
     var $webview = $('<webview />');
     initWebview($webview);
@@ -842,6 +1004,9 @@ $(function() {
       .data('src', url)
       .attr('src', url)
       .appendTo($webviewContainer);
+
+    updateTabs(isNewWindow ? id : null);
+    return id;
   }
 
   function clearCache(cb) {

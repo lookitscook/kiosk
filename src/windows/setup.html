@@ -2,26 +2,24 @@
 <html>
   <head>
     <title>Kiosk: Setup</title>
-    <link rel="shortcut icon" href="../www/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="../www/favicon.ico" type="image/x-icon">
-    <link type="text/css" rel="stylesheet" href="../www/css/material-icons/material-icons.css" media="screen,projection">
-    <link type="text/css" rel="stylesheet" href="../www/css/materialize.min.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="../css/material-icons/material-icons.css" media="screen,projection">
+    <link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="../css/ghpages-materialize.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="../css/style.css"  media="screen,projection"/>
-    <link type="text/css" rel="stylesheet" href="../www/css/shared.css"  media="screen,projection"/>
-    <script language="javascript" type="text/javascript" src="../www/js/async.min.js"></script>
-    <script language="javascript" type="text/javascript" src="../www/js/lodash.min.js"></script>
-    <script language="javascript" type="text/javascript" src="../www/js/jquery.min.js"></script>
-    <script language="javascript" type="text/javascript" src="../www/js/materialize.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/shared.css"  media="screen,projection"/>
+    <script language="javascript" type="text/javascript" src="../js/async.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/lodash.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/materialize.min.js"></script>
     <script language="javascript" type="text/javascript" src="../js/setup.min.js"></script></head>
     <style type="text/css">body,html{overflow:auto}</style>
   </head>
-  <body>
+  <body class="unlicensed">
     <header>
       <div class="container"><a href="https://chrome.google.com/webstore/detail/kiosk/afhcomalholahplbjhnmahkoekoijban" data-target="nav-mobile" class="button-collapse top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a></div>
       <ul id="nav-mobile" class="sidenav sidenav-fixed">
         <li class="logo"><a id="logo-container" href="#" class="brand-logo">
-            <object id="front-page-logo" type="image/svg+xml" data="../img/logo-green.svg">Your browser does not support SVG</object></a></li>
+            <object id="front-page-logo" type="image/svg+xml" data="../img/logo.svg">Your browser does not support SVG</object></a></li>
         <li class="no-padding">
           <ul class="collapsible collapsible-accordion">
             <li class="bold active"><a class="collapsible-header waves-effect waves-green">Content</a>
@@ -29,8 +27,8 @@
                 <ul>
                   <li class="active"><a href="#url">URL(s)</a></li>
                   <li><a href="#servelocal">Serve Local Content</a></li>
-                  <li><a href="#customtoken">Custom Tokens</a></li>
-                  <li><a href="#tokenserver">Token Service URL</a></li>
+                  <li class="pro-feature"><a href="#customtoken">Custom Tokens</a></li>
+                  <li class="pro-feature"><a href="#tokenserver">Token Service URL</a></li>
                   <li><a href="#whitelist">Domain Whitelist</a></li>
                 </ul>
               </div>
@@ -65,12 +63,12 @@
         <p class="caption">
             Multiple URLs must be seperated by a comma.
             If more than one URL is specified they can either be opened in tabs or rotated at defined rate.
-            <strong>URL must start with http:// or https://</strong> Tokens can be embedded in the URL and will be replaced with associated value. 
+            <strong>URL must start with http:// or https://</strong> <span class="pro-feature"> Tokens can be embedded in the URL and will be replaced with associated value. 
             E.g.: 'https://www.mysite.com/content?device={instanceid}' will actually request 'https://https://www.mysite.com/content?device=12345' 
-            where '12345' is a identifier unique to this installtion of the application.
+            where '12345' is a identifier unique to this installtion of the application.</span>
           </p> 
         <div class="row">
-          <div class="col s12">
+          <div class="col s12 pro-feature">
               <p class="caption">
                 <strong>System Tokens:</strong>
               </p>
@@ -117,11 +115,11 @@
           </div>
         </div>
         <div class="row">
-          <div class="input-field col s12">
+          <div class="input-field col s12 pro-feature">
             <label class="active" for="tokenserver"><a name="tokenserver"></a>Token Service URL</label>  
             <input id="tokenserver" type="text">
           </div>
-          <div class="input-field col s12">
+          <div class="input-field col s12 pro-feature">
               <label class="active" for="customtoken"><a name="customtoken"></a>Custom Token JSON</label>  
               <input id="customtoken" type="text">
           </div>
@@ -189,15 +187,35 @@
             <input type="checkbox" id="shownav" />
             <label class="active" for="shownav">Show Navigation</label>
           </div>
+
+          <div class="col s6">
+              <input type="checkbox" id="showbattery" />
+              <label class="active" for="showbattery">Show Battery Status</label>
+            </div>
           <div class="col s6">
             <input type="checkbox" id="hidegslidescontrols" />
             <label class="active" for="hidegslidescontrols">Hide Google Slides Controls</label>
           </div>
+          <div class="col s6">
+              <input type="checkbox" id="allowprint" />
+              <label class="active" for="allowprint"><a name="printing"></a>Enable Printing (ctrl+p)</label>
+          </div>
+          <div class="col s6">
+            <input type="checkbox" id="disallowupload" />
+            <label class="active" for="disallowupload">Disable File Upload</label>
+          </div>
+          <div class="col s6">
+              <input type="checkbox" id="disallowiframes" />
+              <label class="active" for="disallowiframes">Disable Iframes</label>
+            </div>
         </div>
         <div class="row">
           <div class="col s12">
-            <input type="checkbox" id="allowprint" />
-            <label class="active" for="allowprint"><a name="printing"></a>Enable Printing (ctrl+p)</label>
+              <label class="active" for="newwindow-mode">New Window Mode</label>
+              <select id="newwindow-mode">
+                  <option value="modal">Modal Window</option>
+                  <option value="tab">New Tab</option>
+              </select>
           </div>
         </div>
         <div class="row">
@@ -228,10 +246,6 @@
               <div class="col s12"><p>Press <strong>ctrl + a</strong> to activate after setup.</p></div>
             </div>
           </div>
-          <div class="col s6">
-            <input type="checkbox" id="remote" />
-            <label class="active" for="remote">Remote Administration</label>
-          </div>
         </div>
         <div class="row settings-detail">
           <div class="input-field col s12">
@@ -245,18 +259,6 @@
           <div class="input-field col s6">
             <input id="confirm_password" type="password">
             <label class="active" for="confirm_password">Confirm Password</label>
-          </div>
-        </div>
-        <div class="row disabled remote">
-          <div class="col s6">
-            <label class="active" for="host">Host</label>
-             <select id="host" class="browser-default">
-              <option value="127.0.0.1">lo - 127.0.0.1</option>
-            </select>
-          </div>
-          <div class="col s6">
-            <label class="active" for="port">Port</label>
-            <input id="port" type="text" value="8080">
           </div>
         </div>
 
@@ -347,13 +349,13 @@
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row pro-feature">
           <div class="col s12">
             <input type="checkbox" id="remote-schedule" />
             <label class="active" for="remote-schedule">Remote Schedule Server</label>
           </div>
         </div>
-        <div class="row remote-schedule-detail disabled">
+        <div class="row remote-schedule-detail disabled pro-feature">
           <div class="input-field col s12">
             <input id="remote-schedule-url" type="text">
             <label class="active" for="remote-schedule-url">Schedule URL (must start with http:// or https://)</label>
@@ -399,7 +401,7 @@
               </span>
             </p>
           </div>
-          <div class="col s12">
+          <div class="col s12 pro-feature">
               <p>
                   <a href="#" class="black btn waves-effect" id="import-policy" style="margin-right:1em">Import Policy</a>
                   <a href="#" class="black btn waves-effect" id="export-policy">Export Policy</a>

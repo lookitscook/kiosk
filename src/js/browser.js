@@ -731,7 +731,7 @@ $(function() {
             bottom: '1px'
           });
           browser.insertCSS({
-            code: ".punch-viewer-nav-fixed{ display:none; visibility:hidden; }"
+            code: ".punch-viewer-nav-v2, .punch-viewer-nav-fixed{ display:none; visibility:hidden; }"
           });
           setTimeout(function() {
             $webview.css({
@@ -778,7 +778,7 @@ $(function() {
             code: "(function () { var iframes =  document.getElementsByTagName('iframe'); for (i = 0; i < iframes.length; ++i) { iframes[i].outerHTML = ''; } })();"
           });
         }
-        if (reset) {
+        if (reset || useScreensaver) {
           ACTIVE_EVENTS.split(' ').forEach(function(type, i) {
             e.target.executeScript({
               code: "document.addEventListener('" + type + "',function(){console.log('kiosk:active')},false)"
@@ -982,8 +982,9 @@ $(function() {
     // add a tab, if not the screensaver
     var $tabs = $('#tabs > ul.tabs');
     var numTabs = $tabs.children('.tab').length;
-    var id = isScreensaver ? "screensaver" : ('browser' + (++numTabs));
-    var $webviewContainer = $('<div id="' + id + '" class="browser" style="display: none"/>');
+    var id = isScreensaver ? "screensaver-browser" : ('browser' + (++numTabs));
+    var style = isScreensaver ? '' : 'display: none'
+    var $webviewContainer = $('<div id="' + id + '" class="browser" style="' + style + '"/>');
     if (!isScreensaver) {
       var $tab = $('<li class="tab"><a class="content type-' + type + '" href="#' + id + '"><span class="title">' + url + '</span></a></li>');
       // allow closing of new window pop-ups

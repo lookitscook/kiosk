@@ -4,6 +4,9 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
 
 ## Changelog
 
+-v6.0.1
+  - Bug fix: screensaver
+
 -v6.0.0
   - BREAKING CHANGE: Removed support for remote admin
   - New feature: disable iframes

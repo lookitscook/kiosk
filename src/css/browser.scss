@@ -11,14 +11,14 @@ body,#container{
   overflow:hidden;
   background:#000;
 }
-#content, #screensaver{
+#content, #screensaver, #screensaver-browser{
   position:absolute;
   top:0;
   right:0;
   bottom:0;
   left:0;
 }
-#screensaver{
+#screensaver, #screensaver-browser{
   z-index:3;
   visibility: hidden;
 
@@ -36,8 +36,11 @@ body.tabbed #content, body.show-top-bar #content{
 body.screensaverActive #content{
   visibility: hidden;
 }
-body.screensaverActive #screensaver{
-  visibility: visible;
+body.screensaverActive {
+  #screensaver, #screensaver-browser{
+    visibility: visible;
+    display: block;
+  }
 }
 
 #tabs{

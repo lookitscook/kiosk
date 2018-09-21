@@ -422,8 +422,6 @@ $(function() {
           }
         }
 
-        Materialize.toast('Demo Version');
-
         if (data.local) {
           localAdmin = true;
 

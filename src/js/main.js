@@ -5,6 +5,15 @@ chrome.app.runtime.onRestarted.addListener(init);
 
 var directoryServer, adminServer, restartTimeout;
 
+chrome.commands.onCommand.addListener(function(command) {
+  console.log('Command:', command);
+  chrome.runtime.sendMessage(null, {
+    'command': command
+  }, function(response) {
+    console.log(response.status);
+  });
+});
+
 function init() {
 
   var win, basePath, socketInfo;

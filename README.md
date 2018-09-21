@@ -4,10 +4,15 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
 
 ## Changelog
 
--v6.0.1
+- v7.0.0
+  - BREAKING CHANGE: Removed support for F3 key content refresh
+  - BREAKING CHANGE: Removed optional CTRL+I shortcut for viewing system information
+  - Bug fix: shortcut key commands now work with all content
+
+- v6.0.1
   - Bug fix: screensaver
 
--v6.0.0
+- v6.0.0
   - BREAKING CHANGE: Removed support for remote admin
   - New feature: disable iframes
   - New feature: disable file upload fields

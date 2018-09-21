@@ -2,8 +2,8 @@
   "name": "Kiosk Enterprise",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "6.0.1",
-  "version_name": "enterprise-6.0.1",
+  "version": "7.0.0",
+  "version_name": "enterprise-7.0.0",
   "author": {
     "name": "The Cook Company",
     "email": "support@cook.company"
@@ -44,5 +44,28 @@
   "optional_permissions": [ "audioCapture", "videoCapture" ],
   "storage": {
     "managed_schema": "schema.json"
+  },
+  "commands": {
+    "openAdmin": {
+      "suggested_key": {
+        "default": "Ctrl+A",
+        "mac": "MacCtrl+A"
+      },
+      "description": "Open the setup page"
+    },
+    "print": {
+      "suggested_key": {
+        "default": "Ctrl+P",
+        "mac": "MacCtrl+P"
+      },
+      "description": "Print the current page"
+    },
+    "refresh": {
+      "suggested_key": {
+        "default": "Ctrl+R",
+        "mac": "MacCtrl+R"
+      },
+      "description": "Refresh the current page"
+    }
   }
 }

@@ -35,7 +35,6 @@ $(function() {
   var showNav = false;
   var showBattery = false;
   var showTopBar = false;
-  var displaySystemInfoOnKeypress = false;
   var tokens = {};
   var allowNewWindow, newWindowMode;
 
@@ -52,32 +51,6 @@ $(function() {
       }
     }
     return tokenizedUrl;
-  }
-
-  function onKeypress(e) {
-    //refresh on F3 or ctrl+r
-    if ((e.which == 168) || (e.which == 82 && e.ctrlKey)) {
-      loadContent(true);
-      return;
-    }
-    //open admin login on ctrl+a
-    if (localAdmin && e.which == 65 && e.ctrlKey) {
-      chrome.runtime.getBackgroundPage(function(backgroundPage) {
-        backgroundPage.stopAutoRestart();
-        $('#login').modal('open');
-        $('#username').focus();
-        $('#passwordLabel').addClass('active');
-      });
-    }
-    //print on ctrl+p
-    if (allowPrint && e.which == 80 && e.ctrlKey) {
-      var activeBrowserID = $('#tabs a.active').attr('href');
-      $(activeBrowserID + ' webview').get(0).print();
-    }
-    //show system informaton on crl+i
-    if (displaySystemInfoOnKeypress && e.which == 73 && e.ctrlKey) {
-      showSystemInformation(5000);
-    }
   }
 
   function showSystemInformation(duration) {
@@ -185,8 +158,6 @@ $(function() {
       return false;
     };
 
-    $(document).keydown(onKeypress);
-
     $('#nav .home').click(function(e) {
       if ($('#nav .home').hasClass('inactive')) {
         return;
@@ -274,7 +245,53 @@ $(function() {
       updateBatteryUI.bind(null, battery));
   }
 
+  function handleMessage(request, sender, sendResponse) {
+    console.log("Processing command:  " + request.command);
+    switch (request.command) {
+      case "openAdmin":
+        // open admin login on ctrl+a
+        if (localAdmin) {
+          chrome.runtime.getBackgroundPage(function(backgroundPage) {
+            backgroundPage.stopAutoRestart();
+            $('#login').modal('open');
+            $('#username').focus();
+            $('#passwordLabel').addClass('active');
+          });
+          sendResponse({
+            status: "Loading admin"
+          });
+          break;
+        }
+        sendResponse({
+          status: "Local admin is not enabled"
+        });
+        break;
+      case "refresh":
+        // refresh on ctrl+r
+        loadContent(true);
+        sendResponse({
+          status: "Refreshing"
+        });
+        break;
+      case "print":
+        // print on ctrl+p
+        if (allowPrint) {
+          var activeBrowserID = $('#tabs a.active').attr('href');
+          $(activeBrowserID + ' webview').get(0).print();
+          sendResponse({
+            status: "Printing"
+          });
+          break;
+        }
+        sendResponse({
+          status: "Printing is not enabled"
+        });
+      default:
+    }
+  }
+
   function init() {
+    chrome.runtime.onMessage.addListener(handleMessage);
 
     if (LICENSED) {
       $('body').removeClass('unlicensed').addClass('licensed');
@@ -413,13 +430,8 @@ $(function() {
           $('body').addClass('show-nav');
         }
 
-        if (data.displaysysteminfo) {
-          if (data.displaysysteminfo === 'always') {
-            showSystemInformation();
-          }
-          if (data.displaysysteminfo === 'keypress') {
-            displaySystemInfoOnKeypress = true;
-          }
+        if (data.displaysysteminfo === 'always') {
+          showSystemInformation();
         }
 
         if (data.local) {
@@ -536,9 +548,6 @@ $(function() {
       var data = e.data;
       if (data.command == 'title' && data.title && data.id) {
         $('#tabs .tab a[href="#' + data.id + '"] .title').text(data.title);
-      }
-      if (data.command == 'keypress' && data.event) {
-        onKeypress(data.event);
       }
     });
   }
@@ -715,8 +724,7 @@ $(function() {
             "  if(e.data.command == 'kioskGetTitle'){" +
             "    kioskAppWindow.postMessage({ command: 'title', title: document.title, id: e.data.id }, kioskAppOrigin);" +
             "  }" +
-            "});" +
-            "window.onkeydown = function(e){ kioskAppWindow.postMessage({ command:'keypress', event: { keyCode: e.keyCode || e.which, which: e.which || e.keyCode, ctrlKey: e.ctrlKey, metaKey: e.metaKey, altKey: e.altKey } }, kioskAppOrigin); }"
+            "});"
         });
         browser.contentWindow.postMessage({
           command: 'kioskGetTitle',

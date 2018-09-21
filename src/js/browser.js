@@ -15,10 +15,9 @@ $(function() {
   var resetTimeout, screensaverTimeout;
   var restart;
   var urlrotateindex = 0;
-  var startupdelay = 0;
   var rotaterate;
   var whitelist;
-  var schedule, scheduleURL, contentURL, defaultURL, currentURL, updateScheduleTimeout, checkScheduleTimeout, schedulepollinterval;
+  var schedule, scheduleURL, contentURL, defaultURL, currentURL, schedulepollinterval;
   var hidegslidescontrols = false;
   var hidecursor = false;
   var disablecontextmenu = false;
@@ -30,9 +29,14 @@ $(function() {
   var resetcache = false;
   var clearcookies = false;
   var allowPrint = false;
+  var disallowUpload = false;
+  var disallowIframes = false;
   var localAdmin = false;
-  var displaySystemInfoOnKeypress = false;
+  var showNav = false;
+  var showBattery = false;
+  var showTopBar = false;
   var tokens = {};
+  var allowNewWindow;
 
   init();
 
@@ -47,32 +51,6 @@ $(function() {
       }
     }
     return tokenizedUrl;
-  }
-
-  function onKeypress(e) {
-    //refresh on F3 or ctrl+r
-    if ((e.which == 168) || (e.which == 82 && e.ctrlKey)) {
-      loadContent(true);
-      return;
-    }
-    //open admin login on ctrl+a
-    if (localAdmin && e.which == 65 && e.ctrlKey) {
-      chrome.runtime.getBackgroundPage(function(backgroundPage) {
-        backgroundPage.stopAutoRestart();
-        $('#login').modal('open');
-        $('#username').focus();
-        $('#passwordLabel').addClass('active');
-      });
-    }
-    //print on ctrl+p
-    if (allowPrint && e.which == 80 && e.ctrlKey) {
-      var activeBrowserID = $('#tabs a.active').attr('href');
-      $(activeBrowserID + ' webview').get(0).print();
-    }
-    //show system informaton on crl+i
-    if (displaySystemInfoOnKeypress && e.which == 73 && e.ctrlKey) {
-      showSystemInformation(5000);
-    }
   }
 
   function showSystemInformation(duration) {
@@ -180,8 +158,6 @@ $(function() {
       return false;
     };
 
-    $(document).keydown(onKeypress);
-
     $('#nav .home').click(function(e) {
       if ($('#nav .home').hasClass('inactive')) {
         return;
@@ -220,7 +196,102 @@ $(function() {
     });
   }
 
+  function updateBatteryUI(battery) {
+    var text = Math.floor(battery.level * 100) + '%';
+    var icon = 'battery_';
+    if (battery.charging) {
+      icon += 'charging_'
+    }
+    var level = Math.ceil(battery.level * 10) * 10;
+    if (level = 100) {
+      icon += 'full';
+    } else if (level === 40) {
+      if (battery.level >= 0.375) {
+        icon += '50';
+      } else {
+        icon += '30';
+      }
+    } else if (level === 70) {
+      if (battery.level >= 0.675) {
+        icon += '80';
+      } else {
+        icon += '50';
+      }
+    } else if (level < 10) {
+      if (battery.charging) {
+        icon += '20'
+      } else {
+        icon += 'alert'
+      }
+    } else {
+      icon += level;
+    }
+    $('#battery-status .text').text(text);
+    $('#battery-status i').text(icon);
+  }
+
+  function monitorBattery(battery) {
+    // Update the initial UI.
+    updateBatteryUI(battery);
+
+    // Monitor for futher updates.
+    battery.addEventListener('levelchange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('chargingchange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('dischargingtimechange',
+      updateBatteryUI.bind(null, battery));
+    battery.addEventListener('chargingtimechange',
+      updateBatteryUI.bind(null, battery));
+  }
+
+  function handleMessage(request, sender, sendResponse) {
+    console.log("Processing command:  " + request.command);
+    switch (request.command) {
+      case "openAdmin":
+        // open admin login on ctrl+a
+        if (localAdmin) {
+          chrome.runtime.getBackgroundPage(function(backgroundPage) {
+            backgroundPage.stopAutoRestart();
+            $('#login').modal('open');
+            $('#username').focus();
+            $('#passwordLabel').addClass('active');
+          });
+          sendResponse({
+            status: "Loading admin"
+          });
+          break;
+        }
+        sendResponse({
+          status: "Local admin is not enabled"
+        });
+        break;
+      case "refresh":
+        // refresh on ctrl+r
+        loadContent(true);
+        sendResponse({
+          status: "Refreshing"
+        });
+        break;
+      case "print":
+        // print on ctrl+p
+        if (allowPrint) {
+          var activeBrowserID = $('#tabs a.active').attr('href');
+          $(activeBrowserID + ' webview').get(0).print();
+          sendResponse({
+            status: "Printing"
+          });
+          break;
+        }
+        sendResponse({
+          status: "Printing is not enabled"
+        });
+      default:
+    }
+  }
+
   function init() {
+    chrome.runtime.onMessage.addListener(handleMessage);
 
     if (LICENSED) {
       $('body').removeClass('unlicensed').addClass('licensed');
@@ -336,18 +407,31 @@ $(function() {
       ], function(err, res) {
 
         allowPrint = !!data.allowprint;
+        disallowUpload = !!data.disallowupload;
+        disallowIframes = !!data.disallowiframes;
+        showNav = !!data.shownav;
+        showBattery = !!data.showbattery;
+        showTopBar = showNav || showBattery;
 
-        if (data.shownav) {
+        if (showTopBar) {
+          $('body').addClass('show-top-bar');
+        }
+
+        if (showBattery) {
+          if ('getBattery' in navigator) {
+            $('body').addClass('show-battery');
+            navigator.getBattery().then(monitorBattery);
+          } else {
+            console.error('getBattery not found in navigator');
+          }
+        }
+
+        if (showNav) {
           $('body').addClass('show-nav');
         }
 
-        if (data.displaysysteminfo) {
-          if (data.displaysysteminfo === 'always') {
-            showSystemInformation();
-          }
-          if (data.displaysysteminfo === 'keypress') {
-            displaySystemInfoOnKeypress = true;
-          }
+        if (data.displaysysteminfo === 'always') {
+          showSystemInformation();
         }
 
         if (data.local) {
@@ -425,7 +509,7 @@ $(function() {
         disabletouchhighlight = data.disabletouchhighlight ? true : false;
         disableselection = data.disableselection ? true : false;
         resetcache = data.resetcache ? true : false;
-        allownewwindow = data.newwindow ? true : false;
+        allowNewWindow = data.newwindow ? true : false;
 
         reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
         screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
@@ -462,10 +546,7 @@ $(function() {
     window.addEventListener('message', function(e) {
       var data = e.data;
       if (data.command == 'title' && data.title && data.id) {
-        $('#tabs .tab.' + data.id + ' a').text(data.title);
-      }
-      if (data.command == 'keypress' && data.event) {
-        onKeypress(data.event);
+        $('#tabs .tab a[href="#' + data.id + '"] .title').text(data.title);
       }
     });
   }
@@ -577,7 +658,7 @@ $(function() {
     } else {
       $('#nav .home').removeClass('inactive');
     }
-    if ($webview.get(0).canGoBack()) {
+    if ($webview.length && $webview.get(0).canGoBack()) {
       $('#nav .back').removeClass('inactive');
     } else {
       $('#nav .back').addClass('inactive');
@@ -642,8 +723,7 @@ $(function() {
             "  if(e.data.command == 'kioskGetTitle'){" +
             "    kioskAppWindow.postMessage({ command: 'title', title: document.title, id: e.data.id }, kioskAppOrigin);" +
             "  }" +
-            "});" +
-            "window.onkeydown = function(e){ kioskAppWindow.postMessage({ command:'keypress', event: { keyCode: e.keyCode || e.which, which: e.which || e.keyCode, ctrlKey: e.ctrlKey, metaKey: e.metaKey, altKey: e.altKey } }, kioskAppOrigin); }"
+            "});"
         });
         browser.contentWindow.postMessage({
           command: 'kioskGetTitle',
@@ -656,7 +736,7 @@ $(function() {
             bottom: '1px'
           });
           browser.insertCSS({
-            code: ".punch-viewer-nav-fixed{ display:none; visibility:hidden; }"
+            code: ".punch-viewer-nav-v2, .punch-viewer-nav-fixed{ display:none; visibility:hidden; }"
           });
           setTimeout(function() {
             $webview.css({
@@ -664,6 +744,16 @@ $(function() {
               bottom: 0,
             });
           }, 10);
+        }
+        if (!allowPrint) {
+          browser.insertCSS({
+            code: "@media print{ body {display:none;} }"
+          });
+        }
+        if (disallowUpload) {
+          browser.executeScript({
+            code: "document.querySelectorAll('input[type=file]').forEach(function(f){ f.disabled = true });"
+          });
         }
         if (hidecursor)
           browser.insertCSS({
@@ -688,6 +778,18 @@ $(function() {
         browser.focus();
       })
       .on('loadstop', function(e) {
+        if (disallowIframes) {
+          e.target.executeScript({
+            code: "(function () { var iframes =  document.getElementsByTagName('iframe'); for (i = 0; i < iframes.length; ++i) { iframes[i].outerHTML = ''; } })();"
+          });
+        }
+        if (reset || useScreensaver) {
+          ACTIVE_EVENTS.split(' ').forEach(function(type, i) {
+            e.target.executeScript({
+              code: "document.addEventListener('" + type + "',function(){console.log('kiosk:active')},false)"
+            });
+          });
+        }
         setNavStatus();
       })
       .on('loadcommit', function(e) {
@@ -702,13 +804,6 @@ $(function() {
           }
         }
         if (useragent) e.target.setUserAgentOverride(useragent);
-        if (reset) {
-          ACTIVE_EVENTS.split(' ').forEach(function(type, i) {
-            $webview[0].executeScript({
-              code: "document.addEventListener('" + type + "',function(){console.log('kiosk:active')},false)"
-            });
-          });
-        }
       });
     $webview[0].request.onBeforeSendHeaders.addListener(
       function(details) {
@@ -724,36 +819,20 @@ $(function() {
       }, {
         urls: ["<all_urls>"]
       }, ["blocking", "requestHeaders"]);
-    if (allownewwindow) {
+    if (allowNewWindow) {
       $webview.on('newwindow', function(e) {
+          // check if the pop-up URL is allowed
           var err = getDomainWhiteListError(e.originalEvent.targetUrl);
           if (err) {
             Materialize.toast(err, 4000);
             return;
           }
-          $('#newWindow webview').remove();
-          var $newWebview = $('<webview/>');
-          initWebview($newWebview);
-          $newWebview.css({
-            right: '1px',
-            width: '99%'
+
+          // open the window in a new tab
+          loadURL(e.originalEvent.targetUrl, {
+            type: 'newwindow'
           });
-          $newWebview.on('close', function(e) {
-            $('#newWindow').modal('close');
-            $('#newWindow webview').remove();
-          });
-          e.originalEvent.window.attach($newWebview[0]);
-          $('#newWindow').append($newWebview).modal('open');
-          setTimeout(function() {
-            $newWebview.css({
-              bottom: 0,
-              right: 0,
-              top: 0,
-              left: 0,
-              height: '100%',
-              width: '100%'
-            });
-          }, 10);
+
         })
         .on('dialog', function(e) {
           var $modal;
@@ -798,19 +877,22 @@ $(function() {
     }
     if (alsoLoadScreensaver && screensaverURL) {
       $('#screensaver .browser').remove();
-      loadURL(screensaverURL, 0, null, true);
+      loadURL(screensaverURL, {
+        type: 'screensaver'
+      });
     }
     if (!currentURL) return;
     if (!Array.isArray(currentURL)) currentURL = [currentURL];
     $('#content .browser').remove();
     $('#tabs .tab').remove();
-    if (Array.isArray(currentURL) && currentURL.length > 1) {
-      $('body').addClass('tabbed');
-    } else {
-      $('body').removeClass('tabbed');
-    }
+    currentURL.forEach(loadURL);
+  }
+
+  function updateTabs(selectId) {
+    var $tabs = $('#tabs > ul.tabs');
+    var numTabs = $tabs.children('.tab').length;
     var colClass = 's1';
-    switch (currentURL.length) {
+    switch (numTabs) {
       case 1:
         colClass = 's12';
         break;
@@ -830,28 +912,69 @@ $(function() {
         colClass = 's2';
         break;
     }
-    for (var i = 0; i < currentURL.length; i++) {
-      loadURL(currentURL[i], i, colClass);
+    $tabs.children().removeAttr('style');
+    $('#content').children().removeAttr('style');
+    $tabs.children('.tab').attr('class', 'tab col ' + colClass);
+    if (numTabs > 1) {
+      $('body').addClass('tabbed');
+    } else {
+      $('body').removeClass('tabbed');
     }
-    var $tabs = $('ul.tabs');
-    if (currentURL.length > 12) {
+    if (numTabs > 12) {
       $tabs.addClass('scroll');
     } else {
       $tabs.removeClass('scroll');
+    }
+    if (showTopBar || $tabs.children('.tab > .newwindow').length) {
+      $('body').addClass('show-top-bar');
+    } else {
+      $('body').removeClass('show-top-bar');
+    }
+    if (!$tabs.find('.active').length) {
+      $tabs.first('li > a').addClass('active');
     }
     $tabs.tabs({
       onShow: function(tab) {
         setNavStatus();
       }
     });
+    if (selectId) {
+      $tabs.find('.active').removeClass('active');
+      $tabs.tabs('select_tab', selectId);
+    }
   }
 
-  function loadURL(url, i, colClass, isScreensaver) {
-    var id = (isScreensaver ? "screensaver" : "browser") + i;
+  function closeTab(e) {
+    var id = $(e.target).parent().attr('href').substring(1);
+    $('#' + id + '.browser').remove();
+    $(e.target).parents('.tab').remove();
+    updateTabs();
+  }
+
+  function loadURL(url, options) {
+
+    var type = (options && options.type) || 'content';
+    var isScreensaver = (type === 'screensaver');
+    var isNewWindow = (type === 'newwindow');
+
+    // add a tab, if not the screensaver
+    var $tabs = $('#tabs > ul.tabs');
+    var numTabs = $tabs.children('.tab').length;
+    var id = isScreensaver ? "screensaver-browser" : ('browser' + (++numTabs));
+    var style = isScreensaver ? '' : 'display: none'
+    var $webviewContainer = $('<div id="' + id + '" class="browser" style="' + style + '"/>');
     if (!isScreensaver) {
-      var $tab = $('<li class="tab col ' + colClass + ' ' + id + '"><a href="#' + id + '">' + url + '</a></li>').appendTo('#tabs .tabs');
+      var $tab = $('<li class="tab"><a class="content type-' + type + '" href="#' + id + '"><span class="title">' + url + '</span></a></li>');
+      // allow closing of new window pop-ups
+      if (isNewWindow) {
+        var $close = $('<i class="material-icons close">close</i>');
+        $tab.children('a').append($close);
+        $close.click(closeTab);
+      }
+      $tab.appendTo($tabs);
     }
-    var $webviewContainer = $('<div id="' + id + '" class="browser"/>');
+
+    // add the associated webview
     $webviewContainer.appendTo(isScreensaver ? '#screensaver' : '#content');
     var $webview = $('<webview />');
     initWebview($webview);
@@ -860,6 +983,9 @@ $(function() {
       .data('src', url)
       .attr('src', url)
       .appendTo($webviewContainer);
+
+    updateTabs(isNewWindow ? id : null);
+    return id;
   }
 
   function clearCache(cb) {

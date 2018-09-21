@@ -5,6 +5,15 @@ chrome.app.runtime.onRestarted.addListener(init);
 
 var directoryServer, adminServer, restartTimeout;
 
+chrome.commands.onCommand.addListener(function(command) {
+  console.log('Command:', command);
+  chrome.runtime.sendMessage(null, {
+    'command': command
+  }, function(response) {
+    console.log(response.status);
+  });
+});
+
 function init() {
 
   var win, basePath, socketInfo;
@@ -86,10 +95,6 @@ function init() {
           startWebserverDirectoryEntry(host, port, entry);
         });
       }
-      if (data.host && data.port) {
-        //make setup page available remotely via HTTP
-        startWebserver(data.host, data.port, 'www', data);
-      }
       openWindow("windows/browser.html");
     } else {
       //need to run setup
@@ -133,37 +138,6 @@ function init() {
     directoryServer.start();
   }
 
-  //directory must be a subdirectory of the package
-  function startWebserver(host, port, directory, settings) {
-    chrome.runtime.getPackageDirectoryEntry(function(packageDirectory) {
-      packageDirectory.getDirectory(directory, {
-        create: false
-      }, function(webroot) {
-        var fs = new WSC.FileSystem(webroot);
-        var handlers = [
-          ['/data.*', AdminDataHandler],
-          ['.*', WSC.DirectoryEntryHandler.bind(null, fs)]
-        ];
-        adminServer = new WSC.WebApplication({
-          host: host,
-          port: port,
-          handlers: handlers,
-          renderIndex: true,
-          optRenderIndex: true,
-          auth: {
-            username: settings.username,
-            password: settings.password
-          }
-        });
-        adminServer.start();
-      });
-    });
-  }
-}
-
-function restartApplication() {
-  chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
-  chrome.runtime.reload();
 }
 
 function stopAutoRestart() {
@@ -171,54 +145,3 @@ function stopAutoRestart() {
     clearTimeout(restartTimeout);
   }
 }
-
-function AdminDataHandler(request) {
-  WSC.BaseHandler.prototype.constructor.call(this);
-}
-
-var app = this;
-_.extend(AdminDataHandler.prototype, {
-  put: function() {
-    var newData = this.request.bodyparams;
-
-    chrome.storage.local.get(null, function(data) {
-
-      var saveData = {};
-      var restartNow = false;
-      for (var key in newData) {
-        var value = newData[key];
-        if (data.hasOwnProperty(key)) {
-          if (key == 'url' && !Array.isArray(value)) {
-            value = value.split(',');
-            restart = true;
-          }
-          data[key] = value;
-          saveData[key] = value;
-        }
-        if (key.toString() == "restart") {
-          restartNow = true;
-        }
-      }
-      chrome.storage.local.set(saveData);
-      this.setHeader('content-type', 'text/json');
-      var buf = new TextEncoder('utf-8').encode(JSON.stringify(data)).buffer;
-      this.write(buf);
-      this.finish();
-
-      if (restartNow) setTimeout(function() {
-        restartApplication();
-      }, 1000);
-
-
-    }.bind(this));
-
-  },
-  get: function() {
-    chrome.storage.local.get(null, function(data) {
-      this.setHeader('content-type', 'text/json');
-      var buf = new TextEncoder('utf-8').encode(JSON.stringify(data)).buffer;
-      this.write(buf);
-      this.finish();
-    }.bind(this));
-  }
-}, WSC.BaseHandler.prototype);

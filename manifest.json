@@ -1,16 +1,16 @@
 {
-  "name": "Kiosk v5.18.0-dev",
+  "name": "Kiosk v7.0.0-dev",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "5.18.0",
-  "version_name": "5.18.0-dev",
+  "version": "7.0.0",
+  "version_name": "7.0.0-dev",
   "author": {
     "name": "The Cook Company",
     "email": "support@cook.company"
   },
   "kiosk_enabled": true,
   "kiosk": { 
-    "required_platform_version": "9592.96.0"
+    "required_platform_version": "10718.71.2"
   },
   "offline_enabled": true,
   "icons": {
@@ -19,7 +19,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["www/js/async.min.js","www/js/jquery.min.js","www/js/lodash.min.js","js/lib/wsc-chrome.js","js/main.min.js"],
+      "scripts": ["js/async.min.js","js/jquery.min.js","js/lodash.min.js","js/lib/wsc-chrome.js","js/main.min.js"],
       "persistent": false
     }
   },
@@ -44,5 +44,28 @@
   "optional_permissions": [ "audioCapture", "videoCapture" ],
   "storage": {
     "managed_schema": "schema.json"
+  },
+  "commands": {
+    "openAdmin": {
+      "suggested_key": {
+        "default": "Ctrl+A",
+        "mac": "MacCtrl+A"
+      },
+      "description": "Open the setup page"
+    },
+    "print": {
+      "suggested_key": {
+        "default": "Ctrl+P",
+        "mac": "MacCtrl+P"
+      },
+      "description": "Print the current page"
+    },
+    "refresh": {
+      "suggested_key": {
+        "default": "Ctrl+R",
+        "mac": "MacCtrl+R"
+      },
+      "description": "Refresh the current page"
+    }
   }
 }

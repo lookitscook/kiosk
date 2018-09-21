@@ -2,17 +2,15 @@
 <html>
   <head>
     <title>Kiosk: Setup</title>
-    <link rel="shortcut icon" href="../www/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="../www/favicon.ico" type="image/x-icon">
-    <link type="text/css" rel="stylesheet" href="../www/css/material-icons/material-icons.css" media="screen,projection">
-    <link type="text/css" rel="stylesheet" href="../www/css/materialize.min.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="../css/material-icons/material-icons.css" media="screen,projection">
+    <link type="text/css" rel="stylesheet" href="../css/materialize.min.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="../css/ghpages-materialize.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="../css/style.css"  media="screen,projection"/>
-    <link type="text/css" rel="stylesheet" href="../www/css/shared.css"  media="screen,projection"/>
-    <script language="javascript" type="text/javascript" src="../www/js/async.min.js"></script>
-    <script language="javascript" type="text/javascript" src="../www/js/lodash.min.js"></script>
-    <script language="javascript" type="text/javascript" src="../www/js/jquery.min.js"></script>
-    <script language="javascript" type="text/javascript" src="../www/js/materialize.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="../css/shared.css"  media="screen,projection"/>
+    <script language="javascript" type="text/javascript" src="../js/async.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/lodash.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/materialize.min.js"></script>
     <script language="javascript" type="text/javascript" src="../js/setup.min.js"></script></head>
     <style type="text/css">body,html{overflow:auto}</style>
   </head>
@@ -21,7 +19,7 @@
       <div class="container"><a href="https://chrome.google.com/webstore/detail/kiosk/afhcomalholahplbjhnmahkoekoijban" data-target="nav-mobile" class="button-collapse top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a></div>
       <ul id="nav-mobile" class="sidenav sidenav-fixed">
         <li class="logo"><a id="logo-container" href="#" class="brand-logo">
-            <object id="front-page-logo" type="image/svg+xml" data="../img/logo-green.svg">Your browser does not support SVG</object></a></li>
+            <object id="front-page-logo" type="image/svg+xml" data="../img/logo.svg">Your browser does not support SVG</object></a></li>
         <li class="no-padding">
           <ul class="collapsible collapsible-accordion">
             <li class="bold active"><a class="collapsible-header waves-effect waves-green">Content</a>
@@ -140,7 +138,6 @@
               <label class="active" for="displaySystemInfo">Display System Information</label>
               <select id="displaySystemInfo" class="browser-default">
                 <option value="admin">In admin only</option>
-                <option value="keypress">On keypress (ctrl + i)</option>
                 <option value="always">Always on</option>
               </select>
             </div>
@@ -189,16 +186,27 @@
             <input type="checkbox" id="shownav" />
             <label class="active" for="shownav">Show Navigation</label>
           </div>
+
+          <div class="col s6">
+              <input type="checkbox" id="showbattery" />
+              <label class="active" for="showbattery">Show Battery Status</label>
+            </div>
           <div class="col s6">
             <input type="checkbox" id="hidegslidescontrols" />
             <label class="active" for="hidegslidescontrols">Hide Google Slides Controls</label>
           </div>
-        </div>
-        <div class="row">
-          <div class="col s12">
-            <input type="checkbox" id="allowprint" />
-            <label class="active" for="allowprint"><a name="printing"></a>Enable Printing (ctrl+p)</label>
+          <div class="col s6">
+              <input type="checkbox" id="allowprint" />
+              <label class="active" for="allowprint"><a name="printing"></a>Enable Printing (ctrl+p)</label>
           </div>
+          <div class="col s6">
+            <input type="checkbox" id="disallowupload" />
+            <label class="active" for="disallowupload">Disable File Upload</label>
+          </div>
+          <div class="col s6">
+              <input type="checkbox" id="disallowiframes" />
+              <label class="active" for="disallowiframes">Disable Iframes</label>
+            </div>
         </div>
         <div class="row">
           <div class="input-field col s12">
@@ -228,10 +236,6 @@
               <div class="col s12"><p>Press <strong>ctrl + a</strong> to activate after setup.</p></div>
             </div>
           </div>
-          <div class="col s6">
-            <input type="checkbox" id="remote" />
-            <label class="active" for="remote">Remote Administration</label>
-          </div>
         </div>
         <div class="row settings-detail">
           <div class="input-field col s12">
@@ -245,18 +249,6 @@
           <div class="input-field col s6">
             <input id="confirm_password" type="password">
             <label class="active" for="confirm_password">Confirm Password</label>
-          </div>
-        </div>
-        <div class="row disabled remote">
-          <div class="col s6">
-            <label class="active" for="host">Host</label>
-             <select id="host" class="browser-default">
-              <option value="127.0.0.1">lo - 127.0.0.1</option>
-            </select>
-          </div>
-          <div class="col s6">
-            <label class="active" for="port">Port</label>
-            <input id="port" type="text" value="8080">
           </div>
         </div>
 

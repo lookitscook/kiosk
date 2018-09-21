@@ -172,11 +172,6 @@
       "description": "",
       "type": "string"
     },
-    "newwindowmode": {
-      "title": "New Window Mode",
-      "description": "Either 'modal' or 'tab'.",
-      "type": "string"
-    },
     "rotaterate": {
       "title": "",
       "description": "",

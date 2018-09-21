@@ -167,15 +167,6 @@ $(function() {
       });
     },
     function(next) {
-      if (!LICENSED) {
-        next(null, {});
-        return;
-      }
-      chrome.storage.managed.get(null, function(res) {
-        next(null, res);
-      });
-    },
-    function(next) {
       chrome.storage.local.get(null, function(res) {
         next(null, res);
       });
@@ -183,8 +174,7 @@ $(function() {
   ], function(err, res) {
 
     var schema = res[0];
-    var data = {};
-    _.defaults(data, res[1], res[2]);
+    var data = res[1];
 
     function toggleMultipleMode(urls) {
       if (urls.length >= 2) {
@@ -595,7 +585,7 @@ $(function() {
       }
       chrome.storage.local.remove(remove);
       chrome.storage.local.set(updated);
-      chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
+      chrome.runtime.restart(); // for ChromeOS devices in "kiosk" mode
       chrome.runtime.reload();
     });
   });

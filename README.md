@@ -4,6 +4,9 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
 
 ## Changelog
 
+- v7.0.1
+  - Cache clearing update
+
 - v7.0.0
   - BREAKING CHANGE: Removed support for F3 key content refresh
   - BREAKING CHANGE: Removed optional CTRL+I shortcut for viewing system information

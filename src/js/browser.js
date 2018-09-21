@@ -139,7 +139,7 @@ $(function() {
   }
 
   function restartApplication() {
-    chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
+    chrome.runtime.restart(); // for ChromeOS devices in "kiosk" mode
     chrome.runtime.reload();
   }
 
@@ -188,12 +188,7 @@ $(function() {
   }
 
   function initModals() {
-    $('.modal').not('#newWindow').modal();
-    $('#newWindow').modal({
-      complete: function() {
-        $('#newWindow webview').remove();
-      }
-    });
+    $('.modal').modal();
   }
 
   function updateBatteryUI(battery) {
@@ -246,7 +241,6 @@ $(function() {
   }
 
   function handleMessage(request, sender, sendResponse) {
-    console.log("Processing command:  " + request.command);
     switch (request.command) {
       case "openAdmin":
         // open admin login on ctrl+a
@@ -298,9 +292,9 @@ $(function() {
     }
 
     initEventHandlers();
-
     initModals();
-    var data = {};
+
+    var data;
     async.series([
       function(next) {
         if (!LICENSED) {
@@ -308,14 +302,19 @@ $(function() {
           return;
         }
         chrome.storage.managed.get(null, function(managedSettings) {
-          // managed settings override local
-          _.defaults(data, managedSettings);
+          data = managedSettings;
           next();
         });
       },
       function(next) {
+        if (!_.isEmpty(data)) {
+          // managed settings override local
+          data.local = false; // local admin is disabled if settings are configured via policy
+          next();
+          return;
+        }
         chrome.storage.local.get(null, function(localSettings) {
-          _.defaults(data, localSettings);
+          data = localSettings;
           next();
         });
       }
@@ -587,8 +586,6 @@ $(function() {
         if ($('body').hasClass('screensaverActive')) {
           return;
         }
-        $('#newWindow').modal('close');
-        $('#newWindow webview').remove();
         $('body').addClass('screensaverActive');
         if (clearcookies) {
           clearCache(function() {
@@ -865,6 +862,9 @@ $(function() {
   }
 
   function refreshContent(screensaver) {
+    $('.tab > .type-newwindow').parent().remove();
+    $('.type-newwindow').remove();
+    updateTabs();
     $('#' + (screensaver ? 'screensaver' : 'content') + ' webview').each(function(i, webview) {
       webview.src = $(webview).data('src');
     });
@@ -925,7 +925,7 @@ $(function() {
     } else {
       $tabs.removeClass('scroll');
     }
-    if (showTopBar || $tabs.children('.tab > .newwindow').length) {
+    if (showTopBar || $tabs.children('.type-newwindow').length) {
       $('body').addClass('show-top-bar');
     } else {
       $('body').removeClass('show-top-bar');
@@ -962,7 +962,7 @@ $(function() {
     var numTabs = $tabs.children('.tab').length;
     var id = isScreensaver ? "screensaver-browser" : ('browser' + (++numTabs));
     var style = isScreensaver ? '' : 'display: none'
-    var $webviewContainer = $('<div id="' + id + '" class="browser" style="' + style + '"/>');
+    var $webviewContainer = $('<div id="' + id + '" class="browser type-' + type + '" style="' + style + '"/>');
     if (!isScreensaver) {
       var $tab = $('<li class="tab"><a class="content type-' + type + '" href="#' + id + '"><span class="title">' + url + '</span></a></li>');
       // allow closing of new window pop-ups
@@ -991,34 +991,30 @@ $(function() {
   function clearCache(cb) {
     if (resetcache) { //set true when we're restarting once after saving from admin
       if (chrome.storage) {
-        chrome.storage.local.remove('resetcache');
+        chrome.storage.local.set({
+          resetcache: false
+        });
       }
       resetcache = false;
     }
+    //remove entire cache
     var clearDataType = {
       appcache: true,
-      cache: true, //remove entire cache
+      cache: true,
       cookies: true,
+      sessionCookies: true,
+      persistentCookies: true,
       fileSystems: true,
       indexedDB: true,
       localStorage: true,
-      webSQL: true,
+      webSQL: true
     };
-    deferredArray = [];
-    $('#content webview').each(function(i, webview) {
-      var deferred = new $.Deferred();
+    var webviews = $('webview').get();
+    async.each(webviews, function(webview, done) {
       webview.clearData({
         since: 0
-      }, clearDataType, function() {
-        deferred.resolve();
-      });
-      deferredArray.push(deferred);
-    });
-    $.when.apply($, deferredArray).then(function() {
-      if (cb) {
-        cb();
-      }
-    });
+      }, clearDataType, done);
+    }, cb);
   }
 
   function onEnded(event) {

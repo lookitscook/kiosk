@@ -31,21 +31,6 @@
       "description": "",
       "type": "boolean"
     },
-    "local": {
-      "title": "",
-      "description": "",
-      "type": "boolean"
-    },
-    "username": {
-      "title": "",
-      "description": "",
-      "type": "string"
-    },
-    "password": {
-      "title": "",
-      "description": "",
-      "type": "string"
-    },
     "reset": {
       "title": "",
       "description": "",
@@ -135,11 +120,6 @@
       "title": "Serve Local: Port",
       "description": "The port to serve local content on",
       "type": "number"
-    },
-    "resetcache": {
-      "title": "",
-      "description": "",
-      "type": "boolean"
     },
     "url": {
       "title": "Content URL(s)",

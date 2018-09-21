@@ -6,19 +6,16 @@ chrome.app.runtime.onRestarted.addListener(init);
 var directoryServer, adminServer, restartTimeout;
 
 chrome.commands.onCommand.addListener(function(command) {
-  console.log('Command:', command);
   chrome.runtime.sendMessage(null, {
     'command': command
   }, function(response) {
-    console.log(response.status);
+    // console.log(response.status);
   });
 });
 
 function init() {
 
-  var win, basePath, socketInfo;
-  var data = {};
-  var filesMap = {};
+  var win, data;
 
   /*
   LOG PERMISSION WARNINGS
@@ -45,61 +42,68 @@ function init() {
         return;
       }
       chrome.storage.managed.get(null, function(managedSettings) {
+        data = managedSettings;
+        next();
+      });
+    },
+    function(next) {
+      if (!_.isEmpty(data)) {
         // managed settings override local
-        _.defaults(data, managedSettings);
         next();
-      });
-    },
-    function(next) {
+        return;
+      }
       chrome.storage.local.get(null, function(localSettings) {
-        _.defaults(data, localSettings);
+        data = localSettings;
         next();
       });
     },
     function(next) {
+      if (!data.startupdelay) {
+        next();
+        return;
+      }
       var startupDelay = parseFloat(data.startupdelay) || 0;
       setTimeout(next, startupDelay * 1000);
     }
   ], function(err) {
 
-    if (('url' in data)) {
-      //setup has been completed
-
-      // Sleepmode may not have been selected by user in setup because it
-      // is a new config param, so assume the previous hard-coded value as
-      // default.
-      if (!data.sleepmode) {
-        chrome.storage.local.set({
-          'sleepmode': 'display'
-        });
-        data.sleepmode = 'display';
-      }
-      if (data.sleepmode == 'none') {
-        chrome.power.releaseKeepAwake();
-      } else {
-        chrome.power.requestKeepAwake(data.sleepmode);
-      }
-
-      if (data.servelocaldirectory && data.servelocalhost && data.servelocalport) {
-        //serve files from local directory
-        chrome.fileSystem.restoreEntry(data.servelocaldirectory, function(entry) {
-          //if we can't get the directory (removed drive possibly)
-          //wait 30 seconds and reload the app
-          if (!entry) {
-            restartTimeout = setTimeout(restart, 30 * 1000);
-            return;
-          }
-
-          var host = data.servelocalhost;
-          var port = data.servelocalport;
-          startWebserverDirectoryEntry(host, port, entry);
-        });
-      }
-      openWindow("windows/browser.html");
-    } else {
-      //need to run setup
+    if (!('url' in data)) {
       openWindow("windows/setup.html");
+      return;
     }
+    //setup has been completed
+
+    // Sleepmode may not have been selected by user in setup because it
+    // is a new config param, so assume the previous hard-coded value as
+    // default.
+    if (!data.sleepmode) {
+      chrome.storage.local.set({
+        'sleepmode': 'display'
+      });
+      data.sleepmode = 'display';
+    }
+    if (data.sleepmode == 'none') {
+      chrome.power.releaseKeepAwake();
+    } else {
+      chrome.power.requestKeepAwake(data.sleepmode);
+    }
+
+    if (data.servelocaldirectory && data.servelocalhost && data.servelocalport) {
+      //serve files from local directory
+      chrome.fileSystem.restoreEntry(data.servelocaldirectory, function(entry) {
+        //if we can't get the directory (removed drive possibly)
+        //wait 30 seconds and reload the app
+        if (!entry) {
+          restartTimeout = setTimeout(restart, 30 * 1000);
+          return;
+        }
+
+        var host = data.servelocalhost;
+        var port = data.servelocalport;
+        startWebserverDirectoryEntry(host, port, entry);
+      });
+    }
+    openWindow("windows/browser.html");
   });
 
   function openWindow(path) {

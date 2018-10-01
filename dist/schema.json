@@ -6,45 +6,30 @@
       "description": "",
       "type": "boolean"
    },
+   "showbattery": {
+      "title": "",
+      "description": "",
+      "type": "boolean"
+   },
    "allowprint": {
       "title": "",
       "description": "",
+      "type": "boolean"
+    },
+    "disallowupload": {
+      "title": "Disable File Upload",
+      "description": "Set all file upload fields to disalbled.",
+      "type": "boolean"
+    },
+    "disallowiframes": {
+      "title": "Disable Iframes",
+      "description": "Do not load content in iframes.",
       "type": "boolean"
     },
     "hidegslidescontrols": {
       "title": "",
       "description": "",
       "type": "boolean"
-    },
-    "local": {
-      "title": "",
-      "description": "",
-      "type": "boolean"
-    },
-    "remote": {
-      "title": "",
-      "description": "",
-      "type": "boolean"
-    },
-    "host": {
-      "title": "",
-      "description": "",
-      "type": "string"
-    },
-    "port": {
-      "title": "",
-      "description": "",
-      "type": "number"
-    },
-    "username": {
-      "title": "",
-      "description": "",
-      "type": "string"
-    },
-    "password": {
-      "title": "",
-      "description": "",
-      "type": "string"
     },
     "reset": {
       "title": "",
@@ -135,11 +120,6 @@
       "title": "Serve Local: Port",
       "description": "The port to serve local content on",
       "type": "number"
-    },
-    "resetcache": {
-      "title": "",
-      "description": "",
-      "type": "boolean"
     },
     "url": {
       "title": "Content URL(s)",

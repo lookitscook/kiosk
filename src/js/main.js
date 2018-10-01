@@ -5,11 +5,17 @@ chrome.app.runtime.onRestarted.addListener(init);
 
 var directoryServer, adminServer, restartTimeout;
 
+chrome.commands.onCommand.addListener(function(command) {
+  chrome.runtime.sendMessage(null, {
+    'command': command
+  }, function(response) {
+    // console.log(response.status);
+  });
+});
+
 function init() {
 
-  var win, basePath, socketInfo;
-  var data = {};
-  var filesMap = {};
+  var win, data;
 
   /*
   LOG PERMISSION WARNINGS
@@ -36,65 +42,68 @@ function init() {
         return;
       }
       chrome.storage.managed.get(null, function(managedSettings) {
+        data = managedSettings;
+        next();
+      });
+    },
+    function(next) {
+      if (!_.isEmpty(data)) {
         // managed settings override local
-        _.defaults(data, managedSettings);
         next();
-      });
-    },
-    function(next) {
+        return;
+      }
       chrome.storage.local.get(null, function(localSettings) {
-        _.defaults(data, localSettings);
+        data = localSettings;
         next();
       });
     },
     function(next) {
+      if (!data.startupdelay) {
+        next();
+        return;
+      }
       var startupDelay = parseFloat(data.startupdelay) || 0;
       setTimeout(next, startupDelay * 1000);
     }
   ], function(err) {
 
-    if (('url' in data)) {
-      //setup has been completed
-
-      // Sleepmode may not have been selected by user in setup because it
-      // is a new config param, so assume the previous hard-coded value as
-      // default.
-      if (!data.sleepmode) {
-        chrome.storage.local.set({
-          'sleepmode': 'display'
-        });
-        data.sleepmode = 'display';
-      }
-      if (data.sleepmode == 'none') {
-        chrome.power.releaseKeepAwake();
-      } else {
-        chrome.power.requestKeepAwake(data.sleepmode);
-      }
-
-      if (data.servelocaldirectory && data.servelocalhost && data.servelocalport) {
-        //serve files from local directory
-        chrome.fileSystem.restoreEntry(data.servelocaldirectory, function(entry) {
-          //if we can't get the directory (removed drive possibly)
-          //wait 30 seconds and reload the app
-          if (!entry) {
-            restartTimeout = setTimeout(restart, 30 * 1000);
-            return;
-          }
-
-          var host = data.servelocalhost;
-          var port = data.servelocalport;
-          startWebserverDirectoryEntry(host, port, entry);
-        });
-      }
-      if (data.host && data.port) {
-        //make setup page available remotely via HTTP
-        startWebserver(data.host, data.port, 'www', data);
-      }
-      openWindow("windows/browser.html");
-    } else {
-      //need to run setup
+    if (!('url' in data)) {
       openWindow("windows/setup.html");
+      return;
     }
+    //setup has been completed
+
+    // Sleepmode may not have been selected by user in setup because it
+    // is a new config param, so assume the previous hard-coded value as
+    // default.
+    if (!data.sleepmode) {
+      chrome.storage.local.set({
+        'sleepmode': 'display'
+      });
+      data.sleepmode = 'display';
+    }
+    if (data.sleepmode == 'none') {
+      chrome.power.releaseKeepAwake();
+    } else {
+      chrome.power.requestKeepAwake(data.sleepmode);
+    }
+
+    if (data.servelocaldirectory && data.servelocalhost && data.servelocalport) {
+      //serve files from local directory
+      chrome.fileSystem.restoreEntry(data.servelocaldirectory, function(entry) {
+        //if we can't get the directory (removed drive possibly)
+        //wait 30 seconds and reload the app
+        if (!entry) {
+          restartTimeout = setTimeout(restart, 30 * 1000);
+          return;
+        }
+
+        var host = data.servelocalhost;
+        var port = data.servelocalport;
+        startWebserverDirectoryEntry(host, port, entry);
+      });
+    }
+    openWindow("windows/browser.html");
   });
 
   function openWindow(path) {
@@ -133,37 +142,6 @@ function init() {
     directoryServer.start();
   }
 
-  //directory must be a subdirectory of the package
-  function startWebserver(host, port, directory, settings) {
-    chrome.runtime.getPackageDirectoryEntry(function(packageDirectory) {
-      packageDirectory.getDirectory(directory, {
-        create: false
-      }, function(webroot) {
-        var fs = new WSC.FileSystem(webroot);
-        var handlers = [
-          ['/data.*', AdminDataHandler],
-          ['.*', WSC.DirectoryEntryHandler.bind(null, fs)]
-        ];
-        adminServer = new WSC.WebApplication({
-          host: host,
-          port: port,
-          handlers: handlers,
-          renderIndex: true,
-          optRenderIndex: true,
-          auth: {
-            username: settings.username,
-            password: settings.password
-          }
-        });
-        adminServer.start();
-      });
-    });
-  }
-}
-
-function restartApplication() {
-  chrome.runtime.restart(); //for ChromeOS devices in "kiosk" mode
-  chrome.runtime.reload();
 }
 
 function stopAutoRestart() {
@@ -171,54 +149,3 @@ function stopAutoRestart() {
     clearTimeout(restartTimeout);
   }
 }
-
-function AdminDataHandler(request) {
-  WSC.BaseHandler.prototype.constructor.call(this);
-}
-
-var app = this;
-_.extend(AdminDataHandler.prototype, {
-  put: function() {
-    var newData = this.request.bodyparams;
-
-    chrome.storage.local.get(null, function(data) {
-
-      var saveData = {};
-      var restartNow = false;
-      for (var key in newData) {
-        var value = newData[key];
-        if (data.hasOwnProperty(key)) {
-          if (key == 'url' && !Array.isArray(value)) {
-            value = value.split(',');
-            restart = true;
-          }
-          data[key] = value;
-          saveData[key] = value;
-        }
-        if (key.toString() == "restart") {
-          restartNow = true;
-        }
-      }
-      chrome.storage.local.set(saveData);
-      this.setHeader('content-type', 'text/json');
-      var buf = new TextEncoder('utf-8').encode(JSON.stringify(data)).buffer;
-      this.write(buf);
-      this.finish();
-
-      if (restartNow) setTimeout(function() {
-        restartApplication();
-      }, 1000);
-
-
-    }.bind(this));
-
-  },
-  get: function() {
-    chrome.storage.local.get(null, function(data) {
-      this.setHeader('content-type', 'text/json');
-      var buf = new TextEncoder('utf-8').encode(JSON.stringify(data)).buffer;
-      this.write(buf);
-      this.finish();
-    }.bind(this));
-  }
-}, WSC.BaseHandler.prototype);

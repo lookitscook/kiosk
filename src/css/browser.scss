@@ -11,14 +11,14 @@ body,#container{
   overflow:hidden;
   background:#000;
 }
-#content, #screensaver{
+#content, #screensaver, #screensaver-browser{
   position:absolute;
   top:0;
   right:0;
   bottom:0;
   left:0;
 }
-#screensaver{
+#screensaver, #screensaver-browser{
   z-index:3;
   visibility: hidden;
 
@@ -30,14 +30,17 @@ body,#container{
 #content{
   z-index:1;
 }
-body.tabbed #content, body.show-nav #content{
+body.tabbed #content, body.show-top-bar #content{
     top:48px;
 }
 body.screensaverActive #content{
   visibility: hidden;
 }
-body.screensaverActive #screensaver{
-  visibility: visible;
+body.screensaverActive {
+  #screensaver, #screensaver-browser{
+    visibility: visible;
+    display: block;
+  }
 }
 
 #tabs{
@@ -45,7 +48,7 @@ body.screensaverActive #screensaver{
   visibility: hidden;
 }
 
-body.tabbed #tabs, body.show-nav #tabs{
+body.tabbed #tabs, body.show-top-bar #tabs{
   display:block;
   visibility: visible;
   z-index:2;
@@ -67,10 +70,36 @@ body.tabbed .tabs{
   display:block;
   visibility: visible;
 }
-body.show-nav .tabs{
-  left: 144px;
-  width: auto;
+body{
+
+  &.show-nav{
+
+    #nav{
+      display:block;
+      visibility: visible;
+    }
+
+    .tabs{
+      left: 144px;
+    }
+
+  }
+
+  &.show-battery{
+
+    #battery-status{
+      display:block;
+      visibility: visible;
+    }
+
+    .tabs{
+      right:80px;
+    }
+
+  }
+
 }
+
 #nav{
   display:none;
   visibility:hidden;
@@ -94,7 +123,7 @@ body.show-nav .tabs{
   text-align:center;
   line-height:32px;
 }
-#nav a i.material-icons{
+#tabs a i.material-icons{
   height:48px;
   line-height:48px;
 }
@@ -108,22 +137,64 @@ body.show-nav .tabs{
 #nav li.inactive a:hover{
   background-color: #000;
 }
-body.show-nav #nav{
-  display:block;
-  visibility: visible;
+
+.tabs{
+  width: auto;
 }
+
 .tabs.scroll{
   overflow-x: auto;
 }
 .tabs .tab{
   float:none;
+  position:relative;
+  text-transform:none;
 }
 .tabs .tab a{
     color:rgba(255,255,255,0.7);
 }
+
+.tabs .tab .close{
+  position: absolute;
+  right: 0.5em;
+  top: 0;
+}
+
 .tabs .tab a.active, .tabs .tab a:hover{
     color:rgba(255,255,255,1.0);
 }
-.tabs .indicator {
-   background-color: rgb(255,255,255) !important;
+
+.tabs .indicator { display: none; }
+.tabs .tab a.active { background: #111; }
+
+#battery-status{
+  position:absolute;
+  background: #000;
+  position:absolute;
+  height:48px;
+  padding: 0 0 0 15px;
+  width: 80px;
+  right:0;
+  top:0;
+  text-align:center;
+  color:#fff;
+  line-height:48px;
+  display: none;
+  visibility: hidden;
+
+  .text{
+    font-size: 14px;
+    float:left;
+    display:block;
+    text-align:center;
+  }
+
+  i{
+    height:48px;
+    line-height:48px;
+    float:left;
+    display:block;
+  }
+
 }
+

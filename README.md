@@ -4,6 +4,29 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
 
 ## Changelog
 
+- v7.0.1
+  - Cache clearing update
+
+- v7.0.0
+  - BREAKING CHANGE: Removed support for F3 key content refresh
+  - BREAKING CHANGE: Removed optional CTRL+I shortcut for viewing system information
+  - BREAKING CHANGE: Removed support for new windows in modals
+  - Bug fix: shortcut key commands now work with all content
+  - Bug fix: new windows can now correctly open children
+
+- v6.0.1
+  - Bug fix: screensaver
+
+- v6.0.0
+  - BREAKING CHANGE: Removed support for remote admin
+  - New feature: disable iframes
+  - New feature: disable file upload fields
+  - New feature: "disable" printing
+  - New feature: open new windows in tabs
+  - New feature: show battery status
+  - Bug fix: console error
+  - Bug fix: show multiple URL mode on edit
+
 - v5.18.0
   - Migrate Free application version to Enterprise code base
 

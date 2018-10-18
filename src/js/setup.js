@@ -61,6 +61,9 @@ $(function() {
         $('.rotate-rate').removeClass('disabled');
       }
     }
+    if (data.newwindowmode) {
+      $('#newwindow-mode').children("[value='" + data.newwindowmode + "']").prop('selected', true);
+    }
     if (data.allowprint) {
       $("#allowprint").prop("checked", true);
     }
@@ -401,6 +404,7 @@ $(function() {
       updated.customtoken = $('#customtoken').val();
       updated.whitelist = parseURLs($('#whitelist').val());
       updated.multipleurlmode = $("#multiple-url-mode").val() || 'tabs';
+      updated.newwindowmode = $("#newwindow-mode").val();
       updated.startupdelay = parseFloat($("#startup-delay").val()) ? parseFloat($("#startup-delay").val()) : 0;
       updated.rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
       updated.displaysysteminfo = $('#displaySystemInfo').val();
@@ -486,6 +490,10 @@ $(function() {
       } else {
         delete updated.url;
         error.push("Content URL is required.");
+      }
+      if (updated.newwindowmode === 'tab' && updated.multipleurlmode !== 'tabs') {
+        delete updated.newwindowmode;
+        error.push('Tabbed mode for new windows requires tabs mode for multiple URLs')
       }
 
       if (updated.customtoken) {

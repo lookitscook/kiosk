@@ -36,7 +36,7 @@ $(function() {
   var showBattery = false;
   var showTopBar = false;
   var tokens = {};
-  var allowNewWindow;
+  var allowNewWindow, newWindowMode;
 
   init();
 
@@ -509,6 +509,7 @@ $(function() {
         disableselection = data.disableselection ? true : false;
         resetcache = data.resetcache ? true : false;
         allowNewWindow = data.newwindow ? true : false;
+        newWindowMode = data.newwindowmode;
 
         reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
         screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
@@ -825,11 +826,38 @@ $(function() {
             return;
           }
 
-          // open the window in a new tab
-          loadURL(e.originalEvent.targetUrl, {
-            type: 'newwindow'
-          });
+          // open the window in a new tab if selected
+          if (newWindowMode === 'tab') {
+            var id = loadURL(e.originalEvent.targetUrl, {
+              type: 'newwindow'
+            });
+            return;
+          }
 
+          //otherwise open in a modal, by default
+          $('#newWindow webview').remove();
+          var $newWebview = $('<webview/>');
+          initWebview($newWebview);
+          $newWebview.css({
+            right: '1px',
+            width: '99%'
+          });
+          $newWebview.on('close', function(e) {
+            $('#newWindow').modal('close');
+            $('#newWindow webview').remove();
+          });
+          e.originalEvent.window.attach($newWebview[0]);
+          $('#newWindow').append($newWebview).modal('open');
+          setTimeout(function() {
+            $newWebview.css({
+              bottom: 0,
+              right: 0,
+              top: 0,
+              left: 0,
+              height: '100%',
+              width: '100%'
+            });
+          }, 10);
         })
         .on('dialog', function(e) {
           var $modal;

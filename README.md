@@ -10,9 +10,7 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
 - v7.0.0
   - BREAKING CHANGE: Removed support for F3 key content refresh
   - BREAKING CHANGE: Removed optional CTRL+I shortcut for viewing system information
-  - BREAKING CHANGE: Removed support for new windows in modals
   - Bug fix: shortcut key commands now work with all content
-  - Bug fix: new windows can now correctly open children
 
 - v6.0.1
   - Bug fix: screensaver

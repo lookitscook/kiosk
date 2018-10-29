@@ -2,8 +2,8 @@
   "name": "Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "7.0.1",
-  "version_name": "7.0.1",
+  "version": "7.1.0",
+  "version_name": "7.1.0",
   "author": {
     "name": "The Cook Company",
     "email": "support@cook.company"

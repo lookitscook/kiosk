@@ -4,6 +4,9 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
 
 ## Changelog
 
+- v7.1.0
+    - New feature: Re-enable modal pop-ups
+
 - v7.0.1
   - Cache clearing update
 

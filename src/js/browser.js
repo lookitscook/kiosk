@@ -835,7 +835,7 @@ $(function() {
           }
 
           //otherwise open in a modal, by default
-          $('#newWindow webview').remove();
+          $('#newWindow webview').addClass('stale');
           var $newWebview = $('<webview/>');
           initWebview($newWebview);
           $newWebview.css({
@@ -849,6 +849,7 @@ $(function() {
           e.originalEvent.window.attach($newWebview[0]);
           $('#newWindow').append($newWebview).modal('open');
           setTimeout(function() {
+            $('#newWindow webview.stale').remove();
             $newWebview.css({
               bottom: 0,
               right: 0,

@@ -63,6 +63,8 @@ $(function() {
     }
     if (data.newwindowmode) {
       $('#newwindow-mode').children("[value='" + data.newwindowmode + "']").prop('selected', true);
+    } else {
+      $('#newwindow-mode').children("[value='tab']").prop('selected', true);
     }
     if (data.allowprint) {
       $("#allowprint").prop("checked", true);

@@ -10,9 +10,9 @@ $(function() {
 
   var restarting = false;
   var reset = false;
-  var useScreensaver, screensaverTime, screensaverURL;
+  var useScreensaver, screensaverTime, screensaverURL, screensaverWarningTime, screensaverWarningMessage, screensaverWarningTimeRemaining, screensaverReloadIntervalTime, screensaverReloadInterval;
   var win = window;
-  var resetTimeout, screensaverTimeout;
+  var resetTimeout, screensaverTimeout, screensaverWarningInterval;
   var restart;
   var urlrotateindex = 0;
   var rotaterate;
@@ -302,19 +302,24 @@ $(function() {
           return;
         }
         chrome.storage.managed.get(null, function(managedSettings) {
-          data = managedSettings;
-          next();
+          data = Object.assign({}, managedSettings);
+          if (managedSettings.devices && managedSettings.devices.length) {
+            chrome.enterprise.deviceAttributes.getDeviceAssetId(function(assetID) {
+              if (assetID && managedSettings.devices[assetID]) {
+                // asset ID config overrides default
+                data = Object.assign({}, data, managedSettings.devices[assetID].configuration);
+              }
+              next();
+            });
+          } else {
+            next();
+          }
         });
       },
       function(next) {
-        if (!_.isEmpty(data)) {
-          // managed settings override local
-          data.local = false; // local admin is disabled if settings are configured via policy
-          next();
-          return;
-        }
         chrome.storage.local.get(null, function(localSettings) {
-          data = localSettings;
+          // managed settings override local
+          data = Object.assign({}, localSettings, data);
           next();
         });
       }
@@ -515,6 +520,10 @@ $(function() {
         screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
         screensaverURL = tokenizeUrl(data.screensaverurl);
         useScreensaver = screensaverTime && screensaverURL ? true : false;
+        screensaverWarningTime = (data.screensaverwarningtime && parseFloat(data.screensaverwarningtime)) || 0;
+        screensaverWarningMessage = data.screensaverwarningmessage;
+        screensaverReloadIntervalTime = parseFloat(data.screensaverreloadinterval) || 0;
+
         clearcookies = data.clearcookiesreset ? true : false;
 
         if (reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
@@ -576,6 +585,15 @@ $(function() {
       clearTimeout(screensaverTimeout);
       screensaverTimeout = false;
     }
+    if (screensaverWarningInterval) {
+      clearInterval(screensaverWarningTimeRemaining);
+      screensaverWarningInterval = false;
+    }
+    $('#screensaverWarning').parent().remove();
+    if (screensaverReloadInterval) {
+      clearInterval(screensaverReloadInterval);
+      screensaverReloadInterval = false;
+    }
     startScreensaverTimeout();
     startResetTimeout();
   }
@@ -583,17 +601,40 @@ $(function() {
   function startScreensaverTimeout() {
     if (useScreensaver && !screensaverTimeout) {
       screensaverTimeout = setTimeout(function() {
-        screensaverTimeout = false;
-        if ($('body').hasClass('screensaverActive')) {
-          return;
-        }
-        $('body').addClass('screensaverActive');
-        if (clearcookies) {
-          clearCache(function() {
+        screensaverTimeout = setTimeout(function() {
+          screensaverTimeout = false;
+          $('#screensaverWarning').parent().remove();
+          if (screensaverWarningInterval) {
+            clearInterval(screensaverWarningInterval);
+            screensaverWarningInterval = false;
+          }
+          if ($('body').hasClass('screensaverActive')) {
+            return;
+          }
+          if (screensaverReloadIntervalTime) {
+            screensaverReloadInterval = setInterval(function() {
+              refreshContent(true);
+            }, screensaverReloadIntervalTime * 60 * 1000);
+          }
+          $('body').addClass('screensaverActive');
+          if (clearcookies) {
+            clearCache(function() {
+              refreshContent(false);
+            });
+          } else {
             refreshContent(false);
-          });
-        } else {
-          refreshContent(false);
+          }
+        }, screensaverWarningTime * 1000);
+        if (screensaverWarningTime && screensaverWarningMessage) {
+          screensaverWarningTimeRemaining = Math.ceil(screensaverWarningTime);
+          Materialize.toast($('<span id="screensaverWarning">' + screensaverWarningMessage.replace(/\{countdown\}/g, screensaverWarningTimeRemaining) + '</span>'), screensaverWarningTime * 1000);
+          screensaverWarningInterval = setInterval(function() {
+            screensaverWarningTimeRemaining--;
+            if (screensaverWarningTimeRemaining < 0) {
+              return;
+            }
+            $('#screensaverWarning').text(screensaverWarningMessage.replace(/\{countdown\}/g, screensaverWarningTimeRemaining));
+          }, 1000);
         }
       }, screensaverTime * 60 * 1000);
     }

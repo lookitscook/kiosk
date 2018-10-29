@@ -42,18 +42,24 @@ function init() {
         return;
       }
       chrome.storage.managed.get(null, function(managedSettings) {
-        data = managedSettings;
-        next();
+        data = Object.assign({}, managedSettings);
+        if (managedSettings.devices && managedSettings.devices.length) {
+          chrome.enterprise.deviceAttributes.getDeviceAssetId(function(assetID) {
+            if (assetID && managedSettings.devices[assetID]) {
+              // asset ID config overrides default
+              data = Object.assign({}, data, managedSettings.devices[assetID].configuration);
+            }
+            next();
+          });
+        } else {
+          next();
+        }
       });
     },
     function(next) {
-      if (!_.isEmpty(data)) {
-        // managed settings override local
-        next();
-        return;
-      }
       chrome.storage.local.get(null, function(localSettings) {
-        data = localSettings;
+        // managed settings override local
+        data = Object.assign({}, localSettings, data);
         next();
       });
     },

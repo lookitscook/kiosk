@@ -1,4 +1,4 @@
-var LICENSED = false;
+var LICENSED = true;
 
 $(function() {
 

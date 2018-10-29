@@ -32,6 +32,10 @@ $(function() {
         $('.multiple-url-mode').removeClass('disabled').show();
       }
     }
+
+    $('#screensaverwarningtime').val(data.screensaverwarningtime || 0);
+    $('#screensaverwarningmessage').val(data.screensaverwarningmessage || 'Screensaver starting in {countdown} seconds...');
+
     if (data.tokenserver) {
       $('#tokenserver').val(data.tokenserver);
     }
@@ -117,6 +121,7 @@ $(function() {
       $("#screensaver-time").val(parseFloat(data.screensavertime));
       $('#screensaver-url').val(data.screensaverurl);
     }
+    $('#screensaver-reload-interval').val(parseFloat(data.screensaverreloadinterval) || '');
     if (data.clearcookiesreset) $("#clear-cookies-reset, #screensaver-reset").prop("checked", true);
     if (data.restart && parseInt(data.restart)) {
       var restart = parseInt(data.restart);
@@ -419,6 +424,7 @@ $(function() {
       updated.clearcookiesreset = $('#clear-cookies-reset').is(':checked') || $('#screensaver-reset').is(':checked');
       var useScreensaver = $('#use-screensaver').is(':checked');
       updated.screensavertime = parseFloat($('#screensaver-time').val()) || 0;
+      updated.screensaverreloadinterval = parseFloat($('#screensaver-reload-interval').val()) || null;
       updated.screensaverurl = $('#screensaver-url').val();
       updated.hidecursor = $("#hidecursor").is(':checked');
       updated.disablecontextmenu = $("#disablecontextmenu").is(':checked');
@@ -440,6 +446,8 @@ $(function() {
       updated.resetcache = $('#reset-cache').is(':checked');
       updated.shownav = $('#shownav').is(':checked');
       updated.showbattery = $('#showbattery').is(':checked');
+      updated.screensaverwarningtime = parseFloat($("#screensaverwarningtime").val()) || 0;
+      updated.screensaverwarningmessage = $("#screensaverwarningmessage").val();
 
       var servelocal = $("#servelocal").is(':checked');
       updated.servelocaldirectory = $('#servelocaldirectory').data('directory');

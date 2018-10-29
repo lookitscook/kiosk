@@ -5,8 +5,11 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
 ## Changelog
 
 - v7.1.0
-  - New feature: Re-enable modal pop-ups
+  - New feature: re-enable modal pop-ups
   - New feature: support Confirm and Prompt dialogs.
+  - New feature: screensaver warning notification
+  - New feature: screensaver reload interval
+  - New feature: configuration by asset ID
 
 - v7.0.1
   - Cache clearing update

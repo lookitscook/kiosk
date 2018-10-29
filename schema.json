@@ -1,18 +1,19 @@
 {
   "type": "object",
+  "id": "KioskConfig",
   "properties": {
     "shownav": {
-      "title": "",
+      "title": "Show Navigation",
       "description": "",
       "type": "boolean"
    },
    "showbattery": {
-      "title": "",
+      "title": "Show Battery Indicator",
       "description": "",
       "type": "boolean"
    },
    "allowprint": {
-      "title": "",
+      "title": "Allow Printing",
       "description": "",
       "type": "boolean"
     },
@@ -27,82 +28,97 @@
       "type": "boolean"
     },
     "hidegslidescontrols": {
-      "title": "",
+      "title": "Hide Google Slides Controls",
       "description": "",
       "type": "boolean"
     },
     "reset": {
-      "title": "",
+      "title": "Inactivity Reset Time (minutes)",
       "description": "",
       "type": "number"
     },
     "screensavertime": {
-      "title": "",
+      "title": "Screensaver Time",
       "description": "",
       "type": "number"
     },
     "screensaverurl": {
-      "title": "",
+      "title": "Screensaver URL",
       "description": "",
       "type": "string"
     },
+    "screensaverwarningtime": {
+      "title": "Screensaver Warning Time",
+      "description": "The length of time to show the screensaver warning prior to activating the screensaver. Set to 0 to disable the warning. (seconds)",
+      "type": "number"
+    },
+    "screensaverwarningmessage": {
+      "title": "Screensaver Warning Message",
+      "description": "The message to display prior to activating the screensaver",
+      "type": "string"
+    },
+    "screensaverreloadinterval": {
+      "title": "Screensaver Reload Interval",
+      "description": "How often to refresh the screensaver content while it is active. (minutes)",
+      "type": "number"
+    },
     "clearcookiesreset": {
-      "title": "",
+      "title": "Clear Cookies on Reset",
       "description": "",
       "type": "boolean"
     },
     "restart": {
-      "title": "",
+      "title": "Restart Time",
       "description": "",
       "type": "number"
     },
     "restartday": {
-      "title": "",
+      "title": "Restart Day",
       "description": "",
       "type": "string"
     },
     "remoteschedule": {
-      "title": "",
+      "title": "Use Remote Schedule",
       "description": "",
       "type": "boolean"
     },
     "remotescheduleurl": {
-      "title": "",
+      "title": "Remote Schedule URL",
       "description": "",
       "type": "string"
     },
     "schedulepollinterval": {
-      "title": "",
+      "title": "Remote Schedule Poll Interval",
       "description": "",
       "type": "number"
     },
     "hidecursor": {
-      "title": "",
+      "title": "Hide Cursor",
       "description": "",
       "type": "boolean"
     },
     "disablecontextmenu": {
-      "title": "",
+      "title": "Disable Context Menu",
       "description": "",
       "type": "boolean"
     },
     "disabledrag": {
-      "title": "",
+      "title": "Disable Drag",
       "description": "",
       "type": "boolean"
     },
     "disabletouchhighlight": {
-      "title": "",
+      "title": "Disable Touch Highlight",
       "description": "",
       "type": "boolean"
     },
     "disableselection": {
-      "title": "",
+      "title": "Disable Selection",
       "description": "",
       "type": "boolean"
     },
     "newwindow": {
-      "title": "",
+      "title": "New Window",
       "description": "",
       "type": "boolean"
     },
@@ -140,7 +156,7 @@
       "type": "string"
     },
     "whitelist": {
-      "title": "",
+      "title": "Content Domain Whitelist",
       "description": "",
       "type": "array",
       "items": {
@@ -148,7 +164,7 @@
       }
     },
     "multipleurlmode": {
-      "title": "",
+      "title": "Multiple URL Mode",
       "description": "",
       "type": "string"
     },
@@ -158,24 +174,34 @@
       "type": "string"
     },
     "rotaterate": {
-      "title": "",
+      "title": "Rotate Rate",
       "description": "",
       "type": "number"
     },
     "useragent": {
-      "title": "",
+      "title": "User Agent",
       "description": "",
       "type": "string"
     },
     "authorization": {
-      "title": "",
+      "title": "Authorization Header",
       "description": "",
       "type": "string"
     },
     "sleepmode": {
-      "title": "",
+      "title": "Sleep Mode",
       "description": "",
       "type": "string"
+    },
+    "devices": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "assetid": { "type": "string" },
+          "configuration": { "$ref": "KioskConfig" }
+        }
+      }
     }
   }
 }

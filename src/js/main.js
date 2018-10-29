@@ -1,4 +1,4 @@
-var LICENSED = true;
+var LICENSED = false;
 
 chrome.app.runtime.onLaunched.addListener(init);
 chrome.app.runtime.onRestarted.addListener(init);

@@ -1,4 +1,4 @@
-var LICENSED = true;
+var LICENSED = false;
 
 $(function() {
 
@@ -864,25 +864,33 @@ $(function() {
           var $modal;
           if (e.originalEvent.messageType == "alert") {
             $modal = $('#dialogAlert');
+          } else if (e.originalEvent.messageType == "confirm") {
+            e.preventDefault();
+            $modal = $('#dialogConfirm');
+          } else if (e.originalEvent.messageType == "prompt") {
+            e.preventDefault();
+            $modal = $('#dialogPrompt');
+            $modal.find('.input-field > input').attr('placeholder', e.originalEvent.defaultPromptText);
           }
-          /*else if(e.originalEvent.messageType == "confirm"){ //Confirmation and Prompts currently non-functional
-                      $modal = $('#dialogConfirm');
-                  }else if(e.originalEvent.messageType == "prompt"){
-                      $modal = $('#dialogPrompt');
-                      $modal.find('.input-field > input').attr('placeholder',e.originalEvent.defaultPromptText);
-                  }*/
           if ($modal) {
-            //e.preventDefault();
             $modal.find('.text').text(e.originalEvent.messageText);
             $modal.modal('open');
             $modal.find('a.ok').click(function() {
               $modal.modal('close');
-              e.originalEvent.dialog.ok($modal.find('#promptValue').val());
+              try {
+                e.originalEvent.dialog.ok($modal.find('#promptValue').val());
+              } catch (err) {
+                console.error(err)
+              }
               return;
             });
             $modal.find('a.cancel').click(function() {
               $modal.modal('close');
-              e.originalEvent.dialog.cancel();
+              try {
+                e.originalEvent.dialog.cancel();
+              } catch (err) {
+                console.error(err)
+              }
               return;
             });
           }

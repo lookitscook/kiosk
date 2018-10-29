@@ -1,4 +1,4 @@
-var LICENSED = true;
+var LICENSED = false;
 var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
 
 $(function() {

@@ -39,6 +39,7 @@
     "app.window.fullscreen",
     "app.window.fullscreen.overrideEsc",
     "gcm",
+    "enterprise.deviceAttributes",
     {"fileSystem": ["write", "directory","retainEntries"]}
   ],
   "optional_permissions": [ "audioCapture", "videoCapture" ],

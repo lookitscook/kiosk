@@ -880,6 +880,7 @@ $(function() {
             var id = loadURL(e.originalEvent.targetUrl, {
               type: 'newwindow'
             });
+            e.originalEvent.window.attach($('#' + id + ' > webview')[0]);
             return;
           }
 

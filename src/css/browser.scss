@@ -206,3 +206,11 @@ body{
   height:80%;	
   overflow:hidden;	
 }
+
+#screensaverWarningModal{
+  .modal-content{
+    background: #000;
+    text-align: center;
+    color: #fff;
+  }
+}

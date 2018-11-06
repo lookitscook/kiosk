@@ -593,11 +593,11 @@ $(function() {
       clearTimeout(screensaverTimeout);
       screensaverTimeout = false;
     }
+    $('#screensaverWarningModal').modal('close');
     if (screensaverWarningInterval) {
       clearInterval(screensaverWarningTimeRemaining);
       screensaverWarningInterval = false;
     }
-    $('#screensaverWarning').parent().remove();
     if (screensaverReloadInterval) {
       clearInterval(screensaverReloadInterval);
       screensaverReloadInterval = false;
@@ -611,7 +611,7 @@ $(function() {
       screensaverTimeout = setTimeout(function() {
         screensaverTimeout = setTimeout(function() {
           screensaverTimeout = false;
-          $('#screensaverWarning').parent().remove();
+          $('#screensaverWarningModal').modal('close');
           if (screensaverWarningInterval) {
             clearInterval(screensaverWarningInterval);
             screensaverWarningInterval = false;
@@ -635,7 +635,8 @@ $(function() {
         }, screensaverWarningTime * 1000);
         if (screensaverWarningTime && screensaverWarningMessage) {
           screensaverWarningTimeRemaining = Math.ceil(screensaverWarningTime);
-          Materialize.toast($('<span id="screensaverWarning">' + screensaverWarningMessage.replace(/\{countdown\}/g, screensaverWarningTimeRemaining) + '</span>'), screensaverWarningTime * 1000);
+          $('#screensaverWarning').text(screensaverWarningMessage.replace(/\{countdown\}/g, screensaverWarningTimeRemaining));
+          $('#screensaverWarningModal').modal('open');
           screensaverWarningInterval = setInterval(function() {
             screensaverWarningTimeRemaining--;
             if (screensaverWarningTimeRemaining < 0) {

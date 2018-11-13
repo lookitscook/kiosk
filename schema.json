@@ -64,7 +64,7 @@
     },
     "clearcookiesreset": {
       "title": "Clear Cookies on Reset",
-      "description": "",
+      "description": "Should we clear cookies on reset?",
       "type": "boolean"
     },
     "restart": {
@@ -79,47 +79,47 @@
     },
     "remoteschedule": {
       "title": "Use Remote Schedule",
-      "description": "",
+      "description": "Should we use a remote schedule?",
       "type": "boolean"
     },
     "remotescheduleurl": {
       "title": "Remote Schedule URL",
-      "description": "",
+      "description": "The URL of the JSON formatted schedule.",
       "type": "string"
     },
     "schedulepollinterval": {
       "title": "Remote Schedule Poll Interval",
-      "description": "",
+      "description": "How often to check for an updated schedule.",
       "type": "number"
     },
     "hidecursor": {
       "title": "Hide Cursor",
-      "description": "",
+      "description": "Hide the cursor.",
       "type": "boolean"
     },
     "disablecontextmenu": {
       "title": "Disable Context Menu",
-      "description": "",
+      "description": "Disable the context menu.",
       "type": "boolean"
     },
     "disabledrag": {
       "title": "Disable Drag",
-      "description": "",
+      "description": "Disable draggigng images.",
       "type": "boolean"
     },
     "disabletouchhighlight": {
       "title": "Disable Touch Highlight",
-      "description": "",
+      "description": "Disable hightlight on touch.",
       "type": "boolean"
     },
     "disableselection": {
       "title": "Disable Selection",
-      "description": "",
+      "description": "Disable selecting text.",
       "type": "boolean"
     },
     "newwindow": {
       "title": "New Window",
-      "description": "",
+      "description": "Allow pop-ups and new windows?",
       "type": "boolean"
     },
     "servelocaldirectory": {
@@ -157,7 +157,7 @@
     },
     "whitelist": {
       "title": "Content Domain Whitelist",
-      "description": "",
+      "description": "When specified, will only allow content on these domains.",
       "type": "array",
       "items": {
         "type": "string"
@@ -165,7 +165,7 @@
     },
     "multipleurlmode": {
       "title": "Multiple URL Mode",
-      "description": "",
+      "description": "Specify how to handle multiple content URLs. Valid values: 'tabs', 'rotate'",
       "type": "string"
     },
     "newwindowmode": {
@@ -175,22 +175,22 @@
     },
     "rotaterate": {
       "title": "Rotate Rate",
-      "description": "",
+      "description": "With 'rotate' multiple URL mode, how often should the content switch? (seconds)",
       "type": "number"
     },
     "useragent": {
       "title": "User Agent",
-      "description": "",
+      "description": "Customize the user agent sent with content and screensaver requests.",
       "type": "string"
     },
     "authorization": {
       "title": "Authorization Header",
-      "description": "",
+      "description": "Customize the authorization header sent with content and screensaver requests.",
       "type": "string"
     },
     "sleepmode": {
       "title": "Sleep Mode",
-      "description": "",
+      "description": "Valid values: 'display', 'none'",
       "type": "string"
     },
     "devices": {

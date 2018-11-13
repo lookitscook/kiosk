@@ -894,8 +894,11 @@ $(function() {
             width: '99%'
           });
           $newWebview.on('close', function(e) {
-            $('#newWindow').modal('close');
-            $('#newWindow webview').remove();
+            try {
+              $('#newWindow').modal('close');
+            } catch (err) {
+              console.error(err);
+            }
           });
           e.originalEvent.window.attach($newWebview[0]);
           $('#newWindow').append($newWebview).modal('open');

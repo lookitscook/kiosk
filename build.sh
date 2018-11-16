@@ -24,8 +24,8 @@ htmlmin src/windows/setup.html > dist/windows/setup.html
 #build js
 cp node_modules/async/dist/async.min.js dist/js/async.min.js;
 cp node_modules/jquery/dist/jquery.min.js dist/js/jquery.min.js;
-cp node_modules/materialize-css/dist/js/materialize.min.js dist/js/materialize.min.js;
 cp node_modules/moment/min/moment.min.js dist/js/moment.min.js;
+cp lib/materialize-custom.min.js dist/js/materialize.min.js;
 cp lib/lodash.min.js dist/js/lodash.min.js;
 cp lib/wsc-chrome/wsc-chrome.js dist/js/lib/wsc-chrome.js;
 uglifyjs src/js/browser.js > dist/js/browser.min.js;

@@ -4,22 +4,22 @@
   "properties": {
     "shownav": {
       "title": "Show Navigation",
-      "description": "",
+      "description": "Show home/forward/back browser navigation bar.",
       "type": "boolean"
    },
    "showbattery": {
       "title": "Show Battery Indicator",
-      "description": "",
+      "description": "Display icon and percent indicator of remaining battery life.",
       "type": "boolean"
    },
    "allowprint": {
       "title": "Allow Printing",
-      "description": "",
+      "description": "Enable printing via CTRL+P shortcut or via application.",
       "type": "boolean"
     },
     "disallowupload": {
       "title": "Disable File Upload",
-      "description": "Set all file upload fields to disalbled.",
+      "description": "Set all file upload fields to disabled.",
       "type": "boolean"
     },
     "disallowiframes": {
@@ -29,12 +29,12 @@
     },
     "hidegslidescontrols": {
       "title": "Hide Google Slides Controls",
-      "description": "",
+      "description": "Only show Google Slides content when using embedded player URL. Do not show control overlay.",
       "type": "boolean"
     },
     "reset": {
       "title": "Inactivity Reset Time (minutes)",
-      "description": "",
+      "description": "Delay before showing screensaver or resetting application after last interaction.",
       "type": "number"
     },
     "screensavertime": {
@@ -44,7 +44,7 @@
     },
     "screensaverurl": {
       "title": "Screensaver URL",
-      "description": "",
+      "description": "The content URL to be used as a screensaver",
       "type": "string"
     },
     "screensaverwarningtime": {
@@ -69,12 +69,12 @@
     },
     "restart": {
       "title": "Restart Time",
-      "description": "",
+      "description": "The hour of the day at which to restart. 1-24.",
       "type": "number"
     },
     "restartday": {
       "title": "Restart Day",
-      "description": "",
+      "description": "The day of the week upon which to restart. e.g. 'monday'. Leave blank for daily.",
       "type": "string"
     },
     "remoteschedule": {

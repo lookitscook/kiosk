@@ -603,7 +603,7 @@ $(function() {
       }
       chrome.storage.local.remove(remove);
       chrome.storage.local.set(updated);
-      chrome.runtime.restart(); // for ChromeOS devices in "kiosk" mode
+      if (chrome.runtime.restart) chrome.runtime.restart(); // for ChromeOS devices in "kiosk" mode
       chrome.runtime.reload();
     });
   });

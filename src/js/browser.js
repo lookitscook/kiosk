@@ -549,12 +549,17 @@ $(function() {
         }
         currentURL = defaultURL;
         loadContent(true);
-        if (resetcache) {
+        if (resetcache || clearcookies) {
+          $('#container').hide();
           setTimeout(function() {
+            var restartApp = resetcache;
             clearCache(function() {
-              restartApplication();
+              if (restartApp) {
+                restartApplication();
+              }
+              $('#container').show();
             });
-          }, 1000);
+          }, 100);
         }
 
       });

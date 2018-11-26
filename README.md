@@ -10,6 +10,7 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
   - New feature: screensaver warning notification
   - New feature: screensaver reload interval
   - New feature: configuration by asset ID
+  - Bug fix: clear cache on startup if inactivity reset is enabled
 
 - v7.0.1
   - Cache clearing update

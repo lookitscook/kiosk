@@ -761,6 +761,8 @@ $(function() {
           });
         } else if (e.originalEvent.permission === 'fullscreen') {
           e.originalEvent.request.allow();
+        } else if (e.originalEvent.permission === 'download') {
+          e.originalEvent.request.allow();
         }
       })
       .on('contentload', function(e) {

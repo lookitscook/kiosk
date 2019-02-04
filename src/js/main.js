@@ -102,11 +102,11 @@ function init() {
       chrome.power.requestKeepAwake(data.sleepmode);
     }
 
-     // optionally disable accesibility features
-     if(data.disableaccessibility){
-      if(!chrome.accessibilityFeatures){
+    // optionally disable accesibility features
+    if (data.disableaccessibility) {
+      if (!chrome.accessibilityFeatures) {
         console.error('Accesibility features are not available on this platform.');
-      }else{
+      } else {
         [
           "spokenFeedback",
           "largeCursor",

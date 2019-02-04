@@ -22,6 +22,11 @@
       "description": "Set all file upload fields to disabled.",
       "type": "boolean"
     },
+    "disableaccessibility": {
+      "title": "Disable Accessibility Features",
+      "description": "Disable all accessibility feautres",
+      "type": "boolean"
+    },
     "disallowiframes": {
       "title": "Disable Iframes",
       "description": "Do not load content in iframes.",

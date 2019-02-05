@@ -27,6 +27,11 @@
       "description": "Disable all accessibility feautres",
       "type": "boolean"
     },
+    "allowdownload": {
+      "title": "Allow File Download",
+      "description": "Allow file downloading",
+      "type": "boolean"
+    },
     "disallowiframes": {
       "title": "Disable Iframes",
       "description": "Do not load content in iframes.",

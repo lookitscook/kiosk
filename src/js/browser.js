@@ -29,6 +29,7 @@ $(function() {
   var resetcache = false;
   var clearcookies = false;
   var allowPrint = false;
+  var allowDownload = false;
   var disallowUpload = false;
   var disallowIframes = false;
   var localAdmin = false;
@@ -419,6 +420,7 @@ $(function() {
       ], function(err, res) {
 
         allowPrint = !!data.allowprint;
+        allowDownload = !!data.allowdownload;
         disallowUpload = !!data.disallowupload;
         disallowIframes = !!data.disallowiframes;
         showNav = !!data.shownav;
@@ -762,7 +764,9 @@ $(function() {
         } else if (e.originalEvent.permission === 'fullscreen') {
           e.originalEvent.request.allow();
         } else if (e.originalEvent.permission === 'download') {
-          e.originalEvent.request.allow();
+          if (allowDownload) {
+            e.originalEvent.request.allow();
+          }
         }
       })
       .on('contentload', function(e) {

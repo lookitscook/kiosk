@@ -26,6 +26,7 @@
     "jshint": "^2.9.5",
     "mocha": "^3.5.0",
     "node-sass": "^4.5.3",
+    "nwjs-builder-phoenix": "^1.15.0",
     "uglify-js": "^3.0.28"
   },
   "dependencies": {

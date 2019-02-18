@@ -69,5 +69,8 @@
       },
       "description": "Refresh the current page"
     }
+  },
+  "build": {
+    "nwVersion": "0.36.2"
   }
 }

@@ -41,4 +41,7 @@ cp schema.json dist/build/schema.json;
 
 # package it
 cd dist/build;
-zip -r "../$(node -pe 'JSON.parse(process.argv[1]).version_name' "$(cat manifest.json)").zip" .;
+zip -r "../$(node -pe 'JSON.parse(process.argv[1]).version_name' "$(cat manifest.json)").zip" .;zip -r "../$(node -pe 'JSON.parse(process.argv[1]).version_name' "$(cat manifest.json)").zip" .;
+
+# build desktop versions
+build --tasks win-x86,win-x64,linux-x86,linux-x64,mac-x64 --mirror https://dl.nwjs.io/ --chrome-app .

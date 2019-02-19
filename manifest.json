@@ -71,6 +71,21 @@
     }
   },
   "build": {
-    "nwVersion": "0.36.2"
+    "nwVersion": "0.36.2",
+    "output": "../",
+    "outputPattern": "${PLATFORM}-${ARCH}",
+    "packed": true,
+    "targets": [
+      "nsis"
+    ],
+    "mac": {
+      "icon": "./img/icon.icns"
+    },
+    "win": {
+      "icon": "./img/icon.ico"
+    },
+    "window": {
+      "icon": "./img/icon_128.png"
+    }
   }
 }

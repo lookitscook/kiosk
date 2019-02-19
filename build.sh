@@ -80,5 +80,15 @@ zip -r $VERSION_NAME-linux-x86.zip linux-x86;
 rm -rf linux-x86;
 zip -r $VERSION_NAME-linux-x64.zip linux-x64;
 rm -rf linux-x64;
+rm versions.nsis.json
 
+# generate MD5 hashes
+echo "MD5 Checksums" >> checksums.txt;
+echo "-------------" >> checksums.txt;
+md5 -r $VERSION_NAME-chrome-app.zip >> checksums.txt;
+md5 -r $VERSION_NAME-linux-x64.zip >> checksums.txt;
+md5 -r $VERSION_NAME-linux-x86.zip >> checksums.txt;
+md5 -r $VERSION_NAME-mac-x64.dmg >> checksums.txt;
+md5 -r $VERSION_NAME-win-x64-setup.exe >> checksums.txt;
+md5 -r $VERSION_NAME-win-x86-setup.exe >> checksums.txt;
 

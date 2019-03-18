@@ -14,7 +14,7 @@
     <script language="javascript" type="text/javascript" src="../js/setup.min.js"></script></head>
     <style type="text/css">body,html{overflow:auto}</style>
   </head>
-  <body class="unlicensed">
+  <body class="window-setup unlicensed">
     <header>
       <div class="container"><a href="https://chrome.google.com/webstore/detail/kiosk/afhcomalholahplbjhnmahkoekoijban" data-target="nav-mobile" class="button-collapse top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a></div>
       <ul id="nav-mobile" class="sidenav sidenav-fixed">
@@ -64,7 +64,7 @@
             Multiple URLs must be seperated by a comma.
             If more than one URL is specified they can either be opened in tabs or rotated at defined rate.
             <strong>URL must start with http:// or https://</strong> <span class="pro-feature"> Tokens can be embedded in the URL and will be replaced with associated value. 
-            E.g.: 'https://www.mysite.com/content?device={instanceid}' will actually request 'https://https://www.mysite.com/content?device=12345' 
+            E.g.: 'https://www.mysite.com/content?device={id}' will actually request 'https://https://www.mysite.com/content?device=12345' 
             where '12345' is a identifier unique to this installtion of the application.</span>
           </p> 
         <div class="row">
@@ -73,7 +73,7 @@
                 <strong>System Tokens:</strong>
               </p>
               <ul id="tokens">
-                <li>{instanceid}</li>
+                <li>{id}</li>
               </ul>
           </div>
           <div class="input-field col s12">
@@ -144,7 +144,7 @@
           </div>
           <div class="row">
             <div class="col s12">
-              <label>Instance ID: </label> <span id="displayInstanceID"></span>
+              <label>Device UUID: </label> <span id="displayDeviceUUID"></span>
               <br>
               <label>Content: </label> <span id="displayContentURL"></span>
             </div>
@@ -420,9 +420,9 @@
               </span>
             </p>
           </div>
-          <div class="col s12 pro-feature">
+          <div class="col s12">
               <p>
-                  <a href="#" class="black btn waves-effect" id="import-policy" style="margin-right:1em">Import Policy</a>
+                  <a href="#" class="pro-feature black btn waves-effect" id="import-policy" style="margin-right:1em">Import Policy</a>
                   <a href="#" class="black btn waves-effect" id="export-policy">Export Policy</a>
               </p>
           </div>

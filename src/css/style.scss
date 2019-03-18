@@ -39,10 +39,43 @@ nav.top-nav{
 }
 
 .waves-effect.waves-green .waves-ripple {
-    background-color: rgba(69, 211, 38, 1.0);
+    background-color: #45d326;
 }
 
 .container .row{
     margin-left:0;
     margin-right:0;
+}
+
+.btn, .btn-large, .btn-small,
+.btn:hover, .btn-large:hover, .btn-small:hover{
+    background-color: #45d326;
+    box-shadow: none;
+    font-family: 'Bree', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1.44px;
+}
+
+a{
+    color: #45d326;
+}
+
+.window-pair{
+   > .container {
+       padding-top: 120px;
+   }
+}
+
+.window-error{
+    background: #000;
+    color: #fff;
+
+    #message{
+        position: absolute;
+        top: 50%;
+        left:0;
+        width: 100%;
+        text-align:center;
+        transform: translateY(-50%);
+    }
 }

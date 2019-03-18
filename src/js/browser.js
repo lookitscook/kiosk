@@ -1,4 +1,4 @@
-var LICENSED = true;
+var licensed = false;
 
 $(function() {
 
@@ -55,9 +55,7 @@ $(function() {
   }
 
   function showSystemInformation(duration) {
-    chrome.instanceID.getID(function(instanceID) {
-      Materialize.toast('InstanceID: ' + instanceID + '<br>Content: ' + contentURL.join(','), duration);
-    });
+    Materialize.toast('UUID: ' + data.uuid + '<br>Content: ' + contentURL.join(','), duration);
   }
 
   function rotateURL() {
@@ -288,53 +286,19 @@ $(function() {
   function init() {
     chrome.runtime.onMessage.addListener(handleMessage);
 
-    if (LICENSED) {
-      $('body').removeClass('unlicensed').addClass('licensed');
-    }
+    chrome.storage.local.get(null, function(local) {
 
-    initEventHandlers();
-    initModals();
+      var data = local.deviceConfig;
+      licensed = !!data.licensed;
 
-    var data;
-    async.series([
-      function(next) {
-        if (!LICENSED) {
-          next();
-          return;
-        }
-        chrome.storage.managed.get(null, function(managedSettings) {
-          data = Object.assign({}, managedSettings);
-          if (!managedSettings.devices || !managedSettings.devices.length) {
-            next();
-            return;
-          }
-          chrome.enterprise.deviceAttributes.getDeviceAssetId(function(assetID) {
-            if (!assetID) {
-              next();
-              return;
-            }
-            var deviceConfig = managedSettings.devices.find(function(config) {
-              return assetID == config.assetid;
-            });
-            if (!deviceConfig) {
-              next();
-              return;
-            }
-            data = Object.assign({}, data, deviceConfig.configuration);
-            next();
-          });
-        });
-      },
-      function(next) {
-        chrome.storage.local.get(null, function(localSettings) {
-          // managed settings override local
-          data = Object.assign({}, localSettings, data);
-          next();
-        });
+      if (licensed) {
+        $('body').removeClass('unlicensed').addClass('licensed');
       }
-    ], function(err) {
 
-      if (!LICENSED) {
+      initEventHandlers();
+      initModals();
+
+      if (!licensed) {
         //disable pro features
         data.tokenserver = null;
         data.customtoken = null;
@@ -343,7 +307,7 @@ $(function() {
       }
 
       //get tokens
-      var useTokens = LICENSED && (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
+      var useTokens = licensed && (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
         return url.indexOf('{') >= 0 && url.indexOf('}') >= 0;
       });
 
@@ -353,15 +317,8 @@ $(function() {
             next();
             return;
           }
-          chrome.instanceID.getID(function(instanceid) {
-            if (!instanceid) {
-              console.error('No instance id acquired.');
-              next();
-              return;
-            }
-            tokens.instanceid = instanceid;
-            next();
-          });
+          tokens.uuid = data.uuid;
+          next();
         },
         function(next) {
           if (!useTokens) {

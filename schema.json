@@ -208,6 +208,7 @@
       "items": {
         "type": "object",
         "properties": {
+          "uuid": { "type": "string" },
           "assetid": { "type": "string" },
           "configuration": { "$ref": "KioskConfig" }
         }

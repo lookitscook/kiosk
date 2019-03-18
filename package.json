@@ -1,22 +1,23 @@
 {
   "name": "kiosk",
-  "version": "7.1.0",
+  "version": "8.0.0",
   "description": "Kiosk",
   "main": "main.js",
   "scripts": {
     "lint": "jshint src/js/**.js",
     "beautify": "glob-run js-beautify -r 'src/js/**.js'",
     "test": "mocha test/",
-    "build": "./build.sh"
+    "build": "./build.sh",
+    "start": "./start.sh"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matt-cook/kiosk.git"
+    "url": "git+https://github.com/kiosk-enterprise/kiosk.git"
   },
   "author": "Matt Cook <support@cook.company>",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://discuss.kiosk.cook.company/c/bugs"
+    "url": "https://kiosk.cook.company/support"
   },
   "homepage": "https://kiosk.cook.company",
   "devDependencies": {

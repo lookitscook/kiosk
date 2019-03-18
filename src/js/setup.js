@@ -1,11 +1,6 @@
-var LICENSED = true;
 var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
 
 $(function() {
-
-  if (LICENSED) {
-    $('body').removeClass('unlicensed').addClass('licensed');
-  }
 
   function updateData(data) {
     if (data.newwindow) {
@@ -169,9 +164,7 @@ $(function() {
     $('select').material_select();
   }
 
-  chrome.instanceID.getID(function(instanceid) {
-    $('#displayInstanceID').text(instanceid);
-  });
+  $('#displayDeviceUUID').text(data.uuid);
 
   async.series([
     function(next) {
@@ -181,6 +174,9 @@ $(function() {
     },
     function(next) {
       chrome.storage.local.get(null, function(res) {
+        if (res.licensed) {
+          $('body').removeClass('unlicensed').addClass('licensed');
+        }
         next(null, res);
       });
     },

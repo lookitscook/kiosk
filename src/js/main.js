@@ -317,7 +317,7 @@ function init() {
       });
     }
     openWindow("windows/browser.html");
-    if(customerId){
+    if (customerId) {
       checkIn();
     }
   });

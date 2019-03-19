@@ -54,37 +54,31 @@ function getCustomerConfig(cb) {
     cb(new Error('Check in error: no device UUID'));
     return;
   }
-  $.ajax({
-    url: CHECK_IN_URL,
-    method: 'POST',
-    data: {
-      uuid: uuid,
-      configuration: customerConfigId
-    },
-    success: function(data) {
-      var response = {};
-      if (data) {
-        response.newConfigId = data.newConfigId;
-        if (data.newConfig) {
-          var fields = Object.keys(data.newConfig);
-          response.newConfig = {};
-          fields.forEach(function(field) {
-            if (typeof data.newConfig[field].Value != "undefined") {
-              response.newConfig[field] = data.newConfig[field].Value;
-            }
-          });
-        }
+  return postData(CHECK_IN_URL, {
+    uuid: uuid,
+    configuration: customerConfigId
+  }).then(function(data) {
+    var response = {};
+    if (data) {
+      response.newConfigId = data.newConfigId;
+      if (data.newConfig) {
+        var fields = Object.keys(data.newConfig);
+        response.newConfig = {};
+        fields.forEach(function(field) {
+          if (typeof data.newConfig[field].Value != "undefined") {
+            response.newConfig[field] = data.newConfig[field].Value;
+          }
+        });
       }
-      chrome.storage.local.set({
-        last_successful_checkin: new Date(),
-      }, function(err) {
-        cb(err, response);
-      });
-    },
-    error: function(err) {
-      console.error(err);
-      cb(err);
-    },
+    }
+    chrome.storage.local.set({
+      last_successful_checkin: new Date(),
+    }, function(err) {
+      cb(err, response);
+    });
+  }).catch(function(err) {
+    console.error(err);
+    cb(err);
   });
 }
 
@@ -323,7 +317,9 @@ function init() {
       });
     }
     openWindow("windows/browser.html");
-    checkIn();
+    if(customerId){
+      checkIn();
+    }
   });
 
   function openWindow(path) {
@@ -373,4 +369,20 @@ function stopAutoRestart() {
 function restart() {
   if (chrome.runtime.restart) chrome.runtime.restart(); // for ChromeOS devices in "kiosk" mode
   chrome.runtime.reload();
+}
+
+function postData(url, data) {
+  return fetch(url, {
+    method: "POST",
+    mode: "cors",
+    cache: "no-cache",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    redirect: "follow",
+    referrer: "no-referrer",
+    body: JSON.stringify(data),
+  }).then(function(response) {
+    return response.json();
+  });
 }

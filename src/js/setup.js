@@ -164,8 +164,6 @@ $(function() {
     $('select').material_select();
   }
 
-  $('#displayDeviceUUID').text(data.uuid);
-
   async.series([
     function(next) {
       $.getJSON(chrome.runtime.getURL("../schema.json"), function(res) {
@@ -184,6 +182,8 @@ $(function() {
 
     var schema = res[0];
     var data = res[1];
+
+    $('#displayDeviceUUID').text(data.uuid);
 
     function toggleMultipleMode(urls) {
       if (urls.length >= 2) {

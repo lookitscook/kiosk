@@ -34,8 +34,8 @@ cp node_modules/moment/min/moment.min.js dist/unpackaged/js/moment.min.js;
 cp lib/materialize-custom.min.js dist/unpackaged/js/materialize.min.js;
 cp lib/lodash.min.js dist/unpackaged/js/lodash.min.js;
 cp lib/wsc-chrome/wsc-chrome.js dist/unpackaged/js/lib/wsc-chrome.js;
+cat node_modules/async/dist/async.min.js <(echo) lib/lodash.min.js <(echo) lib/wsc-chrome/wsc-chrome.js <(echo) src/js/main.js | uglifyjs -o dist/unpackaged/js/main.min.js
 uglifyjs src/js/browser.js > dist/unpackaged/js/browser.min.js;
-uglifyjs src/js/main.js > dist/unpackaged/js/main.min.js;
 uglifyjs src/js/setup.js > dist/unpackaged/js/setup.min.js;
 uglifyjs src/js/pair.js > dist/unpackaged/js/pair.min.js;
 

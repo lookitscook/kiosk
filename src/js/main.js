@@ -119,7 +119,8 @@ function init() {
   async.series([
     function(next) {
       // get locally applied settings and other data
-      chrome.storage.local.get(null, function(localConfig) {
+      chrome.storage.local.get(null, function(res) {
+        localConfig = res || {};
         uuid = localConfig.uuid;
         customerId = localConfig.paired_user_id;
         customerConfigId = localConfig.paired_user_configuration;
@@ -127,6 +128,15 @@ function init() {
         licensed = !!localConfig.licensed;
         next();
       });
+    },
+    function(next) {
+      if (uuid) {
+        return next();
+      }
+      uuid = generateGuid();
+      chrome.storage.local.set({
+        uuid: uuid,
+      }, next);
     },
     function(next) {
       // check for a configured start up delay prior to making any external requests
@@ -137,16 +147,6 @@ function init() {
       }
       var startupDelay = parseFloat(data.startupdelay) || 0;
       setTimeout(next, startupDelay * 1000);
-    },
-    function(next) {
-      // register
-      if (uuid) {
-        return next();
-      }
-      uuid = generateGuid();
-      chrome.storage.local.set({
-        uuid: uuid,
-      }, next);
     },
     function(next) {
       // attempt to check in, if paired
@@ -193,7 +193,7 @@ function init() {
     },
     function(next) {
       // look up asset ID specific config, if any
-      if (!chrome.enterprise || !chrome.enterprise.deviceAttributes || !data.devices || !data.devices.length) {
+      if (!licensed || !chrome.enterprise || !chrome.enterprise.deviceAttributes || !data.devices || !data.devices.length) {
         return next();
       }
       chrome.enterprise.deviceAttributes.getDeviceAssetId(function(assetID) {
@@ -212,7 +212,7 @@ function init() {
     },
     function(next) {
       // look up UUID specific config, if any
-      if (!data.devices || !data.devices.length) {
+      if (!licensed || !data.devices || !data.devices.length) {
         return next();
       }
       var deviceConfig = data.devices.find(function(config) {

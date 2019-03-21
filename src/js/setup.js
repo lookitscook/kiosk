@@ -10,6 +10,10 @@ $(function() {
       $("#disallowupload").prop("checked", true);
     }
 
+    if (uuid) {
+      $('#displayDeviceUUID').text(uuid);
+    }
+
     if (data.disallowiframes) {
       $("#disallowiframes").prop("checked", true);
     }
@@ -167,23 +171,25 @@ $(function() {
   async.series([
     function(next) {
       $.getJSON(chrome.runtime.getURL("../schema.json"), function(res) {
-        next(null, res);
+        schema = res || {};
+        next();
       });
     },
     function(next) {
       chrome.storage.local.get(null, function(res) {
+        if (!res) {
+          data = {};
+          next();
+        }
         if (res.licensed) {
           $('body').removeClass('unlicensed').addClass('licensed');
         }
+        uuid = res.uuid;
+        data = res.deviceConfig || {};
         next(null, res);
       });
     },
   ], function(err, res) {
-
-    var schema = res[0];
-    var data = res[1];
-
-    $('#displayDeviceUUID').text(data.uuid);
 
     function toggleMultipleMode(urls) {
       if (urls.length >= 2) {

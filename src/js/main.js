@@ -3,9 +3,6 @@ var CHECK_IN_URL = FN_BASE_URL + 'check_in';
 var REGISTER_DEVICE_URL = FN_BASE_URL + 'register_device';
 var CHECK_IN_DUE = 1000 * 60 * 60 * 24 * 14; // check in due every 14 days, in ms
 
-chrome.app.runtime.onLaunched.addListener(init);
-chrome.app.runtime.onRestarted.addListener(init);
-
 var licensed = false;
 var directoryServer, adminServer, restartTimeout;
 var uuid, customerId, customerConfigId, data;
@@ -17,6 +14,8 @@ chrome.commands.onCommand.addListener(function(command) {
     // console.log(response.status);
   });
 });
+
+init();
 
 function checkIn() {
   getCustomerConfig(function(err, response) {

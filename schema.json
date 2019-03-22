@@ -22,11 +22,6 @@
       "description": "Set all file upload fields to disabled.",
       "type": "boolean"
     },
-    "disableaccessibility": {
-      "title": "Disable Accessibility Features",
-      "description": "Disable all accessibility feautres",
-      "type": "boolean"
-    },
     "allowdownload": {
       "title": "Allow File Download",
       "description": "Allow file downloading",

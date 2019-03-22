@@ -72,9 +72,6 @@ $(function() {
     if (data.allowprint) {
       $("#allowprint").prop("checked", true);
     }
-    if (data.disableaccessibility) {
-      $("#disableaccessibility").prop("checked", true);
-    }
     if (data.hidegslidescontrols) {
       $("#hidegslidescontrols").prop("checked", true);
     }
@@ -421,8 +418,6 @@ $(function() {
       updated.rotaterate = parseFloat($("#rotate-rate").val()) ? parseFloat($("#rotate-rate").val()) : 0;
       updated.displaysysteminfo = $('#displaySystemInfo').val();
       updated.allowprint = $("#allowprint").is(':checked');
-      updated.disableaccessibility = $("#disableaccessibility").is(':checked');
-      updated.allowdownload = $("#allowdownload").is(':checked');
       updated.hidegslidescontrols = $("#hidegslidescontrols").is(':checked');
       updated.local = $("#local").is(':checked');
       updated.restart = $("#restart").is(':checked');

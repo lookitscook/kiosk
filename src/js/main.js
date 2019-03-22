@@ -267,40 +267,7 @@ function init() {
     } else {
       chrome.power.requestKeepAwake(data.sleepmode);
     }
-
-    // optionally disable accesibility features
-    if (data.disableaccessibility) {
-      if (!chrome.accessibilityFeatures) {
-        console.error('Accesibility features are not available on this platform.');
-      } else {
-        [
-          "spokenFeedback",
-          "largeCursor",
-          "stickyKeys",
-          "highContrast",
-          "screenMagnifier",
-          "autoclick",
-          "virtualKeyboard",
-          /*"caretHighlight", // accessing these causes app to crash
-          "cursorHighlight",
-          "focusHighlight",
-          "selectToSpeak",
-          "switchAccess"*/
-        ].forEach(function(prop) {
-          if (!chrome.accessibilityFeatures[prop]) {
-            return;
-          }
-          try {
-            chrome.accessibilityFeatures[prop].set({
-              value: false
-            });
-          } catch (err) {
-            console.error(err);
-          }
-        });
-      }
-    }
-
+    
     if (data.servelocaldirectory && data.servelocalhost && data.servelocalport) {
       //serve files from local directory
       chrome.fileSystem.restoreEntry(data.servelocaldirectory, function(entry) {

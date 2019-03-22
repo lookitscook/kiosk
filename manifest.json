@@ -2,8 +2,8 @@
   "name": "Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "8.0.4",
-  "version_name": "kiosk-8.0.4",
+  "version": "9.0.0",
+  "version_name": "kiosk-9.0.0",
   "author": {
     "name": "The Cook Company",
     "email": "support@cook.company"
@@ -40,8 +40,7 @@
     "app.window.fullscreen.overrideEsc",
     "gcm",
     "enterprise.deviceAttributes",
-    "accessibilityFeatures.modify",
-    {"fileSystem": ["write","directory","retainEntries"]}
+    {"fileSystem": ["write", "directory","retainEntries"]}
   ],
   "optional_permissions": [ "audioCapture", "videoCapture" ],
   "storage": {

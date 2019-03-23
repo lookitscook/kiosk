@@ -40,8 +40,12 @@ $(function() {
         }, restart);
       },
       error: function(err) {
-        Materialize.toast('Pairing error', 4000);
         console.error(err);
+        if (err.responseJSON && err.responseJSON.error === 'quota_reached') {
+          Materialize.toast('Account device limit reached. Please increase your subscription quanitity.', 4000);
+          return;
+        }
+        Materialize.toast('Pairing error', 4000);
       },
     });
   });

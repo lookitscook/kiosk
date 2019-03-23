@@ -266,7 +266,7 @@ function init() {
     } else {
       chrome.power.requestKeepAwake(data.sleepmode);
     }
-    
+
     if (data.servelocaldirectory && data.servelocalhost && data.servelocalport) {
       //serve files from local directory
       chrome.fileSystem.restoreEntry(data.servelocaldirectory, function(entry) {

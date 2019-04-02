@@ -2,8 +2,8 @@
   "name": "Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "9.0.2",
-  "version_name": "kiosk-9.0.2",
+  "version": "9.0.3",
+  "version_name": "kiosk-9.0.3",
   "author": {
     "name": "The Cook Company",
     "email": "support@cook.company"
@@ -70,7 +70,8 @@
     }
   },
   "build": {
-    "nwVersion": "0.36.2",
+    "nwVersion": "0.35.4",
+    "ffmpegIntegration": true,
     "output": "../",
     "outputPattern": "${PLATFORM}-${ARCH}",
     "packed": true,

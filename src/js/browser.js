@@ -695,6 +695,11 @@ $(function() {
       })
       .on('consolemessage', function(e) {
         if (e.originalEvent.message == 'kiosk:active') active();
+        else if (e.originalEvent.message == 'kiosk:reset') {
+          clearCache(function() {
+            refreshContent(false);
+          });
+        };
       })
       .on('permissionrequest', function(e) {
         if (e.originalEvent.permission === 'media') {

@@ -7,6 +7,8 @@ var licensed = false;
 var directoryServer, adminServer, restartTimeout;
 var uuid, customerId, customerConfigId, data;
 
+chrome.app.runtime.onLaunched.addListener(init);
+
 chrome.commands.onCommand.addListener(function(command) {
   chrome.runtime.sendMessage(null, {
     'command': command
@@ -14,8 +16,6 @@ chrome.commands.onCommand.addListener(function(command) {
     // console.log(response.status);
   });
 });
-
-init();
 
 function checkIn() {
   getCustomerConfig(function(err, response) {

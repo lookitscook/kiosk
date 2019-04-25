@@ -4,7 +4,7 @@
   -webkit-tap-highlight-color: rgba(0,0,0,0); 
   -webkit-touch-callout: none;
 }
-.disabled, body.unlicensed .pro-feature{
+.disabled{
   display:none;
   visibility:hidden;
 }

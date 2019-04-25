@@ -3,78 +3,72 @@ var CHECK_IN_URL = FN_BASE_URL + 'check_in';
 var REGISTER_DEVICE_URL = FN_BASE_URL + 'register_device';
 var CHECK_IN_DUE = 1000 * 60 * 60 * 24 * 14; // check in due every 14 days, in ms
 
-var licensed = false;
 var directoryServer, adminServer, restartTimeout;
-var uuid, customerId, customerConfigId, data;
+var data = {};
 
 chrome.app.runtime.onLaunched.addListener(init);
 
 chrome.commands.onCommand.addListener(function(command) {
   chrome.runtime.sendMessage(null, {
     'command': command
-  }, function(response) {
-    // console.log(response.status);
   });
 });
 
-function checkIn() {
-  getCustomerConfig(function(err, response) {
-    licensed = true;
+/*
+LOG PERMISSION WARNINGS
+use to test manifest permissions changes
+DO NOT publish if new warnings are triggered. Prompt on existing
+installations would likely be a major issue.
+
+Current permission warnings are:
+-"Exchange data with any device on the local network or internet",
+-"Read folders that you open in the application"
+
+Should be commented out in production application.
+*/
+/*chrome.management.getPermissionWarningsByManifest(
+  JSON.stringify(chrome.runtime.getManifest()),
+  function(warning){
+    console.log("PERMISSION WARNINGS",warning);
+  }
+);*/
+
+function pollForCustomerConfigUpdate(cb) {
+  getCustomerConfig(data.uuid, data.paired_user_configuration, function(err) {
     if (err) {
-      console.error('check in error', err);
-      if (checkInPastDue()) {
-        licensed = false;
-      }
+      console.error('Error getting customer config', err);
     }
-    if (response.newConfigId) {
-      return chrome.storage.local.set({
-        paired_user_configuration: response.newConfigId,
-        customerConfig: response.newConfig
-      }, restart);
-    } else if (licensed !== data.licensed) {
-      // it either became licensed or unlicensed
-      return chrome.storage.local.set({
-        licensed: licensed
-      }, restart);
+    if (cb) {
+      cb();
     }
-    setTimeout(checkIn, 5 * 60 * 1000); //check in every 5 minutes
+    setTimeout(pollForCustomerConfigUpdate, 5 * 60 * 1000); //check in every 5 minutes
   });
 }
 
-function checkInPastDue() {
-  if (!data || !data.last_successful_checkin || ((new Date) - data.last_successful_checkin) > CHECK_IN_DUE) {
-    return true;
-  }
-  return false;
-}
-
-function getCustomerConfig(cb) {
-  if (!uuid) {
+function getCustomerConfig(deviceUuid, configId, cb) {
+  if (!deviceUuid) {
     cb(new Error('Check in error: no device UUID'));
     return;
   }
   return postData(CHECK_IN_URL, {
-    uuid: uuid,
-    configuration: customerConfigId
-  }).then(function(data) {
-    var response = {};
-    if (data) {
-      response.newConfigId = data.newConfigId;
-      if (data.newConfig) {
-        var fields = Object.keys(data.newConfig);
-        response.newConfig = {};
-        fields.forEach(function(field) {
-          if (typeof data.newConfig[field].Value != "undefined") {
-            response.newConfig[field] = data.newConfig[field].Value;
-          }
-        });
-      }
+    uuid: deviceUuid,
+    configuration: configId
+  }).then(function(res) {
+    if (res && res.newConfig) {
+      var newConfigId = res.newConfigId;
+      var fields = Object.keys(res.newConfig);
+      var newConfig = {};
+      fields.forEach(function(field) {
+        if (typeof res.newConfig[field].Value != "undefined") {
+          newConfig[field] = res.newConfig[field].Value;
+        }
+      });
+      Object.assign(data, newConfig, {
+        paired_user_configuration: newConfigId,
+      });
+      return chrome.storage.local.set(data, cb);
     }
-    chrome.storage.local.set({
-      last_successful_checkin: new Date(),
-    }, function(err) {
-      cb(err, response);
-    });
+    return cb();
   }).catch(function(err) {
     console.error(err);
     cb(err);
@@ -93,160 +87,140 @@ function generateGuid() {
   return result;
 }
 
+function setStatus(status) {
+  console.log('status: ', status);
+  chrome.runtime.sendMessage(null, {
+    'status': status
+  });
+}
+
 function init() {
 
-  var win;
-
-  /*
-  LOG PERMISSION WARNINGS
-  use to test manifest permissions changes
-  DO NOT publish if new warnings are triggered. Prompt on existing
-  installations would likely be a major issue.
-
-  Current permission warnings are:
-  -"Exchange data with any device on the local network or internet",
-  -"Read folders that you open in the application"
-
-  Should be commented out in production application.
-  */
-  /*chrome.management.getPermissionWarningsByManifest(
-    JSON.stringify(chrome.runtime.getManifest()),
-    function(warning){
-      console.log("PERMISSION WARNINGS",warning);
-    }
-  );*/
   async.series([
     function(next) {
-      // get locally applied settings and other data
+      openWindow("windows/status.html", function() {
+        setTimeout(next, 100);
+      });
+    },
+    function(next) {
+      setStatus('Getting prior configuration');
       chrome.storage.local.get(null, function(res) {
-        localConfig = res || {};
-        uuid = localConfig.uuid;
-        customerId = localConfig.paired_user_id;
-        customerConfigId = localConfig.paired_user_configuration;
-        data = localConfig.deviceConfig || {};
-        licensed = !!localConfig.licensed;
+        data = res || {};
+        setStatus('Prior configuration lookup complete');
         next();
       });
     },
     function(next) {
-      if (uuid) {
+      if (data.uuid) {
+        setStatus('Existing UUID found');
         return next();
       }
-      uuid = generateGuid();
+      setStatus('Generating UUID');
+      data.uuid = generateGuid();
       chrome.storage.local.set({
-        uuid: uuid,
+        uuid: data.uuid,
       }, next);
     },
     function(next) {
       // check for a configured start up delay prior to making any external requests
       // delay is often used to allow wi-fi to initiate
-      if (!data || !data.startupdelay) {
-        next();
-        return;
+      if (!data.startupdelay) {
+        setStatus('No startup delay specified');
+        return next();
       }
+      setStatus('Delaying startup');
       var startupDelay = parseFloat(data.startupdelay) || 0;
       setTimeout(next, startupDelay * 1000);
     },
     function(next) {
-      // attempt to check in, if paired
-      // will also set the customer config
-      if (!customerId) {
-        licensed = false;
+      // get config from Kiosk Device Management Console
+      if (!data.paired_user_id) {
+        setStatus('Not paired with Kiosk Device Management Console');
         return next();
       }
-      getCustomerConfig(function(err, response) {
-        if (err) {
-          console.log('unable to fetch customer config', err);
-          if (checkInPastDue()) {
-            licensed = false;
-          }
-          return next();
-        }
-        licensed = true;
-        if (response.newConfigId) {
-          return chrome.storage.local.set({
-            paired_user_configuration: response.newConfigId,
-            customerConfig: response.newConfig
-          }, next);
-        }
-        return next();
-      });
+      setStatus('Getting configuration from Kiosk Device Management Console');
+      pollForCustomerConfigUpdate(next);
     },
     function(next) {
-      // get config from chrome management console
-      if (!licensed || !chrome.storage.managed) {
+      // get config from Google Chrome Management Console
+      if (!chrome.storage.managed) {
+        setStatus('Not paired with Chrome Management Console');
         return next();
       }
+      setStatus('Setting listener for managed configuration changes');
+      chrome.storage.onChanged.addListener(function(changes, areaName) {
+        if (areaName === 'managed') {
+          restart();
+        }
+      });
+      setStatus('Getting configuration from Chrome Management Console');
       return chrome.storage.managed.get(null, function(managedConfig) {
-        chrome.storage.local.set({
-          managedConfig: managedConfig
-        }, next);
-      });
-    },
-    function(next) {
-      // merge the top level configs
-      chrome.storage.local.get(null, function(local) {
-        data = Object.assign({}, local, local.managedConfig, local.customerConfig);
-        next();
+        setStatus('Recieved response from Kiosk Device Management Console');
+        if (managedConfig) {
+          Object.assign(data, managedConfig);
+          return chrome.storage.local.set(data, next);
+        }
+        return next();
       });
     },
     function(next) {
       // look up asset ID specific config, if any
-      if (!licensed || !chrome.enterprise || !chrome.enterprise.deviceAttributes || !data.devices || !data.devices.length) {
+      if (!chrome.enterprise || !chrome.enterprise.deviceAttributes || !data.devices || !data.devices.length) {
+        setStatus('Skipping asset ID configuration lookup');
         return next();
       }
+      setStatus('Fetching device asset ID');
       chrome.enterprise.deviceAttributes.getDeviceAssetId(function(assetID) {
         if (!assetID) {
+          setStatus('Unable to acquire device asset ID');
           return next();
         }
         var deviceConfig = data.devices.find(function(config) {
           return assetID == config.assetid;
         });
         if (!deviceConfig) {
+          setStatus('No asset ID specific configuration found');
           return next();
         }
         Object.assign(data, deviceConfig.configuration);
-        return next();
+        setStatus('Applying asset ID configuration');
+        return chrome.storage.local.set(data, next);
       });
     },
     function(next) {
       // look up UUID specific config, if any
-      if (!licensed || !data.devices || !data.devices.length) {
+      if (!data.devices || !data.devices.length) {
+        setStatus('Skipping UUID configuration lookup');
         return next();
       }
       var deviceConfig = data.devices.find(function(config) {
-        return uuid == config.uuid;
+        return data.uuid == config.uuid;
       });
       if (!deviceConfig) {
+        setStatus('No UUID specific configuration found');
         return next();
       }
       Object.assign(data, deviceConfig.configuration);
-      return next();
-    },
-    function(next) {
-      chrome.storage.local.set({
-        licensed: licensed,
-        deviceConfig: data
-      }, next)
+      setStatus('Applying UUID configuration');
+      return chrome.storage.local.set(data, next);
     }
   ], function(err) {
+
+    setStatus('Configuration lookup complete');
+
     if (err) {
       console.error('startup error', err);
-    }
-    if ('openWindow' in data) {
-      chrome.storage.local.remove('openWindow', function() {
-        openWindow("windows/" + data.openWindow + ".html");
-      });
-      return;
+      setStatus('Startup error: ' + (err.toString ? err.toString() : '-'));
     }
 
     if (!('url' in data)) {
       if (('paired_user_id') in data) {
         // paired, just missing config
-        openWindow("windows/missing-config.html");
+        setStatus('No configuration applied to this device.');
         return;
       }
       // need to set up
+      setStatus('Initiating manual pairing');
       openWindow("windows/pair.html");
       return;
     }
@@ -256,6 +230,7 @@ function init() {
     // is a new config param, so assume the previous hard-coded value as
     // default.
     if (!data.sleepmode) {
+      setStatus('Using default sleep mode');
       chrome.storage.local.set({
         'sleepmode': 'display'
       });
@@ -266,8 +241,11 @@ function init() {
     } else {
       chrome.power.requestKeepAwake(data.sleepmode);
     }
+    setStatus('Sleep mode configured');
 
     if (data.servelocaldirectory && data.servelocalhost && data.servelocalport) {
+      setStatus('Starting local server');
+
       //serve files from local directory
       chrome.fileSystem.restoreEntry(data.servelocaldirectory, function(entry) {
         //if we can't get the directory (removed drive possibly)
@@ -279,39 +257,14 @@ function init() {
 
         var host = data.servelocalhost;
         var port = data.servelocalport;
+        setStatus('Local server directory mounted');
         startWebserverDirectoryEntry(host, port, entry);
       });
     }
-    openWindow("windows/browser.html");
-    if (customerId) {
-      checkIn();
-    }
-  });
 
-  function openWindow(path) {
-    if (win) win.close();
-    chrome.system.display.getInfo(function(d) {
-      chrome.app.window.create(path, {
-        'frame': 'none',
-        'id': 'browser',
-        'state': 'fullscreen',
-        'bounds': {
-          'left': 0,
-          'top': 0,
-          'width': d[0].bounds.width,
-          'height': d[0].bounds.height
-        }
-      }, function(w) {
-        win = w;
-        if (win) {
-          win.fullscreen();
-          setTimeout(function() {
-            if (win) win.fullscreen();
-          }, 1000);
-        }
-      });
-    });
-  }
+    setStatus('Opening browser window');
+    openWindow("windows/browser.html");
+  });
 
   function startWebserverDirectoryEntry(host, port, entry) {
     directoryServer = new WSC.WebApplication({
@@ -324,6 +277,41 @@ function init() {
     directoryServer.start();
   }
 
+}
+
+function openWindow(path, callback) {
+  setStatus('Opening window');
+  chrome.system.display.getInfo(function(display) {
+    setStatus('System display info fetched');
+    chrome.app.window.create(path, {
+      'frame': 'none',
+      'state': 'fullscreen',
+      'bounds': {
+        'left': 0,
+        'top': 0,
+        'width': display[0].bounds.width,
+        'height': display[0].bounds.height
+      }
+    }, function(newWindow) {
+      setStatus('New window created');
+      var existingWindows = chrome.app.window.getAll();
+      existingWindows.forEach(function(existingWindow) {
+        if (existingWindow !== newWindow) {
+          existingWindow.close();
+        }
+      });
+      setStatus('Existing windows closed');
+      if (newWindow) {
+        newWindow.fullscreen();
+        setTimeout(function() {
+          if (newWindow) newWindow.fullscreen();
+        }, 1000);
+      }
+      if (callback) {
+        callback();
+      }
+    });
+  });
 }
 
 function stopAutoRestart() {

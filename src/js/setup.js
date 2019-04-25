@@ -174,15 +174,8 @@ $(function() {
     },
     function(next) {
       chrome.storage.local.get(null, function(res) {
-        if (!res) {
-          data = {};
-          next();
-        }
-        if (res.licensed) {
-          $('body').removeClass('unlicensed').addClass('licensed');
-        }
-        uuid = res.uuid;
-        data = res.deviceConfig || {};
+        data = res || {};
+        uuid = data.uuid;
         next(null, res);
       });
     },

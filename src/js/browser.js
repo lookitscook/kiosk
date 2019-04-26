@@ -1,5 +1,3 @@
-var licensed = false;
-
 $(function() {
 
   var RESTART_DELAY = 1000;
@@ -11,7 +9,6 @@ $(function() {
   var restarting = false;
   var reset = false;
   var useScreensaver, screensaverTime, screensaverURL, screensaverWarningTime, screensaverWarningMessage, screensaverWarningTimeRemaining, screensaverReloadIntervalTime, screensaverReloadInterval;
-  var win = window;
   var resetTimeout, screensaverTimeout, screensaverWarningInterval;
   var restart;
   var urlrotateindex = 0;
@@ -286,28 +283,13 @@ $(function() {
   function init() {
     chrome.runtime.onMessage.addListener(handleMessage);
 
-    chrome.storage.local.get(null, function(local) {
-
-      var data = local.deviceConfig;
-      licensed = !!data.licensed;
-
-      if (licensed) {
-        $('body').removeClass('unlicensed').addClass('licensed');
-      }
+    chrome.storage.local.get(null, function(data) {
 
       initEventHandlers();
       initModals();
 
-      if (!licensed) {
-        //disable pro features
-        data.tokenserver = null;
-        data.customtoken = null;
-        data.remoteschedule = null;
-        data.remotescheduleurl = null;
-      }
-
       //get tokens
-      var useTokens = licensed && (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
+      var useTokens = (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
         return url.indexOf('{') >= 0 && url.indexOf('}') >= 0;
       });
 
@@ -416,7 +398,9 @@ $(function() {
               $('#login').modal('close');
               $('#username').val('');
               $("#password").val('');
-              openWindow("windows/setup.html");
+              chrome.runtime.getBackgroundPage(function(backgroundPage) {
+                backgroundPage.openWindow("windows/setup.html");
+              });
             } else {
               Materialize.toast('Invalid login.', 4000);
             }
@@ -1090,31 +1074,6 @@ $(function() {
         restarting = false;
       }, RESTART_DELAY);
     }
-  }
-
-  function openWindow(path) {
-    chrome.system.display.getInfo(function(d) {
-      chrome.app.window.create(path, {
-        'frame': 'none',
-        'id': 'setup',
-        'state': 'fullscreen',
-        'bounds': {
-          'left': 0,
-          'top': 0,
-          'width': d[0].bounds.width,
-          'height': d[0].bounds.height
-        }
-      }, function(w) {
-        chrome.app.window.current().close();
-        win = w;
-        if (win) {
-          win.fullscreen();
-          setTimeout(function() {
-            if (win) win.fullscreen();
-          }, 1000);
-        }
-      });
-    });
   }
 
 });

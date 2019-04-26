@@ -10,9 +10,9 @@ $(function() {
   });
 
   $('#configure-manually').click(function() {
-    chrome.storage.local.set({
-      openWindow: "setup"
-    }, restart);
+    chrome.runtime.getBackgroundPage(function(backgroundPage) {
+      backgroundPage.openWindow("windows/setup.html");
+    });
   });
 
   $('#pair-device').click(function() {

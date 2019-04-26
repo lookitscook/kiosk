@@ -15,7 +15,7 @@
     "url": "git+https://github.com/kiosk-enterprise/kiosk.git"
   },
   "author": "Matt Cook <support@cook.company>",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "bugs": {
     "url": "https://kiosk.cook.company/support"
   },

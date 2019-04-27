@@ -276,6 +276,7 @@ $(function() {
         sendResponse({
           status: "Printing is not enabled"
         });
+        break;
       default:
     }
   }

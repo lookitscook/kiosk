@@ -351,6 +351,11 @@ $(function() {
       download("kiosk-policy.json", policy);
     });
 
+    $('#exit').click(function(e) {
+      e.preventDefault();
+      chrome.app.window.current().close();
+    });
+
     function uploadPolicy() {
       var element = document.createElement('input');
       element.setAttribute('type', 'file');

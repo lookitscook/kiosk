@@ -5,6 +5,7 @@ var CHECK_IN_DUE = 1000 * 60 * 60 * 24 * 14; // check in due every 14 days, in m
 
 var directoryServer, adminServer, restartTimeout;
 var data = {};
+var existingWindows = [];
 
 chrome.app.runtime.onLaunched.addListener(init);
 
@@ -281,10 +282,21 @@ function init() {
 
 function openWindow(path, callback) {
   setStatus('Opening window');
+  try {
+    existingWindows = chrome.app.window.getAll(); // this will fail with "Extension context invalidated." if there are orphaned windows from a previous run
+    setStatus('Existing windows closed');
+  } catch (e) {
+    console.error('unable to close all previous windows', e);
+  }
+  existingWindows.forEach(function(existingWindow) {
+    existingWindow.close();
+  });
+  existingWindows = [];
   chrome.system.display.getInfo(function(display) {
     setStatus('System display info fetched');
     chrome.app.window.create(path, {
       'frame': 'none',
+      'id': generateGuid(),
       'state': 'fullscreen',
       'bounds': {
         'left': 0,
@@ -294,18 +306,9 @@ function openWindow(path, callback) {
       }
     }, function(newWindow) {
       setStatus('New window created');
-      var existingWindows = chrome.app.window.getAll();
-      existingWindows.forEach(function(existingWindow) {
-        if (existingWindow !== newWindow) {
-          existingWindow.close();
-        }
-      });
-      setStatus('Existing windows closed');
       if (newWindow) {
         newWindow.fullscreen();
-        setTimeout(function() {
-          if (newWindow) newWindow.fullscreen();
-        }, 1000);
+        existingWindows.push(newWindow);
       }
       if (callback) {
         callback();

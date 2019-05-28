@@ -25,7 +25,7 @@ $(function() {
         //only a single content item, legacy support
         urls.push(data.url);
       }
-      $('#displayContentURL').text(urls.join(','));
+      $('#displayContentURL').text(urls.join(', '));
       $('#url').val(urls.join(', '));
       if (urls.length > 1) {
         $('.multiple-url-mode').removeClass('disabled').show();
@@ -210,7 +210,7 @@ $(function() {
           }
         });
         if (!err) {
-          $('#displayContentURL').text(urls.join(','));
+          $('#displayContentURL').text(urls.join(', '));
         }
         toggleMultipleMode(urls);
       } else {
@@ -391,7 +391,7 @@ $(function() {
       if (!inputString) {
         return null;
       }
-      return inputString.split(',').map(function(v) {
+      return inputString.split(', ').map(function(v) {
         return v.trim();
       }).filter(function(v) {
         return !!v;

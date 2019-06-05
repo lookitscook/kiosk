@@ -6,6 +6,9 @@ $(function() {
     if (data.newwindow) {
       $("#newwindow").prop("checked", true);
     }
+    if (data.allowdownload) {
+      $("#allowdownload").prop("checked", true);
+    }
     if (data.disallowupload) {
       $("#disallowupload").prop("checked", true);
     }
@@ -351,6 +354,11 @@ $(function() {
       download("kiosk-policy.json", policy);
     });
 
+    $('#exit').click(function(e) {
+      e.preventDefault();
+      chrome.app.window.current().close();
+    });
+
     function uploadPolicy() {
       var element = document.createElement('input');
       element.setAttribute('type', 'file');
@@ -427,6 +435,7 @@ $(function() {
       updated.disabletouchhighlight = $("#disabletouchhighlight").is(':checked');
       updated.disableselection = $("#disableselection").is(':checked');
       updated.newwindow = $("#newwindow").is(':checked');
+      updated.allowdownload = $("#allowdownload").is(':checked');
       updated.disallowupload = $("#disallowupload").is(':checked');
       updated.disallowiframes = $("#disallowiframes").is(':checked');
       updated.useragent = $('#useragent').val();

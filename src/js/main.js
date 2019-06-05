@@ -5,6 +5,7 @@ var CHECK_IN_DUE = 1000 * 60 * 60 * 24 * 14; // check in due every 14 days, in m
 
 var directoryServer, adminServer, restartTimeout;
 var data = {};
+var activeWindow;
 
 chrome.app.runtime.onLaunched.addListener(init);
 
@@ -294,18 +295,13 @@ function openWindow(path, callback) {
       }
     }, function(newWindow) {
       setStatus('New window created');
-      var existingWindows = chrome.app.window.getAll();
-      existingWindows.forEach(function(existingWindow) {
-        if (existingWindow !== newWindow) {
-          existingWindow.close();
-        }
-      });
-      setStatus('Existing windows closed');
+      if (activeWindow) {
+        activeWindow.close();
+      }
+      activeWindow = newWindow;
+      setStatus('Existing window closed');
       if (newWindow) {
         newWindow.fullscreen();
-        setTimeout(function() {
-          if (newWindow) newWindow.fullscreen();
-        }, 1000);
       }
       if (callback) {
         callback();

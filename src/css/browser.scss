@@ -214,3 +214,13 @@ body{
     color: #fff;
   }
 }
+
+#status{
+  position: absolute;
+  padding: 1em;
+  bottom: 0;
+  left: 0;
+  color: white;
+  background: black;
+  z-index:4;
+}

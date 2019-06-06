@@ -36,7 +36,14 @@ $(function() {
   var tokens = {};
   var allowNewWindow, newWindowMode;
 
+  setStatus('beginning initializing...');
+
   init();
+
+  function setStatus(status) {
+    console.log('status: ', status);
+    $('#status').text(status);
+  }
 
   function tokenizeUrl(url) {
     var findTokens = /{([^}]+)}/g;
@@ -276,6 +283,7 @@ $(function() {
         sendResponse({
           status: "Printing is not enabled"
         });
+        break;
       default:
     }
   }
@@ -283,10 +291,15 @@ $(function() {
   function init() {
     chrome.runtime.onMessage.addListener(handleMessage);
 
+    setStatus('loading local settings');
     chrome.storage.local.get(null, function(data) {
+      setStatus('local settings loaded');
 
       initEventHandlers();
+      setStatus('event handlers initialized');
+
       initModals();
+      setStatus('dialogs initialized');
 
       //get tokens
       var useTokens = (Array.isArray(data.url) ? data.url : [data.url]).some(function(url) {
@@ -295,6 +308,7 @@ $(function() {
 
       async.series([
         function(next) {
+          setStatus('setting uuid token');
           if (!useTokens) {
             next();
             return;
@@ -303,10 +317,12 @@ $(function() {
           next();
         },
         function(next) {
+          setStatus('setting network tokens');
           if (!useTokens) {
             next();
             return;
           }
+          setStatus('getting network interfaces');
           chrome.system.network.getNetworkInterfaces(function(interfaces) {
             interfaces.forEach(function(interface) {
               if (!interface.name || !interface.address) {
@@ -319,10 +335,12 @@ $(function() {
           });
         },
         function(next) {
+          setStatus('setting custom tokens');
           if (!useTokens || !data.customtoken) {
             next();
             return;
           }
+          setStatus('parsing custom tokens');
           try {
             tokens = _.defaults(JSON.parse(data.customtoken), tokens);
           } catch (error) {
@@ -331,10 +349,12 @@ $(function() {
           next();
         },
         function(next) {
+          setStatus('setting remote tokens');
           if (!useTokens || !data.tokenserver) {
             next();
             return;
           }
+          setStatus('fetching remote tokens');
           $.getJSON(tokenizeUrl(data.tokenserver)).done(function(tokenServerTokens) {
             tokens = _.defaults(tokenServerTokens, tokens);
             next();
@@ -344,6 +364,7 @@ $(function() {
           });
         },
         function(next) {
+          setStatus('resetting custom tokens');
           //do custom tokens twice to override tokenserver values
           if (!useTokens || !data.customtoken) {
             next();
@@ -357,6 +378,8 @@ $(function() {
           next();
         }
       ], function(err, res) {
+
+        setStatus('processing settings');
 
         allowPrint = !!data.allowprint;
         allowDownload = !!data.allowdownload;
@@ -491,11 +514,16 @@ $(function() {
           setInterval(rotateURL, rotaterate * 1000);
         }
         currentURL = defaultURL;
+
+        setStatus('loading content');
+
         loadContent(true);
         if (resetcache || clearcookies) {
+          setStatus('starting cache clear');
           $('#container').hide();
           setTimeout(function() {
             var restartApp = resetcache;
+            setStatus('clearing cache');
             clearCache(function() {
               if (restartApp) {
                 restartApplication();
@@ -659,6 +687,7 @@ $(function() {
     } else {
       $('#nav .back').addClass('inactive');
     }
+    setStatus('set nav status complete');
   }
 
   function initWebview($webview) {
@@ -675,6 +704,7 @@ $(function() {
       .on('exit', onEnded)
       .on('unresponsive', onEnded)
       .on('loadabort', function(e) {
+        setStatus('load aborted');
         if (e.isTopLevel) onEnded(e);
       })
       .on('consolemessage', function(e) {
@@ -716,6 +746,7 @@ $(function() {
         }
       })
       .on('contentload', function(e) {
+        setStatus('content loaded');
         var browser = e.target;
         browser.executeScript({
           code: "var kioskAppWindow = null;" +
@@ -730,12 +761,15 @@ $(function() {
             "  }" +
             "});"
         });
+        setStatus('content script executed');
         browser.contentWindow.postMessage({
           command: 'kioskGetTitle',
           id: $webview.parent().attr('id')
         }, '*');
+        setStatus('content message posted');
 
         if (hidegslidescontrols && browser.src.indexOf('https://docs.google.com/presentation') >= 0) {
+          setStatus('apply google presentation settings');
           $webview.css({
             height: '99%',
             bottom: '1px'
@@ -744,6 +778,7 @@ $(function() {
             code: ".punch-viewer-nav-v2, .punch-viewer-nav-fixed{ display:none; visibility:hidden; }"
           });
           setTimeout(function() {
+            setStatus('completing google presentation settings');
             $webview.css({
               height: '100%',
               bottom: 0,
@@ -780,22 +815,28 @@ $(function() {
           browser.insertCSS({
             code: "*{-webkit-user-select: none; user-select: none;}"
           });
+        setStatus('focusing on browser');
         browser.focus();
       })
       .on('loadstop', function(e) {
         if (disallowIframes) {
+          setStatus('disallowing iframes');
           e.target.executeScript({
             code: "(function () { var iframes =  document.getElementsByTagName('iframe'); for (i = 0; i < iframes.length; ++i) { iframes[i].outerHTML = ''; } })();"
           });
         }
         if (reset || useScreensaver) {
+          setStatus('adding keepalive logging');
           ACTIVE_EVENTS.split(' ').forEach(function(type, i) {
             e.target.executeScript({
               code: "document.addEventListener('" + type + "',function(){console.log('kiosk:active')},false)"
             });
           });
         }
+        setStatus('setting navigation status');
         setNavStatus();
+        setStatus('content load complete');
+        $("#status").hide();
       })
       .on('loadcommit', function(e) {
         if (e.originalEvent.isTopLevel && $webview.parent().attr('id').indexOf('screensaver') < 0) {
@@ -919,6 +960,7 @@ $(function() {
   }
 
   function loadContent(alsoLoadScreensaver) {
+    setStatus('loading content');
     if (!$('body').hasClass('screensaverActive')) {
       startScreensaverTimeout();
       startResetTimeout();
@@ -1000,7 +1042,7 @@ $(function() {
   }
 
   function loadURL(url, options) {
-
+    setStatus('loading url: ' + url);
     var type = (options && options.type) || 'content';
     var isScreensaver = (type === 'screensaver');
     var isNewWindow = (type === 'newwindow');
@@ -1025,6 +1067,7 @@ $(function() {
     // add the associated webview
     $webviewContainer.appendTo(isScreensaver ? '#screensaver' : '#content');
     var $webview = $('<webview />');
+    setStatus('initializing webview');
     initWebview($webview);
     $webview
       .data('id', id)

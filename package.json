@@ -1,6 +1,6 @@
 {
   "name": "kiosk",
-  "version": "8.0.0",
+  "version": "9.1.0",
   "description": "Kiosk",
   "main": "main.js",
   "scripts": {
@@ -33,8 +33,8 @@
   },
   "dependencies": {
     "async": "^2.5.0",
-    "jquery": "=1.11.1",
+    "jquery": "=3.4.0",
     "materialize-css": "=0.99.0",
-    "moment": "=2.10.3"
+    "moment": "=2.19.3"
   }
 }

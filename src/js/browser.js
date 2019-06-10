@@ -8,8 +8,9 @@ $(function() {
 
   var restarting = false;
   var reset = false;
+  var scheduledReset = false;
   var useScreensaver, screensaverTime, screensaverURL, screensaverWarningTime, screensaverWarningMessage, screensaverWarningTimeRemaining, screensaverReloadIntervalTime, screensaverReloadInterval;
-  var resetTimeout, screensaverTimeout, screensaverWarningInterval;
+  var scheduledResetInterval, resetTimeout, screensaverTimeout, screensaverWarningInterval;
   var restart;
   var urlrotateindex = 0;
   var rotaterate;
@@ -490,6 +491,7 @@ $(function() {
         allowNewWindow = data.newwindow ? true : false;
         newWindowMode = data.newwindowmode;
 
+        scheduledReset = data.scheduledreset && parseFloat(data.scheduledreset) > 0 ? parseFloat(data.scheduledreset) : false;
         reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
         screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
         screensaverURL = tokenizeUrl(data.screensaverurl);
@@ -622,6 +624,25 @@ $(function() {
           }, 1000);
         }
       }, screensaverTime * 60 * 1000);
+    }
+  }
+
+  function startScheduledResetInterval() {
+    if (scheduledReset) {
+      if (scheduledResetInterval) {
+        clearInterval(scheduledResetInterval);
+      }
+      scheduledResetInterval = setInterval(function() {
+        if (clearcookies) {
+          clearCache(function() {
+            refreshContent(true); // screensaver 
+            refreshContent(false); // content
+          });
+        } else {
+          refreshContent(true);
+          refreshContent(false);
+        }
+      }, scheduledReset * 60 * 1000);
     }
   }
 
@@ -964,6 +985,7 @@ $(function() {
     if (!$('body').hasClass('screensaverActive')) {
       startScreensaverTimeout();
       startResetTimeout();
+      startScheduledResetInterval();
     }
     if (alsoLoadScreensaver && screensaverURL) {
       $('#screensaver .browser').remove();

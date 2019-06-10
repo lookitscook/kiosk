@@ -10,6 +10,9 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
 
 ## Changelog
 
+- v9.2.0
+    - New feature: scheduled reset option
+
 - v7.1.0
   - New feature: re-enable modal pop-ups
   - New feature: support Confirm and Prompt dialogs.

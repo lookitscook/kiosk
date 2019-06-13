@@ -1,5 +1,5 @@
 {
-  "name": "Kiosk (v9.2.0 PRE-PRODUCTION)",
+  "name": "Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
   "version": "9.2.0",

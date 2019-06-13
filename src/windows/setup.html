@@ -270,6 +270,24 @@
             <h2><a name="scheduling"></a>Scheduling</h2>
           </div>
         </div>
+        <div class="row">
+          <div class="col s12">
+              <input type="checkbox" id="scheduled-reset" />
+              <label class="active" for="scheduled-reset">Enable Scheduled Reset</label>
+              <div class="row scheduled-reset disabled">
+                <div class="col input-field s2">
+                  <input id="scheduledresetinterval" type="text" value="5">
+                </div>
+                <div class="col input-field s2">
+                  <label for="scheduledresetinterval">minutes</label>
+                </div>
+                <div class="col input-field s4">
+                  <input id="scheduled-clear-cookies-reset" type="checkbox" />
+                  <label class="active" for="scheduled-clear-cookies-reset">Clear Cache on Reset</label>
+                </div>
+              </div>
+            </div>
+        </div>
       <div class="row">
         <div class="col s12">
             <input type="checkbox" id="reset" />

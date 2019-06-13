@@ -111,8 +111,12 @@ $(function() {
       $('#sleep-mode').children("[value='" + data.sleepmode + "']").prop('selected', true);
     }
 
+    if (data.scheduledreset && parseFloat(data.scheduledreset)) {
+      $("#scheduled-reset").prop("checked", true);
+      $('.scheduledreset').removeClass('disabled');
+      $("#scheduledresetinterval").val(data.scheduledreset);
+    }
     if (data.reset && parseFloat(data.reset)) {
-      var reset = parseFloat(data.reset);
       $("#reset").prop("checked", true);
       $('.reset').removeClass('disabled');
       $("#resetinterval").val(data.reset);
@@ -124,7 +128,7 @@ $(function() {
       $('#screensaver-url').val(data.screensaverurl);
     }
     $('#screensaver-reload-interval').val(parseFloat(data.screensaverreloadinterval) || '');
-    if (data.clearcookiesreset) $("#clear-cookies-reset, #screensaver-reset").prop("checked", true);
+    if (data.clearcookiesreset) $("#clear-cookies-reset, #scheduled-clear-cookies-reset, #screensaver-reset").prop("checked", true);
     if (data.restart && parseInt(data.restart)) {
       var restart = parseInt(data.restart);
       $('#houroffset > option').removeAttr('selected');
@@ -265,16 +269,38 @@ $(function() {
     }
     $("#clear-cookies-reset").on('change', function(e) {
       if ($("#clear-cookies-reset").is(':checked')) {
+        $("#scheduled-clear-cookies-reset").prop("checked", true);
         $("#screensaver-reset").prop("checked", true);
       } else {
+        $("#scheduled-clear-cookies-reset").prop("checked", false);
         $("#screensaver-reset").prop("checked", false);
+
+      }
+    });
+    $("#scheduled-clear-cookies-reset").on('change', function(e) {
+      if ($("#scheduled-clear-cookies-reset").is(':checked')) {
+        $("#clear-cookies-reset").prop("checked", true);
+        $("#screensaver-reset").prop("checked", true);
+      } else {
+        $("#clear-cookies-reset").prop("checked", false);
+        $("#screensaver-reset").prop("checked", false);
+
       }
     });
     $("#screensaver-reset").on('change', function(e) {
       if ($("#screensaver-reset").is(':checked')) {
         $("#clear-cookies-reset").prop("checked", true);
+        $("#scheduled-clear-cookies-reset").prop("checked", true);
       } else {
         $("#clear-cookies-reset").prop("checked", false);
+        $("#scheduled-clear-cookies-reset").prop("checked", false);
+      }
+    });
+    $("#scheduled-reset").on('change', function() {
+      if ($("#scheduled-reset").is(':checked')) {
+        $('.scheduled-reset').hide().removeClass('disabled').slideDown();
+      } else {
+        $('.scheduled-reset').slideUp();
       }
     });
     $("#reset").on('change', function() {
@@ -423,8 +449,9 @@ $(function() {
       updated.local = $("#local").is(':checked');
       updated.restart = $("#restart").is(':checked');
       updated.restartday = $('#restartday').val();
+      updated.scheduledreset = $("#scheduled-reset").is(':checked');
       updated.reset = $("#reset").is(':checked');
-      updated.clearcookiesreset = $('#clear-cookies-reset').is(':checked') || $('#screensaver-reset').is(':checked');
+      updated.clearcookiesreset = $('#clear-cookies-reset').is(':checked') || $('#scheduled-clear-cookies-reset').is(':checked') || $('#screensaver-reset').is(':checked');
       var useScreensaver = $('#use-screensaver').is(':checked');
       updated.screensavertime = parseFloat($('#screensaver-time').val()) || 0;
       updated.screensaverreloadinterval = parseFloat($('#screensaver-reload-interval').val()) || null;
@@ -465,9 +492,15 @@ $(function() {
         delete updated.restartday;
         delete updated.restart;
       }
+      if (updated.scheduledreset) {
+        updated.scheduledreset = parseFloat($('#scheduledresetinterval').val()) || 0;
+        if (updated.scheduledreset <= 0) {
+          delete updated.scheduledreset;
+          error.push("Scheduled reset time is required.");
+        }
+      }
       if (updated.reset) {
-        updated.reset = parseFloat($('#resetinterval').val());
-        if (!reset) reset = 0;
+        updated.reset = parseFloat($('#resetinterval').val()) || 0;
         if (updated.reset <= 0) {
           delete updated.reset;
           error.push("Inactivity reset time is required.");

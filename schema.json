@@ -37,14 +37,19 @@
       "description": "Only show Google Slides content when using embedded player URL. Do not show control overlay.",
       "type": "boolean"
     },
+    "scheduledreset": {
+      "title": "Scheduled Reset Time (minutes)",
+      "description": "Delay between scheduled application resets.",
+      "type": "number"
+    },
     "reset": {
       "title": "Inactivity Reset Time (minutes)",
-      "description": "Delay before showing screensaver or resetting application after last interaction.",
+      "description": "Delay before resetting application after last interaction.",
       "type": "number"
     },
     "screensavertime": {
       "title": "Screensaver Time",
-      "description": "",
+      "description": "Delay before showing screensaver after last interaction.",
       "type": "number"
     },
     "screensaverurl": {

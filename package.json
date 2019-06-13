@@ -1,6 +1,6 @@
 {
   "name": "kiosk",
-  "version": "9.1.0",
+  "version": "9.2.0",
   "description": "Kiosk",
   "main": "main.js",
   "scripts": {

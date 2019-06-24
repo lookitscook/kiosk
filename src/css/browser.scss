@@ -98,6 +98,31 @@ body{
 
   }
 
+  &.show-wifi{
+
+    #wifi-status{
+      display:block;
+      visibility: visible;
+    }
+
+    .tabs{
+      right:80px;
+    }
+
+  }
+
+  &.show-wifi.show-battery{
+
+    .tabs{
+      right:160px;
+    }
+
+    #wifi-status{
+      right: 80px;
+    }
+
+  }
+
 }
 
 #nav{
@@ -167,7 +192,7 @@ body{
 .tabs .indicator { display: none; }
 .tabs .tab a.active { background: #111; }
 
-#battery-status{
+#battery-status, #wifi-status{
   position:absolute;
   background: #000;
   position:absolute;

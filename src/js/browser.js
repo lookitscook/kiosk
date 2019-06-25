@@ -216,6 +216,14 @@ $(function() {
     var icon = 'signal_wifi_';
     icon += 'off';
     // TODO: update icon
+    /*
+    signal_wifi_off
+    signal_wifi_0_bar <10%
+    signal_wifi_1_bar <30%
+    signal_wifi_2_bar <50%
+    signal_wifi_3_bar <70%
+    signal_wifi_4_bar >70
+    */
     $('#wifi-status .text').text(text);
     $('#wifi-status i').text(icon);
   }
@@ -414,7 +422,7 @@ $(function() {
         showNav = !!data.shownav;
         showWifi = !!data.showwifi;
         showBattery = !!data.showbattery;
-        showTopBar = showNav || showWifi || showBattery;
+        showTopBar = showNav || (showWifi && chrome.networking && chrome.networking.onc) || showBattery;
 
         if (showTopBar) {
           $('body').addClass('show-top-bar');
@@ -425,6 +433,7 @@ $(function() {
             $('body').addClass('show-wifi');
             monitorWifi();
           } else {
+            setStatus('Wifi status only available in Chrome OS kiosk mode.');
             console.error('Wifi status only available in Chrome OS kiosk mode.');
           }
         }

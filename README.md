@@ -11,7 +11,7 @@ Build: `npm run build` then .zip the `/dist` folder for upload to the Chrome Dev
 ## Changelog
 
 -v9.3.0
-    - New feature: wi-Fi strength indicator
+    - New feature: Wi-Fi strength indicator
 
 - v9.2.0
     - New feature: scheduled reset option

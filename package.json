@@ -8,7 +8,8 @@
     "beautify": "glob-run js-beautify -r 'src/js/**.js'",
     "test": "mocha test/",
     "build": "./build.sh",
-    "start": "./start.sh"
+    "start": "./start.sh",
+    "postinstall": "opencollective-postinstall || true"
   },
   "repository": {
     "type": "git",
@@ -35,6 +36,11 @@
     "async": "^2.5.0",
     "jquery": "=3.4.0",
     "materialize-css": "=0.99.0",
-    "moment": "=2.19.3"
+    "moment": "=2.19.3",
+    "opencollective-postinstall": "^2.0.2"
+  },
+  "collective": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/kiosk"
   }
 }

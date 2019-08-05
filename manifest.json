@@ -19,7 +19,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["js/main.min.js"],
+      "scripts": ["js/main.js"],
       "persistent": false
     }
   },

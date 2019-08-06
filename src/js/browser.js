@@ -464,7 +464,6 @@ $(function() {
           $('body').addClass('show-top-bar');
         }
 
-        $('body').addClass('show-wifi');
         if (showWifi) {
           if (chrome.networking && chrome.networking.onc) {
             $('body').addClass('show-wifi');

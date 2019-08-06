@@ -464,13 +464,10 @@ $(function() {
           $('body').addClass('show-top-bar');
         }
 
-        $('#wifi-status .text').text('a' + showWifi);
         $('body').addClass('show-wifi');
         if (showWifi) {
-          $('#wifi-status .text').text('b');
           if (chrome.networking && chrome.networking.onc) {
             $('body').addClass('show-wifi');
-            $('#wifi-status .text').text('c');
             monitorWifi();
           } else {
             setStatus('Wifi status only available in Chrome OS kiosk mode.');

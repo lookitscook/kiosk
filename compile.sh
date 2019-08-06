@@ -19,6 +19,8 @@ node-sass src/css/browser.scss --output-style expanded -o dist/unpackaged/css/
 node-sass src/css/shared.scss --output-style expanded -o dist/unpackaged/css/
 node-sass src/css/style.scss --output-style expanded -o dist/unpackaged/css/
 cp src/css/ghpages-materialize.css dist/unpackaged/css/ghpages-materialize.css
+cp -R lib/material-wifi-icons dist/unpackaged/css/material-wifi-icons
+
 
 #build html
 cp src/windows/browser.html dist/unpackaged/windows/browser.html

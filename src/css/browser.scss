@@ -219,6 +219,11 @@ body{
     line-height:48px;
     float:left;
     display:block;
+
+    &.wifi-active{
+      font-size: 20px;
+      padding: 0 0.25em;
+    }
   }
 
 }

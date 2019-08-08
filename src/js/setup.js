@@ -85,6 +85,9 @@ $(function() {
     if (data.shownav) {
       $("#shownav").prop("checked", true);
     }
+    if (data.showwifi) {
+      $("#showwifi").prop("checked", true);
+    }
     if (data.showbattery) {
       $("#showbattery").prop("checked", true);
     }
@@ -476,6 +479,7 @@ $(function() {
       updated.sleepmode = $("#sleep-mode").val();
       updated.resetcache = $('#reset-cache').is(':checked');
       updated.shownav = $('#shownav').is(':checked');
+      updated.showwifi = $('#showwifi').is(':checked');
       updated.showbattery = $('#showbattery').is(':checked');
       updated.screensaverwarningtime = parseFloat($("#screensaverwarningtime").val()) || 0;
       updated.screensaverwarningmessage = $("#screensaverwarningmessage").val();

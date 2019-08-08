@@ -7,6 +7,11 @@
       "description": "Show home/forward/back browser navigation bar.",
       "type": "boolean"
    },
+   "showwifi": {
+    "title": "Show Wi-Fi Indicator",
+    "description": "Display icon and percent indicator for a Wi-Fi connection strength.",
+    "type": "boolean"
+ },
    "showbattery": {
       "title": "Show Battery Indicator",
       "description": "Display icon and percent indicator of remaining battery life.",

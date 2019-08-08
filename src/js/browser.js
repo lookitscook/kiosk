@@ -1,9 +1,24 @@
+// stub for local testing, only available on Chrome OS in kiosk mode
+// https://developer.chrome.com/apps/networking_onc
+/*chrome.networking = {
+  onc: {
+    getNetworks: function(config, cb) {
+      return cb([{
+        WiFi: {
+          SignalStrength: 72
+        }
+      }]);
+    }
+  }
+};*/
+
 $(function() {
 
   var RESTART_DELAY = 1000;
   var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
   var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
   var DEFAULT_ROTATE_RATE = 30; //seconds
+  var WIFI_STATUS_POLL_INTERVAL = 10; //seconds
   var ACTIVE_EVENTS = "click mousedown mouseup mousemove touch touchstart touchend keypress keydown";
 
   var restarting = false;
@@ -32,6 +47,7 @@ $(function() {
   var disallowIframes = false;
   var localAdmin = false;
   var showNav = false;
+  var showWifi = false;
   var showBattery = false;
   var showTopBar = false;
   var tokens = {};
@@ -193,6 +209,59 @@ $(function() {
 
   function initModals() {
     $('.modal').modal();
+  }
+
+  function monitorWifi() {
+    if (!chrome.networking || !chrome.networking.onc) {
+      setStatus('chrome.networking.onc not available');
+      return;
+    }
+    setStatus('getting wifi status');
+    chrome.networking.onc.getNetworks({
+      networkType: 'WiFi',
+      visible: true,
+      configured: true,
+      limit: 1 // only check the first configured result
+    }, function(connections) {
+      var wifiDetails = connections[0].WiFi || {};
+      updateWifiUI(wifiDetails.SignalStrength); // integer 0 to 100
+      setTimeout(monitorWifi, WIFI_STATUS_POLL_INTERVAL * 1000);
+    });
+  }
+
+  function updateWifiUI(s) {
+    var signalStrength = s || 0;
+    if (!Number.isInteger(signalStrength)) {
+      return;
+    }
+    $('#wifi-status .text').text(signalStrength + '%');
+
+    /*
+    // ideally we could do this. sadly not all icons are
+    // included in the official Material icons webfont. 
+    var icon = 'signal_wifi_';
+    if (signalStrength < 20) {
+      icon += '0_bar';
+    } else if (signalStrength < 40) {
+      icon += '1_bar';
+    } else if (signalStrength < 60) {
+      icon += '2_bar';
+    } else if (signalStrength < 80) {
+      icon += '3_bar';
+    } else {
+      icon += '4_bar'; // >=80% signal strength
+    }*/
+    //instead we must do this:
+    $('#wifi-status i').removeClass('material-icons').addClass('wifi-active').text('');
+    if (signalStrength < 25) {
+      $('#wifi-status i').addClass('wifi-none');
+    } else if (signalStrength < 50) {
+      $('#wifi-status i').addClass('wifi-half');
+    } else if (signalStrength < 75) {
+      $('#wifi-status i').addClass('wifi-most');
+    } else {
+      $('#wifi-status i').addClass('wifi-full');
+    }
   }
 
   function updateBatteryUI(battery) {
@@ -387,11 +456,22 @@ $(function() {
         disallowUpload = !!data.disallowupload;
         disallowIframes = !!data.disallowiframes;
         showNav = !!data.shownav;
+        showWifi = !!data.showwifi;
         showBattery = !!data.showbattery;
-        showTopBar = showNav || showBattery;
+        showTopBar = showNav || (showWifi && chrome.networking && chrome.networking.onc) || showBattery;
 
         if (showTopBar) {
           $('body').addClass('show-top-bar');
+        }
+
+        if (showWifi) {
+          if (chrome.networking && chrome.networking.onc) {
+            $('body').addClass('show-wifi');
+            monitorWifi();
+          } else {
+            setStatus('Wifi status only available in Chrome OS kiosk mode.');
+            console.error('Wifi status only available in Chrome OS kiosk mode.');
+          }
         }
 
         if (showBattery) {

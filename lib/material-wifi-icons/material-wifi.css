@@ -1,0 +1,26 @@
+@font-face {
+  font-family: 'wifi';
+  src: url('./material-wifi.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+.wifi-full:before,
+.wifi-most:before,
+.wifi-half:before,
+.wifi-none:before {
+  display: inline-block;
+  font-family: 'wifi';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  text-rendering: auto;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.wifi-full:before { content: '\e900'; }
+.wifi-most:before { content: '\e901'; }
+.wifi-half:before { content: '\e903'; }
+.wifi-none:before { content: '\e905'; }

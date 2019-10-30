@@ -23,8 +23,6 @@ cp src/css/ghpages-materialize.css dist/unpackaged/css/ghpages-materialize.css
 #build html
 htmlmin src/windows/browser.html > dist/unpackaged/windows/browser.html
 htmlmin src/windows/setup.html > dist/unpackaged/windows/setup.html
-htmlmin src/windows/pair.html > dist/unpackaged/windows/pair.html
-htmlmin src/windows/status.html > dist/unpackaged/windows/status.html
 
 #build js
 cp node_modules/async/dist/async.min.js dist/unpackaged/js/async.min.js;
@@ -36,8 +34,6 @@ cp lib/wsc-chrome/wsc-chrome.js dist/unpackaged/js/lib/wsc-chrome.js;
 cat node_modules/async/dist/async.min.js <(echo) lib/lodash.min.js <(echo) lib/wsc-chrome/wsc-chrome.js <(echo) src/js/main.js | uglifyjs -o dist/unpackaged/js/main.min.js
 uglifyjs src/js/browser.js > dist/unpackaged/js/browser.min.js;
 uglifyjs src/js/setup.js > dist/unpackaged/js/setup.min.js;
-uglifyjs src/js/pair.js > dist/unpackaged/js/pair.min.js;
-uglifyjs src/js/status.js > dist/unpackaged/js/status.min.js;
 
 #build assets
 cp -R src/img dist/unpackaged/img;

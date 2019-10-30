@@ -59,25 +59,3 @@ nav.top-nav{
 a{
     color: #45d326;
 }
-
-.window-pair{
-   > .container {
-       padding-top: 120px;
-   }
-}
-
-.window-status{
-    background: #000;
-    color: #fff;
-
-    #message{
-        position: absolute;
-        top: 50%;
-        left:0;
-        width: 100%;
-        text-align:center;
-        transform: translateY(-50%);
-        text-transform: uppercase;
-        font-size:0.8em;
-    }
-}

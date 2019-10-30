@@ -16,65 +16,28 @@
   </head>
   <body class="window-setup">
     <header>
-      <div class="container"><a href="https://chrome.google.com/webstore/detail/kiosk/afhcomalholahplbjhnmahkoekoijban" data-target="nav-mobile" class="button-collapse top-nav sidenav-trigger full hide-on-large-only"><i class="material-icons">menu</i></a></div>
       <ul id="nav-mobile" class="sidenav sidenav-fixed">
         <li class="logo"><a id="logo-container" href="#" class="brand-logo">
             <object id="front-page-logo" type="image/svg+xml" data="../img/logo.svg">Your browser does not support SVG</object></a></li>
-        <li class="no-padding">
-          <ul class="collapsible collapsible-accordion">
-            <li class="bold active"><a class="collapsible-header waves-effect waves-green">Content</a>
-              <div class="collapsible-body">
-                <ul>
-                  <li class="active"><a href="#url">URL(s)</a></li>
-                  <li><a href="#servelocal">Serve Local Content</a></li>
-                  <li class="pro-feature"><a href="#customtoken">Custom Tokens</a></li>
-                  <li class="pro-feature"><a href="#tokenserver">Token Service URL</a></li>
-                  <li><a href="#whitelist">Domain Whitelist</a></li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-        </li>
-        <li class="bold"><a href="#systemInformation" class="waves-effect waves-green">System Information</a></li>
-        <li class="no-padding">
-          <ul class="collapsible collapsible-accordion">
-            <li class="bold"><a class="collapsible-header waves-effect waves-green">Browser</a>
-              <div class="collapsible-body" >
-                <ul>
-                  <li><a href="#ui">User Interface</a></li>
-                  <li><a href="#printing">Printing</a></li>
-                  <li><a href="#useragent">User Agent</a></li>
-                  <li><a href="#authheader">Authorization Header</a></li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-        </li>
-        <li class="bold"><a href="#administration" class="waves-effect waves-green">Administration</a></li>
-        <li class="bold"><a href="#schedule" class="waves-effect waves-green">Schedule</a></li>
-        <li class="bold"><a href="#save" class="waves-effect waves-green">Save</a></li>
+        <li class="no-padding"></li>     
       </ul>
     </header>
     <main><div class="container">
-
-
-        <div class="row">
-            <div class="input-field col s4">
-                <input value="" id="label" type="text">
-                <label class="active" for="label">Device Label</label><br>
-                <small>A unique, descriptive name for this device. Used for quickly referencing in the Device Management Dashboard.</small>
-            </div>
-            <div class="input-field col s4">
-                <input value="" id="pairing-token" type="text">
-                <label class="active" for="pairing-token">Pairing Token</label><br>
-                <small>Link this device to your Device Management Dashboard account.</small>
-            </div>
-            <div class="col s3 right-align">
-                <a id="pair-device" class="waves-effect waves-light btn-large">Pair Device</a>
-            </div>
+      <div class="row">
+          <div class="input-field col s4">
+              <input value="" id="label" type="text">
+              <label class="active" for="label">Device Label</label><br>
+              <small>A unique, descriptive name for this device. Used for quickly referencing in the Device Management Dashboard.</small>
           </div>
-
-
+          <div class="input-field col s4">
+              <input value="" id="pairing-token" type="text">
+              <label class="active" for="pairing-token">Pairing Token</label><br>
+              <small>Link this device to your Device Management Dashboard account.</small>
+          </div>
+          <div class="col s3 right-align">
+              <a id="pair-device" class="waves-effect waves-light btn-large">Pair Device</a>
+          </div>
+        </div>
   <div class="row">
     <div class="col s12 m8 offset-m1 xl7 offset-xl1">
 
@@ -461,8 +424,7 @@
               </p>
           </div>
         </div>
-
-
+        
       </div>
   </body>
 </html>

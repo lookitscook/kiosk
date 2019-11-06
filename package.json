@@ -22,11 +22,11 @@
   "homepage": "https://kiosk.cook.company",
   "devDependencies": {
     "appdmg": "^0.5.2",
-    "glob-run": "^0.1.6",
+    "glob-run": "^0.1.7",
     "htmlmin": "0.0.7",
     "js-beautify": "^1.6.14",
     "jshint": "^2.9.5",
-    "mocha": "^3.5.0",
+    "mocha": "^6.2.2",
     "node-sass": "^4.5.3",
     "nwjs-builder-phoenix": "^1.15.0",
     "uglify-js": "^3.0.28"

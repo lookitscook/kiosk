@@ -1,3 +1,4 @@
+
 $(function() {
 
   var RESTART_DELAY = 1000;
@@ -244,8 +245,8 @@ $(function() {
       updateBatteryUI.bind(null, battery));
   }
 
-  function handleMessage(request, sender, sendResponse) {
-    switch (request.command) {
+  chrome.commands.onCommand.addListener(function(command) {
+    switch (command) {
       case "openAdmin":
         // open admin login on ctrl+a
         if (localAdmin) {
@@ -255,42 +256,24 @@ $(function() {
             $('#username').focus();
             $('#passwordLabel').addClass('active');
           });
-          sendResponse({
-            status: "Loading admin"
-          });
-          break;
         }
-        sendResponse({
-          status: "Local admin is not enabled"
-        });
         break;
       case "refresh":
         // refresh on ctrl+r
         loadContent(true);
-        sendResponse({
-          status: "Refreshing"
-        });
         break;
       case "print":
         // print on ctrl+p
         if (allowPrint) {
           var activeBrowserID = $('#tabs a.active').attr('href');
           $(activeBrowserID + ' webview').get(0).print();
-          sendResponse({
-            status: "Printing"
-          });
-          break;
         }
-        sendResponse({
-          status: "Printing is not enabled"
-        });
         break;
       default:
     }
-  }
+  });
 
   function init() {
-    chrome.runtime.onMessage.addListener(handleMessage);
 
     setStatus('loading local settings');
     chrome.storage.local.get(null, function(data) {

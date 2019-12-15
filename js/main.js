@@ -9,12 +9,6 @@ var activeWindow;
 
 chrome.app.runtime.onLaunched.addListener(init);
 
-chrome.commands.onCommand.addListener(function(command) {
-  chrome.runtime.sendMessage(null, {
-    'command': command
-  });
-});
-
 /*
 LOG PERMISSION WARNINGS
 use to test manifest permissions changes

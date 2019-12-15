@@ -1,14 +1,25 @@
 html body{
     font-family:  'Helvetica', 'Arial', sans-serif; /*'Noto Sans',*/
+    background :white;
+    color: black;
 }
-h1, h2, h3, .header{
+
+h1, 
+h2, 
+h3, 
+.header{
     font-family: 'Helvetica', 'Arial', sans-serif; /* 'Bree', */
     font-weight: 100;
     color: #45d326
 }
 
+ul.sidenav{
+    background: none;
+    border-right: 1px solid rgba(255,255,255,0.15);
+}
+
 ul.sidenav.sidenav-fixed li.logo{
-    border-bottom: 1px solid rgba(0,0,0,0.15);
+    border-bottom: 1px solid rgba(255,255,255,0.15);
     margin: 0 0 20px 0;
 }
 
@@ -26,16 +37,8 @@ nav.top-nav{
 }
 
 [type="checkbox"]:checked+label:before{
-    border-right: 2px solid #000;
-    border-bottom: 2px solid #000;
-}
-
-.sidenav .collapsible-body>ul:not(.collapsible)>li.active, .sidenav.sidenav-fixed .collapsible-body>ul:not(.collapsible)>li.active{
-    background-color: #45d326;
-}
-
-.sidenav .collapsible-body>ul:not(.collapsible)>li.active, .sidenav.sidenav-fixed .collapsible-body>ul:not(.collapsible)>li.active a{
-    font-weight: 800;
+    border-right: 2px solid white;
+    border-bottom: 2px solid white;
 }
 
 .waves-effect.waves-green .waves-ripple {
@@ -47,8 +50,12 @@ nav.top-nav{
     margin-right:0;
 }
 
-.btn, .btn-large, .btn-small,
-.btn:hover, .btn-large:hover, .btn-small:hover{
+.btn, 
+.btn-large, 
+.btn-small,
+.btn:hover, 
+.btn-large:hover, 
+.btn-small:hover{
     background-color: #45d326;
     box-shadow: none;
     font-family: 'Bree', sans-serif;

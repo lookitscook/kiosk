@@ -1,2 +1,36 @@
 dist
-node_modules
+/node_modules/*
+
+# the following files are used directly 
+# in the production application 
+# and should therefore be checked in
+
+# .gitignore wildcard is tricky
+# and require explitily re-including
+# the entire path to the file
+
+!node_modules/async
+node_modules/async/*
+!node_modules/async/dist
+node_modules/async/dist/*
+!node_modules/async/dist/async.js
+
+!node_modules/jquery
+node_modules/jquery/*
+!node_modules/jquery/dist
+node_modules/jquery/dist/*
+!node_modules/jquery/dist/jquery.js
+
+!node_modules/materialize-css
+node_modules/materialize-css/*
+!node_modules/materialize-css/dist
+node_modules/materialize-css/dist/*
+!node_modules/materialize-css/dist/css
+node_modules/materialize-css/dist/css/*
+!node_modules/materialize-css/dist/css/materialize.css
+
+!node_modules/moment
+node_modules/moment/*
+!node_modules/moment/moment.js
+
+build

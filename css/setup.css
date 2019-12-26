@@ -13,41 +13,18 @@ h3,
     color: #45d326
 }
 
-ul.sidenav{
-    background: none;
-    border-right: 1px solid rgba(255,255,255,0.15);
+#logo{
+    width: 12vw;
+    margin: 3em 0 1em 0;
 }
 
-ul.sidenav.sidenav-fixed li.logo{
-    border-bottom: 1px solid rgba(255,255,255,0.15);
-    margin: 0 0 20px 0;
-}
-
-#logo-container{
-    margin: 47px 0;
-}
-
-nav.top-nav{
-    height: 152px;
-    padding-top: 20px;
-}
-
-#front-page-logo{
-    max-width:100%;
-}
-
-[type="checkbox"]:checked+label:before{
+/*[type="checkbox"]:checked+label:before{
     border-right: 2px solid white;
     border-bottom: 2px solid white;
-}
+}*/
 
 .waves-effect.waves-green .waves-ripple {
     background-color: #45d326;
-}
-
-.container .row{
-    margin-left:0;
-    margin-right:0;
 }
 
 .btn, 

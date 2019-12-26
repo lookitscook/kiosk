@@ -26,6 +26,8 @@ mkdir -p build/unpackaged/node_modules/jquery/dist;
 cp node_modules/jquery/dist/jquery.js build/unpackaged/node_modules/jquery/dist/jquery.js;
 mkdir -p build/unpackaged/node_modules/materialize-css/dist/css;
 cp node_modules/materialize-css/dist/css/materialize.css build/unpackaged/node_modules/materialize-css/dist/css/materialize.css
+mkdir -p build/unpackaged/node_modules/materialize-css/dist/js;
+cp node_modules/materialize-css/dist/js/materialize.js build/unpackaged/node_modules/materialize-css/dist/js/materialize.js
 mkdir -p build/unpackaged/node_modules/moment;
 cp node_modules/moment/moment.js build/unpackaged/node_modules/moment/moment.js
 

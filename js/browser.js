@@ -7,6 +7,7 @@ $(function() {
   var DEFAULT_ROTATE_RATE = 30; //seconds
   var ACTIVE_EVENTS = "click mousedown mouseup mousemove touch touchstart touchend keypress keydown";
 
+  var uuid;
   var restarting = false;
   var reset = false;
   var scheduledReset = false;
@@ -61,7 +62,7 @@ $(function() {
   }
 
   function showSystemInformation(duration) {
-    Materialize.toast('UUID: ' + data.uuid + '<br>Content: ' + contentURL.join(','), duration);
+    Materialize.toast('UUID: ' + uuid + '<br>Content: ' + contentURL.join(','), duration);
   }
 
   function rotateURL() {
@@ -279,6 +280,8 @@ $(function() {
     chrome.storage.local.get(null, function(data) {
       setStatus('local settings loaded');
 
+      uuid = data.uuid;
+
       initEventHandlers();
       setStatus('event handlers initialized');
 
@@ -390,10 +393,6 @@ $(function() {
           $('body').addClass('show-nav');
         }
 
-        if (data.displaysysteminfo === 'always') {
-          showSystemInformation();
-        }
-
         if (data.local) {
           localAdmin = true;
 
@@ -499,6 +498,10 @@ $(function() {
           setInterval(rotateURL, rotaterate * 1000);
         }
         currentURL = defaultURL;
+
+        if (data.displaysysteminfo === 'always') {
+          showSystemInformation();
+        }
 
         setStatus('loading content');
 

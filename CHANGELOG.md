@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Simplify development and build process
 - Dependency security updates
 - Schema documentation
+- Bug fix: show system information
 
 ### Removed
 - Setup navigation menu

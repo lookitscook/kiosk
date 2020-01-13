@@ -1,3 +1,4 @@
+
 $(function() {
 
   var RESTART_DELAY = 1000;
@@ -6,6 +7,7 @@ $(function() {
   var DEFAULT_ROTATE_RATE = 30; //seconds
   var ACTIVE_EVENTS = "click mousedown mouseup mousemove touch touchstart touchend keypress keydown";
 
+  var uuid;
   var restarting = false;
   var reset = false;
   var scheduledReset = false;
@@ -60,7 +62,7 @@ $(function() {
   }
 
   function showSystemInformation(duration) {
-    Materialize.toast('UUID: ' + data.uuid + '<br>Content: ' + contentURL.join(','), duration);
+    Materialize.toast('UUID: ' + uuid + '<br>Content: ' + contentURL.join(','), duration);
   }
 
   function rotateURL() {
@@ -244,8 +246,8 @@ $(function() {
       updateBatteryUI.bind(null, battery));
   }
 
-  function handleMessage(request, sender, sendResponse) {
-    switch (request.command) {
+  chrome.commands.onCommand.addListener(function(command) {
+    switch (command) {
       case "openAdmin":
         // open admin login on ctrl+a
         if (localAdmin) {
@@ -255,46 +257,30 @@ $(function() {
             $('#username').focus();
             $('#passwordLabel').addClass('active');
           });
-          sendResponse({
-            status: "Loading admin"
-          });
-          break;
         }
-        sendResponse({
-          status: "Local admin is not enabled"
-        });
         break;
       case "refresh":
         // refresh on ctrl+r
         loadContent(true);
-        sendResponse({
-          status: "Refreshing"
-        });
         break;
       case "print":
         // print on ctrl+p
         if (allowPrint) {
           var activeBrowserID = $('#tabs a.active').attr('href');
           $(activeBrowserID + ' webview').get(0).print();
-          sendResponse({
-            status: "Printing"
-          });
-          break;
         }
-        sendResponse({
-          status: "Printing is not enabled"
-        });
         break;
       default:
     }
-  }
+  });
 
   function init() {
-    chrome.runtime.onMessage.addListener(handleMessage);
 
     setStatus('loading local settings');
     chrome.storage.local.get(null, function(data) {
       setStatus('local settings loaded');
+
+      uuid = data.uuid;
 
       initEventHandlers();
       setStatus('event handlers initialized');
@@ -407,10 +393,6 @@ $(function() {
           $('body').addClass('show-nav');
         }
 
-        if (data.displaysysteminfo === 'always') {
-          showSystemInformation();
-        }
-
         if (data.local) {
           localAdmin = true;
 
@@ -516,6 +498,10 @@ $(function() {
           setInterval(rotateURL, rotaterate * 1000);
         }
         currentURL = defaultURL;
+
+        if (data.displaysysteminfo === 'always') {
+          showSystemInformation();
+        }
 
         setStatus('loading content');
 

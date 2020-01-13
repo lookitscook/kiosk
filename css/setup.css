@@ -1,0 +1,45 @@
+html body{
+    font-family:  'Helvetica', 'Arial', sans-serif; /*'Noto Sans',*/
+    background :white;
+    color: black;
+}
+
+h1, 
+h2, 
+h3, 
+.header{
+    font-family: 'Helvetica', 'Arial', sans-serif; /* 'Bree', */
+    font-weight: 100;
+    color: #45d326
+}
+
+#logo{
+    width: 12vw;
+    margin: 3em 0 1em 0;
+}
+
+/*[type="checkbox"]:checked+label:before{
+    border-right: 2px solid white;
+    border-bottom: 2px solid white;
+}*/
+
+.waves-effect.waves-green .waves-ripple {
+    background-color: #45d326;
+}
+
+.btn, 
+.btn-large, 
+.btn-small,
+.btn:hover, 
+.btn-large:hover, 
+.btn-small:hover{
+    background-color: #45d326;
+    box-shadow: none;
+    font-family: 'Bree', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 1.44px;
+}
+
+a{
+    color: #45d326;
+}

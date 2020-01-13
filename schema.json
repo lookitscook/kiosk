@@ -200,7 +200,7 @@
     },
     "sleepmode": {
       "title": "Sleep Mode",
-      "description": "Valid values: 'display', 'none'",
+      "description": "Valid values: 'display', 'system', none'",
       "type": "string"
     },
     "devices": {

@@ -1,4 +1,5 @@
-body,#container{
+body,
+#container{
   position:absolute;
   top:0;
   left:0;
@@ -11,36 +12,45 @@ body,#container{
   overflow:hidden;
   background:#000;
 }
-#content, #screensaver, #screensaver-browser{
+
+#content, 
+#screensaver, 
+#screensaver-browser{
   position:absolute;
   top:0;
   right:0;
   bottom:0;
   left:0;
 }
-#screensaver, #screensaver-browser{
+
+#screensaver,
+#screensaver-browser{
   z-index:3;
   visibility: hidden;
-
-  webview{
-    pointer-events: none;
-  }
-
 }
+
+#screensaver webview, 
+#screensaver-browser webview{
+  pointer-events: none;
+}
+
 #content{
   z-index:1;
 }
-body.tabbed #content, body.show-top-bar #content{
+
+body.tabbed #content, 
+body.show-top-bar #content{
     top:48px;
 }
+
 body.screensaverActive #content{
   visibility: hidden;
 }
-body.screensaverActive {
-  #screensaver, #screensaver-browser{
-    visibility: visible;
-    display: block;
-  }
+
+body.screensaverActive #screensaver, 
+body.screensaverActive #screensaver-browser{
+  visibility: visible;
+  display: block;
 }
 
 #tabs{
@@ -48,7 +58,8 @@ body.screensaverActive {
   visibility: hidden;
 }
 
-body.tabbed #tabs, body.show-top-bar #tabs{
+body.tabbed #tabs, 
+body.show-top-bar #tabs{
   display:block;
   visibility: visible;
   z-index:2;
@@ -70,34 +81,22 @@ body.tabbed .tabs{
   display:block;
   visibility: visible;
 }
-body{
+body.show-nav #nav{
+  display:block;
+  visibility: visible;
+}
 
-  &.show-nav{
+body.show-nav .tabs{
+  left: 144px;
+}
 
-    #nav{
-      display:block;
-      visibility: visible;
-    }
+body.show-battery #battery-status{
+  display:block;
+  visibility: visible;
+}
 
-    .tabs{
-      left: 144px;
-    }
-
-  }
-
-  &.show-battery{
-
-    #battery-status{
-      display:block;
-      visibility: visible;
-    }
-
-    .tabs{
-      right:80px;
-    }
-
-  }
-
+body.show-battery .tabs{
+  right:80px;
 }
 
 #nav{
@@ -110,11 +109,14 @@ body{
   left:0;
   top:0;
 }
+
 #nav ul{
   height:48px;
   width:144px;
 }
-#nav li, #nav a{
+
+#nav li, 
+#nav a{
   display:block;
   height:48px;
   width:48px;
@@ -127,13 +129,16 @@ body{
   height:48px;
   line-height:48px;
 }
+
 #nav a:hover{
   background-color: #222;
   -webkit-transition: background-color 0.5s;
 }
+
 #nav li.inactive a{
   color: #333;
 }
+
 #nav li.inactive a:hover{
   background-color: #000;
 }
@@ -145,11 +150,13 @@ body{
 .tabs.scroll{
   overflow-x: auto;
 }
+
 .tabs .tab{
   float:none;
   position:relative;
   text-transform:none;
 }
+
 .tabs .tab a{
     color:rgba(255,255,255,0.7);
 }
@@ -181,21 +188,20 @@ body{
   line-height:48px;
   display: none;
   visibility: hidden;
+}
 
-  .text{
-    font-size: 14px;
-    float:left;
-    display:block;
-    text-align:center;
-  }
+#battery-status .text{
+  font-size: 14px;
+  float:left;
+  display:block;
+  text-align:center;
+}
 
-  i{
-    height:48px;
-    line-height:48px;
-    float:left;
-    display:block;
-  }
-
+#battery-status i{
+  height:48px;
+  line-height:48px;
+  float:left;
+  display:block;
 }
 
 #newWindow{	
@@ -207,12 +213,10 @@ body{
   overflow:hidden;	
 }
 
-#screensaverWarningModal{
-  .modal-content{
-    background: #000;
-    text-align: center;
-    color: #fff;
-  }
+#screensaverWarningModal .modal-content{
+  background: #000;
+  text-align: center;
+  color: #fff;
 }
 
 #status{

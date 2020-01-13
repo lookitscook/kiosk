@@ -9,12 +9,6 @@ var activeWindow;
 
 chrome.app.runtime.onLaunched.addListener(init);
 
-chrome.commands.onCommand.addListener(function(command) {
-  chrome.runtime.sendMessage(null, {
-    'command': command
-  });
-});
-
 /*
 LOG PERMISSION WARNINGS
 use to test manifest permissions changes
@@ -90,19 +84,11 @@ function generateGuid() {
 
 function setStatus(status) {
   console.log('status: ', status);
-  chrome.runtime.sendMessage(null, {
-    'status': status
-  });
 }
 
 function init() {
 
   async.series([
-    function(next) {
-      openWindow("windows/status.html", function() {
-        setTimeout(next, 100);
-      });
-    },
     function(next) {
       setStatus('Getting prior configuration');
       chrome.storage.local.get(null, function(res) {
@@ -221,8 +207,8 @@ function init() {
         return;
       }
       // need to set up
-      setStatus('Initiating manual pairing');
-      openWindow("windows/pair.html");
+      setStatus('Initiating setup');
+      openWindow("windows/setup.html");
       return;
     }
     //setup has been completed

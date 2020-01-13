@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Kiosk: Content</title>
+    <link type="text/css" rel="stylesheet" href="../css/material-icons/material-icons.css" media="screen">
+    <link type="text/css" rel="stylesheet" href="../node_modules/materialize-css/dist/css/materialize.css" media="screen" />
+    <link type="text/css" rel="stylesheet" href="../css/shared.css" media="screen" />
+    <link type="text/css" rel="stylesheet" href="../css/browser.css" media="screen" />
+    <script src="../node_modules/async/dist/async.js"></script>
+    <script src="../js/lodash.min.js"></script>
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
+    <script src="../node_modules/moment/moment.js"></script>
+    <script src="../node_modules/materialize-css/dist/js/materialize.js"></script>
+    <script src="../js/browser.js"></script>
+</head>
+
+<body class="window-browser">
+    <div id="login" class="modal">
+        <div class="modal-content">
+            <div class="action-bar">
+                <div class="row">&nbsp;</div>
+                <div class="row">
+                    <div class="input-field col offset-s2 s8">
+                        <input id="username" type="text" class="validate">
+                        <label class="active" for="username">Username</label>
+                    </div>
+
+                    <div class="input-field col offset-s2 s8">
+                        <input id="password" type="password" class="validate">
+                        <label id="passwordLabel" class="active" for="password">Password</label>
+                    </div>
+
+                    <div class="input-field col offset-s2 s8">
+                        <a href="#" id="submit" class="btn-large black waves-effect" style="float:right">Go</a>
+                    </div>
+                </div>
+                <div class="row">&nbsp;</div>
+            </div>
+        </div>
+    </div>
+    <div id="mediaPermission" class="modal">
+        <div class="modal-content">
+            <h4>Permission Request</h4>
+            <p>This application needs video and/or audio device access. Please grant access in the following dialogue.</p>
+            <div class="modal-footer">
+                <a href="#!" class="cancel modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+                <a href="#!" class="ok modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+            </div>
+        </div>
+    </div>
+    <div id="dialogAlert" class="modal">
+        <div class="modal-content">
+            <h5 class="text"> </h5>
+            <div class="modal-footer">
+                <a href="#!" class="ok modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+            </div>
+        </div>
+    </div>
+    <div id="dialogConfirm" class="modal">
+        <div class="modal-content">
+            <h5 class="text"> </h5>
+            <div class="modal-footer">
+                <a href="#!" class="cancel modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+                <a href="#!" class="ok modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+            </div>
+        </div>
+    </div>
+    <div id="dialogPrompt" class="modal">
+        <div class="modal-content">
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="promptValue" type="text" placeholder="">
+                    <label for="promptValue" class="active text"></label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="cancel modal-action modal-close waves-effect waves-red btn-flat">Cancel</a>
+                <a href="#!" class="ok modal-action modal-close waves-effect waves-green btn-flat">OK</a>
+            </div>
+        </div>
+    </div>
+    <div id="newWindow" class="modal"></div>
+    <div id="container">
+        <div id="tabs" class="row">
+            <nav id="nav">
+                <ul>
+                    <li class="home inactive"><a href="#"><i class="material-icons">home</i></a></li>
+                    <li class="back inactive"><a href="#"><i class="material-icons">arrow_back</i></a></li>
+                    <li class="refresh"><a href="#"><i class="material-icons">refresh</i></a></li>
+                </ul>
+            </nav>
+            <ul class="tabs"></ul>
+            <div id="battery-status"><span class="text">&nbsp;&nbsp;&nbsp;</span> <i class="material-icons">battery_unknown</i></div>
+        </div>
+        <div id="screensaver"></div>
+        <div id="content"></div>
+        <div id="status">initializing...</div>
+        <div id="screensaverWarningModal" class="modal">
+            <div class="modal-content">
+                <h4 id="screensaverWarning">Permission Request</h4>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

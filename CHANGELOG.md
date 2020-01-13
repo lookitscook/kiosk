@@ -6,16 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [9.2.0] - 2019-01-13
 ### Added
 - Seperate Changelog
-
 ### Changed
 - Remove custom build of Materialize
 - Simplify development and build process
 - Dependency security updates
 - Schema documentation
 - Bug fix: show system information
-
 ### Removed
 - Setup navigation menu
 - Seperate pairing and status page

@@ -470,6 +470,12 @@ $(function() {
         disabletouchhighlight = data.disabletouchhighlight ? true : false;
         disableselection = data.disableselection ? true : false;
         resetcache = data.resetcache ? true : false;
+        if (chrome.storage) {
+          chrome.storage.local.set({
+            resetcache: false
+          });
+        }
+
         allowNewWindow = data.newwindow ? true : false;
         newWindowMode = data.newwindowmode;
 
@@ -520,6 +526,13 @@ $(function() {
             });
           }, 100);
         }
+
+        setStatus('starting listener for configuration changes');
+        chrome.storage.onChanged.addListener(function(changes, areaName) {
+            restartApplication();
+        });
+
+        pollForCustomerConfigUpdate(data);
 
       });
     });
@@ -1088,14 +1101,9 @@ $(function() {
   }
 
   function clearCache(cb) {
-    if (resetcache) { //set true when we're restarting once after saving from admin
-      if (chrome.storage) {
-        chrome.storage.local.set({
-          resetcache: false
-        });
-      }
-      resetcache = false;
-    }
+    //set true when we're restarting once after saving from admin
+    resetcache = false;
+
     //remove entire cache
     var clearDataType = {
       appcache: true,
@@ -1125,6 +1133,19 @@ $(function() {
         restarting = false;
       }, RESTART_DELAY);
     }
+  }
+
+  function pollForCustomerConfigUpdate(data) {
+    getCustomerConfig(data.uuid, data.paired_user_configuration, function(err, newConfig) {
+      if (err) {
+        console.error('Error getting customer config', err);
+      }
+      if(newConfig){
+        Object.assign(data, newConfig);
+        return chrome.storage.local.set(data, restartApplication);
+      }
+      setTimeout(function() { pollForCustomerConfigUpdate(data); }, 5 * 60 * 1000); //check in every 5 minutes
+    });
   }
 
 });

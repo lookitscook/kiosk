@@ -2,8 +2,8 @@
   "name": "Kiosk",
   "description": "Launch any URL as a full-screen kiosk.",
   "manifest_version": 2,
-  "version": "9.3.0",
-  "version_name": "kiosk-9.3.0",
+  "version": "9.3.1",
+  "version_name": "kiosk-9.3.1",
   "author": {
     "name": "The Cook Company",
     "email": "support@cook.company"
@@ -19,7 +19,7 @@
   },
   "app": {
     "background": {
-      "scripts": ["node_modules/async/dist/async.js", "js/lodash.min.js", "js/wsc-chrome.js", "js/main.js"],
+      "scripts": ["node_modules/async/dist/async.js", "js/lodash.min.js", "js/wsc-chrome.js", "js/shared.js", "js/main.js"],
       "persistent": false
     }
   },

@@ -28,48 +28,6 @@ Should be commented out in production application.
   }
 );*/
 
-function pollForCustomerConfigUpdate(cb) {
-  getCustomerConfig(data.uuid, data.paired_user_configuration, function(err) {
-    if (err) {
-      console.error('Error getting customer config', err);
-    }
-    if (cb) {
-      cb();
-    }
-    setTimeout(pollForCustomerConfigUpdate, 5 * 60 * 1000); //check in every 5 minutes
-  });
-}
-
-function getCustomerConfig(deviceUuid, configId, cb) {
-  if (!deviceUuid) {
-    cb(new Error('Check in error: no device UUID'));
-    return;
-  }
-  return postData(CHECK_IN_URL, {
-    uuid: deviceUuid,
-    configuration: configId
-  }).then(function(res) {
-    if (res && res.newConfig) {
-      var newConfigId = res.newConfigId;
-      var fields = Object.keys(res.newConfig);
-      var newConfig = {};
-      fields.forEach(function(field) {
-        if (typeof res.newConfig[field].Value != "undefined") {
-          newConfig[field] = res.newConfig[field].Value;
-        }
-      });
-      Object.assign(data, newConfig, {
-        paired_user_configuration: newConfigId,
-      });
-      return chrome.storage.local.set(data, cb);
-    }
-    return cb();
-  }).catch(function(err) {
-    console.error(err);
-    cb(err);
-  });
-}
-
 function generateGuid() {
   var result, i, j;
   result = '';
@@ -126,7 +84,14 @@ function init() {
         return next();
       }
       setStatus('Getting configuration from Kiosk Device Management Console');
-      pollForCustomerConfigUpdate(next);
+      getCustomerConfig(data.uuid, data.paired_user_configuration, function(err, remoteConfig) {
+        if(!remoteConfig){
+          return next();
+        }
+        Object.assign(data, newConfig);
+        chrome.storage.local.set(data, next);
+      });
+      
     },
     function(next) {
       // get config from Google Chrome Management Console
@@ -134,12 +99,6 @@ function init() {
         setStatus('Not paired with Chrome Management Console');
         return next();
       }
-      setStatus('Setting listener for managed configuration changes');
-      chrome.storage.onChanged.addListener(function(changes, areaName) {
-        if (areaName === 'managed') {
-          restart();
-        }
-      });
       setStatus('Getting configuration from Chrome Management Console');
       return chrome.storage.managed.get(null, function(managedConfig) {
         setStatus('Recieved response from Kiosk Device Management Console');
@@ -300,25 +259,4 @@ function stopAutoRestart() {
   if (restartTimeout) {
     clearTimeout(restartTimeout);
   }
-}
-
-function restart() {
-  if (chrome.runtime.restart) chrome.runtime.restart(); // for ChromeOS devices in "kiosk" mode
-  chrome.runtime.reload();
-}
-
-function postData(url, data) {
-  return fetch(url, {
-    method: "POST",
-    mode: "cors",
-    cache: "no-cache",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    redirect: "follow",
-    referrer: "no-referrer",
-    body: JSON.stringify(data),
-  }).then(function(response) {
-    return response.json();
-  });
 }

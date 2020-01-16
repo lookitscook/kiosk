@@ -178,13 +178,13 @@ $(function() {
 
   async.series([
     function(next) {
-      $.getJSON(chrome.runtime.getURL("../schema.json"), function(res) {
+      $.getJSON(system.getSchemaUrl(), function(res) {
         schema = res || {};
         next();
       });
     },
     function(next) {
-      chrome.storage.local.get(null, function(res) {
+      system.getLocalStorage(null, function(res) {
         data = res || {};
         uuid = data.uuid;
         next(null, res);
@@ -642,10 +642,9 @@ $(function() {
           remove.push(field);
         }
       }
-      chrome.storage.local.remove(remove);
-      chrome.storage.local.set(updated);
-      if (chrome.runtime.restart) chrome.runtime.restart(); // for ChromeOS devices in "kiosk" mode
-      chrome.runtime.reload();
+      system.removeLocalStorage(remove);
+      system.setLocalStorage(updated);
+      system.restart();
     });
   });
 
@@ -673,7 +672,7 @@ $(function() {
         label: label
       },
       success: function(data) {
-        chrome.storage.local.set({
+        system.setLocalStorage({
           paired_user_id: data.userId
         }, restartApplication);
       },
@@ -689,8 +688,7 @@ $(function() {
   });
 
   var restartApplication = function() {
-    if (chrome.runtime.restart) chrome.runtime.restart(); // for ChromeOS devices in "kiosk" mode
-    chrome.runtime.reload();
+    system.restart();
   }
 
 });

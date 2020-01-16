@@ -7,26 +7,7 @@ var directoryServer, adminServer, restartTimeout;
 var data = {};
 var activeWindow;
 
-chrome.app.runtime.onLaunched.addListener(init);
-
-/*
-LOG PERMISSION WARNINGS
-use to test manifest permissions changes
-DO NOT publish if new warnings are triggered. Prompt on existing
-installations would likely be a major issue.
-
-Current permission warnings are:
--"Exchange data with any device on the local network or internet",
--"Read folders that you open in the application"
-
-Should be commented out in production application.
-*/
-/*chrome.management.getPermissionWarningsByManifest(
-  JSON.stringify(chrome.runtime.getManifest()),
-  function(warning){
-    console.log("PERMISSION WARNINGS",warning);
-  }
-);*/
+system.onLaunched(init);
 
 function pollForCustomerConfigUpdate(cb) {
   getCustomerConfig(data.uuid, data.paired_user_configuration, function(err) {
@@ -61,7 +42,7 @@ function getCustomerConfig(deviceUuid, configId, cb) {
       Object.assign(data, newConfig, {
         paired_user_configuration: newConfigId,
       });
-      return chrome.storage.local.set(data, cb);
+      return system.setLocalStorage(data, cb);
     }
     return cb();
   }).catch(function(err) {
@@ -91,7 +72,7 @@ function init() {
   async.series([
     function(next) {
       setStatus('Getting prior configuration');
-      chrome.storage.local.get(null, function(res) {
+      system.getLocalStorage(null, function(res) {
         data = res || {};
         setStatus('Prior configuration lookup complete');
         next();
@@ -104,7 +85,7 @@ function init() {
       }
       setStatus('Generating UUID');
       data.uuid = generateGuid();
-      chrome.storage.local.set({
+      system.setLocalStorage({
         uuid: data.uuid,
       }, next);
     },
@@ -145,7 +126,7 @@ function init() {
         setStatus('Recieved response from Kiosk Device Management Console');
         if (managedConfig) {
           Object.assign(data, managedConfig);
-          return chrome.storage.local.set(data, next);
+          return system.setLocalStorage(data, next);
         }
         return next();
       });
@@ -171,7 +152,7 @@ function init() {
         }
         Object.assign(data, deviceConfig.configuration);
         setStatus('Applying asset ID configuration');
-        return chrome.storage.local.set(data, next);
+        return system.setLocalStorage(data, next);
       });
     },
     function(next) {
@@ -189,7 +170,7 @@ function init() {
       }
       Object.assign(data, deviceConfig.configuration);
       setStatus('Applying UUID configuration');
-      return chrome.storage.local.set(data, next);
+      return system.setLocalStorage(data, next);
     }
   ], function(err) {
 
@@ -218,7 +199,7 @@ function init() {
     // default.
     if (!data.sleepmode) {
       setStatus('Using default sleep mode');
-      chrome.storage.local.set({
+      system.setLocalStorage({
         'sleepmode': 'display'
       });
       data.sleepmode = 'display';
@@ -303,8 +284,7 @@ function stopAutoRestart() {
 }
 
 function restart() {
-  if (chrome.runtime.restart) chrome.runtime.restart(); // for ChromeOS devices in "kiosk" mode
-  chrome.runtime.reload();
+  system.restart();
 }
 
 function postData(url, data) {

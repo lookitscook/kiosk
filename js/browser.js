@@ -145,8 +145,7 @@ $(function() {
   }
 
   function restartApplication() {
-    if (chrome.runtime.restart) chrome.runtime.restart(); // for ChromeOS devices in "kiosk" mode
-    chrome.runtime.reload();
+    system.restart();
   }
 
   function initEventHandlers() {
@@ -246,12 +245,12 @@ $(function() {
       updateBatteryUI.bind(null, battery));
   }
 
-  chrome.commands.onCommand.addListener(function(command) {
+  system.onCommand(function(command) {
     switch (command) {
       case "openAdmin":
         // open admin login on ctrl+a
         if (localAdmin) {
-          chrome.runtime.getBackgroundPage(function(backgroundPage) {
+          system.getBackgroundPage(function(backgroundPage) {
             backgroundPage.stopAutoRestart();
             $('#login').modal('open');
             $('#username').focus();
@@ -277,7 +276,7 @@ $(function() {
   function init() {
 
     setStatus('loading local settings');
-    chrome.storage.local.get(null, function(data) {
+    system.getLocalStorage(null, function(data) {
       setStatus('local settings loaded');
 
       uuid = data.uuid;
@@ -310,7 +309,7 @@ $(function() {
             return;
           }
           setStatus('getting network interfaces');
-          chrome.system.network.getNetworkInterfaces(function(interfaces) {
+          system.getNetworkInterfaces(function(interfaces) {
             interfaces.forEach(function(interface) {
               if (!interface.name || !interface.address) {
                 console.error('Missing details for network interface:', interface);
@@ -404,7 +403,7 @@ $(function() {
               $('#login').modal('close');
               $('#username').val('');
               $("#password").val('');
-              chrome.runtime.getBackgroundPage(function(backgroundPage) {
+              system.getBackgroundPage(function(backgroundPage) {
                 backgroundPage.openWindow("windows/setup.html");
               });
             } else {
@@ -725,9 +724,9 @@ $(function() {
       .on('permissionrequest', function(e) {
         if (e.originalEvent.permission === 'media') {
           e.preventDefault();
-          chrome.permissions.contains({
-            permissions: ['audioCapture', 'videoCapture']
-          }, function(result) {
+          system.hasPermissions(
+            ['audioCapture', 'videoCapture']
+          , function(result) {
             if (result) {
               // The app has the permissions.
               e.originalEvent.request.allow();
@@ -735,9 +734,8 @@ $(function() {
               // The app doesn't have the permissions.
               // request it
               $('#mediaPermission .ok').click(function() {
-                chrome.permissions.request({
-                  permissions: ['audioCapture', 'videoCapture']
-                }, function(granted) {
+                system.requestPermissions(['audioCapture', 'videoCapture']
+                , function(granted) {
                   if (granted) e.originalEvent.request.allow();
                 });
               });
@@ -1089,11 +1087,9 @@ $(function() {
 
   function clearCache(cb) {
     if (resetcache) { //set true when we're restarting once after saving from admin
-      if (chrome.storage) {
-        chrome.storage.local.set({
-          resetcache: false
-        });
-      }
+      system.setLocalStorage({
+        resetcache: false
+      });
       resetcache = false;
     }
     //remove entire cache

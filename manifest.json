@@ -5,12 +5,23 @@
   "scope": "/",
   "display": "fullscreen",
   "start_url": "https://app.kiosk.cook.company",
-  "short_name": "kiosk",
+  "short_name": "Kiosk",
   "theme_color": "transparent",
   "description": "Launch any URL as a full screen kiosk.",
   "orientation": "any",
   "background_color": "black",
   "related_applications": [],
   "prefer_related_applications": false,
-  "icons": []
+  "icons": [
+    {
+      "src": "img/manifest-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "img/manifest-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }

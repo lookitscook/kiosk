@@ -5,7 +5,8 @@
   "main": "index.html",
   "scripts": {
     "lint": "jshint src/js/**.js",
-    "beautify": "glob-run js-beautify -r 'src/js/**.js'"
+    "beautify": "glob-run js-beautify -r 'src/js/**.js'",
+    "make-assets": "npx pwa-asset-generator ./img/logo.svg ./img/ -i ./index.html -m ./manifest.json"
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,8 @@
   "devDependencies": {
     "glob-run": "^0.1.7",
     "js-beautify": "^1.6.14",
-    "jshint": "^2.9.5"
+    "jshint": "^2.9.5",
+    "pwa-asset-generator": "^2.2.0"
   },
   "dependencies": {
     "async": "^2.5.0",

@@ -2,29 +2,25 @@
   "name": "kiosk",
   "version": "9.2.0",
   "description": "Kiosk",
-  "main": "main.js",
+  "main": "index.html",
   "scripts": {
     "lint": "jshint src/js/**.js",
-    "beautify": "glob-run js-beautify -r 'src/js/**.js'",
-    "build": "./build.sh",
-    "start": "./start.sh"
+    "beautify": "glob-run js-beautify -r 'src/js/**.js'"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kiosk-enterprise/kiosk.git"
+    "url": "git+https://github.com/lookitscook/kiosk.git"
   },
-  "author": "Matt Cook <support@cook.company>",
+  "author": "Cook <support@cook.company>",
   "license": "MIT",
   "bugs": {
-    "url": "https://kiosk.cook.company/support"
+    "url": "https://support.kiosk.cook.company"
   },
   "homepage": "https://kiosk.cook.company",
   "devDependencies": {
-    "appdmg": "^0.5.2",
     "glob-run": "^0.1.7",
     "js-beautify": "^1.6.14",
-    "jshint": "^2.9.5",
-    "nwjs-builder-phoenix": "^1.15.0"
+    "jshint": "^2.9.5"
   },
   "dependencies": {
     "async": "^2.5.0",

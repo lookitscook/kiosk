@@ -7,75 +7,10 @@
       "description": "Show home/forward/back browser navigation bar.",
       "type": "boolean"
    },
-   "showbattery": {
-      "title": "Show Battery Indicator",
-      "description": "Display icon and percent indicator of remaining battery life.",
-      "type": "boolean"
-   },
-   "allowprint": {
-      "title": "Allow Printing",
-      "description": "Enable printing via CTRL+P shortcut or via application.",
-      "type": "boolean"
-    },
-    "disallowupload": {
-      "title": "Disable File Upload",
-      "description": "Set all file upload fields to disabled.",
-      "type": "boolean"
-    },
-    "allowdownload": {
-      "title": "Allow File Download",
-      "description": "Allow file downloading",
-      "type": "boolean"
-    },
-    "disallowiframes": {
-      "title": "Disable Iframes",
-      "description": "Do not load content in iframes.",
-      "type": "boolean"
-    },
-    "hidegslidescontrols": {
-      "title": "Hide Google Slides Controls",
-      "description": "Only show Google Slides content when using embedded player URL. Do not show control overlay.",
-      "type": "boolean"
-    },
     "scheduledreset": {
       "title": "Scheduled Reset Time (minutes)",
       "description": "Delay between scheduled application resets.",
       "type": "number"
-    },
-    "reset": {
-      "title": "Inactivity Reset Time (minutes)",
-      "description": "Delay before resetting application after last interaction.",
-      "type": "number"
-    },
-    "screensavertime": {
-      "title": "Screensaver Time",
-      "description": "Delay before showing screensaver after last interaction.",
-      "type": "number"
-    },
-    "screensaverurl": {
-      "title": "Screensaver URL",
-      "description": "The content URL to be used as a screensaver",
-      "type": "string"
-    },
-    "screensaverwarningtime": {
-      "title": "Screensaver Warning Time",
-      "description": "The length of time to show the screensaver warning prior to activating the screensaver. Set to 0 to disable the warning. (seconds)",
-      "type": "number"
-    },
-    "screensaverwarningmessage": {
-      "title": "Screensaver Warning Message",
-      "description": "The message to display prior to activating the screensaver",
-      "type": "string"
-    },
-    "screensaverreloadinterval": {
-      "title": "Screensaver Reload Interval",
-      "description": "How often to refresh the screensaver content while it is active. (minutes)",
-      "type": "number"
-    },
-    "clearcookiesreset": {
-      "title": "Clear Cookies on Reset",
-      "description": "Should we clear cookies on reset?",
-      "type": "boolean"
     },
     "restart": {
       "title": "Restart Time",
@@ -85,6 +20,11 @@
     "restartday": {
       "title": "Restart Day",
       "description": "The day of the week upon which to restart. e.g. 'monday'. Leave blank for daily.",
+      "type": "string"
+    },
+    "displaysysteminfo": {
+      "title": "Display System Info",
+      "description": "Where to display system debug information.",
       "type": "string"
     },
     "remoteschedule": {
@@ -102,50 +42,10 @@
       "description": "How often to check for an updated schedule.",
       "type": "number"
     },
-    "hidecursor": {
-      "title": "Hide Cursor",
-      "description": "Hide the cursor.",
-      "type": "boolean"
-    },
-    "disablecontextmenu": {
-      "title": "Disable Context Menu",
-      "description": "Disable the context menu.",
-      "type": "boolean"
-    },
-    "disabledrag": {
-      "title": "Disable Drag",
-      "description": "Disable draggigng images.",
-      "type": "boolean"
-    },
-    "disabletouchhighlight": {
-      "title": "Disable Touch Highlight",
-      "description": "Disable hightlight on touch.",
-      "type": "boolean"
-    },
-    "disableselection": {
-      "title": "Disable Selection",
-      "description": "Disable selecting text.",
-      "type": "boolean"
-    },
     "newwindow": {
       "title": "New Window",
       "description": "Allow pop-ups and new windows?",
       "type": "boolean"
-    },
-    "servelocaldirectory": {
-      "title": "Serve Local: Directory",
-      "description": "The directory to serve content from",
-      "type": "string"
-    },
-    "servelocalhost": {
-      "title": "Serve Local: Host",
-      "description": "The host to serve local content on",
-      "type": "string"
-    },
-    "servelocalport": {
-      "title": "Serve Local: Port",
-      "description": "The port to serve local content on",
-      "type": "number"
     },
     "url": {
       "title": "Content URL(s)",
@@ -178,30 +78,10 @@
       "description": "Specify how to handle multiple content URLs. Valid values: 'tabs', 'rotate'",
       "type": "string"
     },
-    "newwindowmode": {
-      "title": "New Window Mode",
-      "description": "Either 'modal' or 'tab'.",
-      "type": "string"
-    },
     "rotaterate": {
       "title": "Rotate Rate",
       "description": "With 'rotate' multiple URL mode, how often should the content switch? (seconds)",
       "type": "number"
-    },
-    "useragent": {
-      "title": "User Agent",
-      "description": "Customize the user agent sent with content and screensaver requests.",
-      "type": "string"
-    },
-    "authorization": {
-      "title": "Authorization Header",
-      "description": "Customize the authorization header sent with content and screensaver requests.",
-      "type": "string"
-    },
-    "sleepmode": {
-      "title": "Sleep Mode",
-      "description": "Valid values: 'display', 'system', none'",
-      "type": "string"
     },
     "devices": {
       "type": "array",

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Kiosk</title>
+    <link type="text/css" rel="stylesheet" href="./css/material-icons/material-icons.css" media="screen">
+    <link type="text/css" rel="stylesheet" href="./node_modules/materialize-css/dist/css/materialize.css" media="screen" />
+    <link type="text/css" rel="stylesheet" href="./css/shared.css" media="screen" />
+    <link type="text/css" rel="stylesheet" href="./css/browser.css" media="screen" />
+    <script src="./node_modules/async/dist/async.js"></script>
+    <script src="./js/lodash.min.js"></script>
+    <script src="./node_modules/jquery/dist/jquery.js"></script>
+    <script src="./node_modules/moment/moment.js"></script>
+    <script src="./node_modules/materialize-css/dist/js/materialize.js"></script>
+    <script src="./js/shared.js"></script>
+    <script src="./js/browser.js"></script>
+</head>
+
+<body class="window-browser">
+    <div id="container">
+        <div id="tabs" class="row">
+            <nav id="nav">
+                <ul>
+                    <li class="home inactive"><a href="#"><i class="material-icons">home</i></a></li>
+                    <li class="back inactive"><a href="#"><i class="material-icons">arrow_back</i></a></li>
+                    <li class="refresh"><a href="#"><i class="material-icons">refresh</i></a></li>
+                </ul>
+            </nav>
+            <ul class="tabs"></ul>
+        </div>
+        <div id="content"></div>
+        <div id="status">initializing...</div>
+    </div>
+</body>
+
+</html>

@@ -27,22 +27,7 @@ system.getSchemaUrl = function(){
     return chrome.runtime.getURL("../schema.json");
 }
 
-system.onCommand = function(handler){
-    chrome.commands.onCommand.addListener(handler);
-}
-
 system.getBackgroundPage = function(cb){
     chrome.runtime.getBackgroundPage(cb);
 }
 
-system.getNetworkInterfaces = function(cb){
-    chrome.system.network.getNetworkInterfaces(cb);
-}
-
-system.hasPermissions = function(permissions, cb){
-    chrome.permissions.contains({ permissions: permissions }, cb);
-}
-
-system.requestPermissions = function(permissions, cb){
-    chrome.permissions.request({ permissions: permissions }, cb);
-}

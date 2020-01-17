@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Kiosk: Setup</title>
+    <title>Kiosk Setup</title>
     <link rel="stylesheet" href="../css/material-icons/material-icons.css" media="screen">
     <link rel="stylesheet" href="../node_modules/materialize-css/dist/css/materialize.css" media="screen" />
     <link rel="stylesheet" href="../css/setup.css" media="screen" />
@@ -11,6 +11,7 @@
     <script src="../js/lodash.min.js"></script>
     <script src="../node_modules/jquery/dist/jquery.js"></script>
     <script src="../node_modules/materialize-css/dist/js/materialize.js"></script>
+    <script src="../js/shared.js"></script>
     <script src="../js/setup.js"></script>
     <style>
         body,
@@ -68,26 +69,6 @@
                         <label class="active" for="url">Content URL(s)</label>
                         <input id="url" type="text">
                     </div>
-                    <div class="input-field col s12">
-                        <input type="checkbox" id="servelocal" />
-                        <label class="active" for="servelocal">Serve Local Content</label>
-                    </div>
-                </div>
-                <div class="row disabled servelocal">
-                    <div class="col s6">
-                        <label class="active" for="servelocalhost">Host</label>
-                        <select id="servelocalhost" class="browser-default" disabled>
-                            <option value="127.0.0.1">lo - 127.0.0.1</option>
-                        </select>
-                    </div>
-                    <div class="col s6">
-                        <label class="active" for="servelocalport">Port</label>
-                        <input id="servelocalport" type="text" value="8080">
-                    </div>
-                    <div class="col s12">
-                        <label class="active" for="servelocaldirectory">Directory (<a id="changelocaldirectory" href="#">change</a>)</label>
-                        <input class="file-path validate" disabled id="servelocaldirectory" type="text" />
-                    </div>
                 </div>
                 <div class="row disabled multiple-url-mode">
                     <div class="col s5">
@@ -110,10 +91,6 @@
                     <div class="input-field col s12 pro-feature">
                         <label class="active" for="customtoken">Custom Token JSON</label>
                         <input id="customtoken" type="text">
-                    </div>
-                    <div class="col s12">
-                        <label class="active" for="whitelist">Domain Whitelist. Multiple values must be seperated by a comma.</label>
-                        <input id="whitelist" type="text">
                     </div>
                 </div>
 
@@ -147,110 +124,12 @@
 
                 <div class="row">
                     <div class="col s6">
-                        <input type="checkbox" id="hidecursor" />
-                        <label class="active" for="hidecursor">Hide Cursor</label>
-                    </div>
-                    <div class="col s6">
-                        <input type="checkbox" id="disablecontextmenu" />
-                        <label class="active" for="disablecontextmenu">Disable Context Menu</label>
-                    </div>
-                    <div class="col s6">
-                        <input type="checkbox" id="disabledrag" />
-                        <label class="active" for="disabledrag">Disable Image Drag</label>
-                    </div>
-                    <div class="col s6">
-                        <input type="checkbox" id="disabletouchhighlight" />
-                        <label class="active" for="disabletouchhighlight">Disable Touch Highlight</label>
-                    </div>
-                    <div class="col s6">
-                        <input type="checkbox" id="disableselection" />
-                        <label class="active" for="disableselection">Disable Text Selection</label>
-                    </div>
-                    <div class="col s6">
                         <input type="checkbox" id="newwindow" />
                         <label class="active" for="newwindow">Enable New Windows and Dialogs</label>
                     </div>
                     <div class="col s6">
                         <input type="checkbox" id="shownav" />
                         <label class="active" for="shownav">Show Navigation</label>
-                    </div>
-
-                    <div class="col s6">
-                        <input type="checkbox" id="showbattery" />
-                        <label class="active" for="showbattery">Show Battery Status</label>
-                    </div>
-                    <div class="col s6">
-                        <input type="checkbox" id="hidegslidescontrols" />
-                        <label class="active" for="hidegslidescontrols">Hide Google Slides Controls</label>
-                    </div>
-                    <div class="col s6">
-                        <input type="checkbox" id="allowprint" />
-                        <label class="active" for="allowprint">Enable Printing (ctrl+p)</label>
-                    </div>
-                    <div class="col s6">
-                        <input type="checkbox" id="allowdownload" />
-                        <label class="active" for="allowdownload">Enable File Download</label>
-                    </div>
-                    <div class="col s6">
-                        <input type="checkbox" id="disallowupload" />
-                        <label class="active" for="disallowupload">Disable File Upload</label>
-                    </div>
-                    <div class="col s6">
-                        <input type="checkbox" id="disallowiframes" />
-                        <label class="active" for="disallowiframes">Disable Iframes</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col s12">
-                        <label class="active" for="newwindow-mode">New Window Mode</label>
-                        <select id="newwindow-mode">
-                            <option value="tab">New Tab</option>
-                            <option value="modal">Modal Window</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="input-field col s12">
-                        <input id="useragent" type="text">
-                        <label class="active" for="useragent">Override User Agent</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="input-field col s12">
-                        <input id="authorization" type="text">
-                        <label class="active" for="authorization">Override Authorization Header</label>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col s12">
-                        <h4>Administration</h4>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col s6">
-                        <input type="checkbox" id="local" checked/>
-                        <label class="active" for="local">Local Administration</label>
-                        <div class="row local">
-                            <div class="col s12">
-                                <p>Press <strong>ctrl + a</strong> to activate after setup.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row settings-detail">
-                    <div class="input-field col s12">
-                        <input id="username" type="text" value="admin">
-                        <label class="active" for="username">Username</label>
-                    </div>
-                    <div class="input-field col s6">
-                        <input id="password" type="password">
-                        <label class="active" for="password">Password</label>
-                    </div>
-                    <div class="input-field col s6">
-                        <input id="confirm_password" type="password">
-                        <label class="active" for="confirm_password">Confirm Password</label>
                     </div>
                 </div>
 
@@ -269,66 +148,6 @@
                             </div>
                             <div class="col input-field s2">
                                 <label for="scheduledresetinterval">minutes</label>
-                            </div>
-                            <div class="col input-field s4">
-                                <input id="scheduled-clear-cookies-reset" type="checkbox" />
-                                <label class="active" for="scheduled-clear-cookies-reset">Clear Cache on Reset</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col s12">
-                        <input type="checkbox" id="reset" />
-                        <label class="active" for="reset">Enable Inactivity Reset</label>
-                        <div class="row reset disabled">
-                            <div class="col input-field s2">
-                                <input id="resetinterval" type="text" value="5">
-                            </div>
-                            <div class="col input-field s2">
-                                <label for="reset">minutes</label>
-                            </div>
-                            <div class="col input-field s4">
-                                <input id="clear-cookies-reset" type="checkbox" />
-                                <label class="active" for="clear-cookies-reset">Clear Cache on Inactivty</label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col s12">
-                        <input type="checkbox" id="use-screensaver" />
-                        <label class="active" for="use-screensaver">Enable Screensaver</label>
-                        <div class="row use-screensaver disabled">
-                            <div class="col input-field s2">
-                                <input id="screensaver-time" type="text" value="5">
-                            </div>
-                            <div class="col input-field s2">
-                                <label for="screensaver-time">minutes</label>
-                            </div>
-                            <div class="col input-field s4">
-                                <input id="screensaver-reset" type="checkbox" />
-                                <label class="active" for="screensaver-reset">Clear Cache on Inactivty</label>
-                            </div>
-                            <div class="input-field col s12">
-                                <input id="screensaver-url" type="text">
-                                <label class="active" for="screensaver-url">Screensaver URL
-                                    <br> (must start with http:// or https://)</label>
-                            </div>
-                            <div class="input-field col s8">
-                                <input id="screensaverwarningmessage" type="text">
-                                <label class="active" for="screensaverwarningmessage">Warning Message
-                                    <br> Use token <strong>{countdown}</strong> for time remaining.</label>
-                            </div>
-                            <div class="input-field col s4">
-                                <input id="screensaverwarningtime" type="text">
-                                <label class="active" for="screensaverwarningtime">Warning Time
-                                    <br> (seconds). 0 to disable.</label>
-                            </div>
-                            <div class="input-field col s4">
-                                <input id="screensaver-reload-interval" type="text">
-                                <label class="active" for="screensaver-reload-interval">Screensaver Reload Interval
-                                    <br> (minutes)</label>
                             </div>
                         </div>
                     </div>
@@ -392,22 +211,6 @@
                     </div>
                     <div class="col input-field s2">
                         <label>minutes</label>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col s5">
-                        <label class="active" for="sleep-mode">Sleep Mode</label>
-                        <select id="sleep-mode">
-                            <option value="display">Prevent from sleeping.</option>
-                            <option value="system">Keep system awake; screen can dim.</option>
-                            <option value="none">Allow system sleep.</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col s5">
-                        <label class="active" for="startup-delay">Startup Delay (seconds)</label>
-                        <input id="startup-delay" type="text" value="0">
                     </div>
                 </div>
 

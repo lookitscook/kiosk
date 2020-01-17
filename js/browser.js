@@ -1,46 +1,26 @@
 
 $(function() {
 
-  var RESTART_DELAY = 1000;
+  var FN_BASE_URL = 'https://us-central1-causal-shell-204520.cloudfunctions.net/';
+  var CHECK_IN_URL = FN_BASE_URL + 'check_in';
   var CHECK_SCHEDULE_DELAY = 30 * 1000; //check content against schedule every 30 seconds
   var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
   var DEFAULT_ROTATE_RATE = 30; //seconds
-  var ACTIVE_EVENTS = "click mousedown mouseup mousemove touch touchstart touchend keypress keydown";
 
   var uuid;
-  var restarting = false;
-  var reset = false;
   var scheduledReset = false;
-  var useScreensaver, screensaverTime, screensaverURL, screensaverWarningTime, screensaverWarningMessage, screensaverWarningTimeRemaining, screensaverReloadIntervalTime, screensaverReloadInterval;
-  var scheduledResetInterval, resetTimeout, screensaverTimeout, screensaverWarningInterval;
+  var scheduledResetInterval;
   var restart;
   var urlrotateindex = 0;
   var rotaterate;
-  var whitelist;
   var schedule, scheduleURL, contentURL, defaultURL, currentURL, schedulepollinterval;
-  var hidegslidescontrols = false;
-  var hidecursor = false;
-  var disablecontextmenu = false;
-  var disabledrag = false;
-  var disabletouchhighlight = false;
-  var disableselection = false;
-  var useragent = '';
-  var authorization = '';
-  var resetcache = false;
-  var clearcookies = false;
-  var allowPrint = false;
-  var allowDownload = false;
-  var disallowUpload = false;
-  var disallowIframes = false;
-  var localAdmin = false;
   var showNav = false;
-  var showBattery = false;
   var showTopBar = false;
   var tokens = {};
-  var allowNewWindow, newWindowMode;
+  var allowNewWindow;
 
-  setStatus('beginning initializing...');
-
+  setStatus('beginning initialization...');
+  
   init();
 
   function setStatus(status) {
@@ -74,7 +54,7 @@ $(function() {
       }
       currentURL = contentURL[urlrotateindex];
       $("#browser").remove();
-      loadContent(false);
+      loadContent();
     }
   }
 
@@ -135,11 +115,11 @@ $(function() {
         //only on a change do we want to load
         if (scheduledContent[0].content && !hasURL(scheduledContent[0].content)) {
           currentURL = scheduledContent[0].content.length ? scheduledContent[0].content : [scheduledContent[0].content];
-          loadContent(false);
+          loadContent();
         }
       } else if (currentURL != defaultURL) {
         currentURL = defaultURL;
-        loadContent(false);
+        loadContent();
       }
     }
   }
@@ -168,9 +148,9 @@ $(function() {
         return;
       }
       var activeBrowserID = $('#tabs a.active').attr('href');
-      var $webview = $(activeBrowserID + ' webview');
-      var activeHomeURL = $webview.data('src');
-      $webview.attr('src', activeHomeURL);
+      var $iframe = $(activeBrowserID + ' iframe');
+      var activeHomeURL = $iframe.data('src');
+      $iframe.attr('src', activeHomeURL);
     });
 
     $('#nav .back').click(function(e) {
@@ -178,8 +158,8 @@ $(function() {
         return;
       }
       var activeBrowserID = $('#tabs a.active').attr('href');
-      var $webview = $(activeBrowserID + ' webview');
-      $webview.get(0).back();
+      var $iframe = $(activeBrowserID + ' iframe');
+      $iframe.get(0).back();
     });
 
     $('#nav .refresh').click(function(e) {
@@ -187,8 +167,8 @@ $(function() {
         return;
       }
       var activeBrowserID = $('#tabs a.active').attr('href');
-      var $webview = $(activeBrowserID + ' webview');
-      $webview.attr('src', $webview.attr('src'));
+      var $iframe = $(activeBrowserID + ' iframe');
+      $iframe.attr('src', $iframe.attr('src'));
     });
   }
 
@@ -196,88 +176,78 @@ $(function() {
     $('.modal').modal();
   }
 
-  function updateBatteryUI(battery) {
-    var text = Math.floor(battery.level * 100) + '%';
-    var icon = 'battery_';
-    if (battery.charging) {
-      icon += 'charging_'
-    }
-    var level = Math.ceil(battery.level * 10) * 10;
-    if (level = 100) {
-      icon += 'full';
-    } else if (level === 40) {
-      if (battery.level >= 0.375) {
-        icon += '50';
-      } else {
-        icon += '30';
-      }
-    } else if (level === 70) {
-      if (battery.level >= 0.675) {
-        icon += '80';
-      } else {
-        icon += '50';
-      }
-    } else if (level < 10) {
-      if (battery.charging) {
-        icon += '20'
-      } else {
-        icon += 'alert'
-      }
-    } else {
-      icon += level;
-    }
-    $('#battery-status .text').text(text);
-    $('#battery-status i').text(icon);
-  }
-
-  function monitorBattery(battery) {
-    // Update the initial UI.
-    updateBatteryUI(battery);
-
-    // Monitor for futher updates.
-    battery.addEventListener('levelchange',
-      updateBatteryUI.bind(null, battery));
-    battery.addEventListener('chargingchange',
-      updateBatteryUI.bind(null, battery));
-    battery.addEventListener('dischargingtimechange',
-      updateBatteryUI.bind(null, battery));
-    battery.addEventListener('chargingtimechange',
-      updateBatteryUI.bind(null, battery));
-  }
-
-  system.onCommand(function(command) {
-    switch (command) {
-      case "openAdmin":
-        // open admin login on ctrl+a
-        if (localAdmin) {
-          system.getBackgroundPage(function(backgroundPage) {
-            backgroundPage.stopAutoRestart();
-            $('#login').modal('open');
-            $('#username').focus();
-            $('#passwordLabel').addClass('active');
-          });
-        }
-        break;
-      case "refresh":
-        // refresh on ctrl+r
-        loadContent(true);
-        break;
-      case "print":
-        // print on ctrl+p
-        if (allowPrint) {
-          var activeBrowserID = $('#tabs a.active').attr('href');
-          $(activeBrowserID + ' webview').get(0).print();
-        }
-        break;
-      default:
-    }
-  });
-
   function init() {
 
-    setStatus('loading local settings');
-    system.getLocalStorage(null, function(data) {
-      setStatus('local settings loaded');
+    setStatus('loading settings');
+    async.series([
+      function(next) {
+        setStatus('Getting prior configuration');
+        system.getLocalStorage(null, function(res) {
+          data = res || {};
+          setStatus('Prior configuration lookup complete');
+          next();
+        });
+      },
+      function(next) {
+        if (data.uuid) {
+          setStatus('Existing UUID found');
+          return next();
+        }
+        setStatus('Generating UUID');
+        data.uuid = generateGuid();
+        system.setLocalStorage({
+          uuid: data.uuid,
+        }, next);
+      },
+      function(next) {
+        // get config from Kiosk Device Management Console
+        if (!data.paired_user_id) {
+          setStatus('Not paired with Kiosk Device Management Console');
+          return next();
+        }
+        setStatus('Getting configuration from Kiosk Device Management Console');
+        pollForCustomerConfigUpdate(next);
+      },
+      function(next) {
+        // look up UUID specific config, if any
+        if (!data.devices || !data.devices.length) {
+          setStatus('Skipping UUID configuration lookup');
+          return next();
+        }
+        var deviceConfig = data.devices.find(function(config) {
+          return data.uuid == config.uuid;
+        });
+        if (!deviceConfig) {
+          setStatus('No UUID specific configuration found');
+          return next();
+        }
+        Object.assign(data, deviceConfig.configuration);
+        setStatus('Applying UUID configuration');
+        return system.setLocalStorage(data, next);
+      }
+    ], function(err) {
+  
+      setStatus('Configuration lookup complete');
+  
+      if (err) {
+        console.error('startup error', err);
+        setStatus('Startup error: ' + (err.toString ? err.toString() : '-'));
+      }
+  
+      if (!('url' in data)) {
+        if (('paired_user_id') in data) {
+          // paired, just missing config
+          setStatus('No configuration applied to this device.');
+          return;
+        }
+        // need to set up
+        setStatus('Initiating setup');
+        window.location = './setup';
+        return;
+      }
+      //setup has been completed
+
+      setStatus('settings loaded');
 
       uuid = data.uuid;
 
@@ -302,7 +272,8 @@ $(function() {
           tokens.uuid = data.uuid;
           next();
         },
-        function(next) {
+        // TODO: use native js method to get IP address(es)
+        /*function(next) {
           setStatus('setting network tokens');
           if (!useTokens) {
             next();
@@ -319,7 +290,7 @@ $(function() {
             });
             next();
           });
-        },
+        },*/
         function(next) {
           setStatus('setting custom tokens');
           if (!useTokens || !data.customtoken) {
@@ -367,65 +338,15 @@ $(function() {
 
         setStatus('processing settings');
 
-        allowPrint = !!data.allowprint;
-        allowDownload = !!data.allowdownload;
-        disallowUpload = !!data.disallowupload;
-        disallowIframes = !!data.disallowiframes;
         showNav = !!data.shownav;
-        showBattery = !!data.showbattery;
         showTopBar = showNav || showBattery;
 
         if (showTopBar) {
           $('body').addClass('show-top-bar');
         }
 
-        if (showBattery) {
-          if ('getBattery' in navigator) {
-            $('body').addClass('show-battery');
-            navigator.getBattery().then(monitorBattery);
-          } else {
-            console.error('getBattery not found in navigator');
-          }
-        }
-
         if (showNav) {
           $('body').addClass('show-nav');
-        }
-
-        if (data.local) {
-          localAdmin = true;
-
-          var submitLoginForm = function submitLoginForm(e) {
-            e.preventDefault();
-            var username = $('#username').val();
-            var password = $("#password").val();
-            if (username == data.username && password == data.password) {
-              $('#login').modal('close');
-              $('#username').val('');
-              $("#password").val('');
-              system.getBackgroundPage(function(backgroundPage) {
-                backgroundPage.openWindow("windows/setup.html");
-              });
-            } else {
-              Materialize.toast('Invalid login.', 4000);
-            }
-          };
-
-          // UX: Pressing enter within the username field will focus the password field
-          $('#username').on('keydown', function(e) {
-            if (e.which == 13 || e.key == 'Enter') {
-              $('#password').focus();
-            }
-          });
-
-          // UX: Pressing enter within the password field will submit the login form
-          $('#password').on('keydown', function(e) {
-            if (e.which == 13 || e.key == 'Enter') {
-              submitLoginForm(e);
-            }
-          });
-
-          $('#submit').on('click', submitLoginForm);
         }
 
         if (data.restart && parseInt(data.restart)) {
@@ -462,35 +383,15 @@ $(function() {
           setInterval(checkSchedule, CHECK_SCHEDULE_DELAY);
         }
 
-        hidegslidescontrols = data.hidegslidescontrols ? true : false;
-        hidecursor = data.hidecursor ? true : false;
-        disablecontextmenu = data.disablecontextmenu ? true : false;
-        disabledrag = data.disabledrag ? true : false;
-        disabletouchhighlight = data.disabletouchhighlight ? true : false;
-        disableselection = data.disableselection ? true : false;
-        resetcache = data.resetcache ? true : false;
         allowNewWindow = data.newwindow ? true : false;
-        newWindowMode = data.newwindowmode;
 
         scheduledReset = data.scheduledreset && parseFloat(data.scheduledreset) > 0 ? parseFloat(data.scheduledreset) : false;
-        reset = data.reset && parseFloat(data.reset) > 0 ? parseFloat(data.reset) : false;
-        screensaverTime = data.screensavertime && parseFloat(data.screensavertime) > 0 ? parseFloat(data.screensavertime) : false;
-        screensaverURL = tokenizeUrl(data.screensaverurl);
-        useScreensaver = screensaverTime && screensaverURL ? true : false;
-        screensaverWarningTime = (data.screensaverwarningtime && parseFloat(data.screensaverwarningtime)) || 0;
-        screensaverWarningMessage = data.screensaverwarningmessage;
-        screensaverReloadIntervalTime = parseFloat(data.screensaverreloadinterval) || 0;
-
-        clearcookies = data.clearcookiesreset ? true : false;
-
-        if (reset || useScreensaver) $('*').on(ACTIVE_EVENTS, active);
 
         defaultURL = contentURL = Array.isArray(data.url) ? data.url.map(function(url) {
           return tokenizeUrl(url);
         }) : [tokenizeUrl(data.url)];
         whitelist = Array.isArray(data.whitelist) ? data.whitelist : data.whitelist ? [data.whitelist] : [];
-        useragent = data.useragent;
-        authorization = data.authorization;
+
         if (data.multipleurlmode == 'rotate') {
           defaultURL = contentURL[urlrotateindex];
           rotaterate = data.rotaterate ? data.rotaterate : DEFAULT_ROTATE_RATE;
@@ -504,30 +405,9 @@ $(function() {
 
         setStatus('loading content');
 
-        loadContent(true);
-        if (resetcache || clearcookies) {
-          setStatus('starting cache clear');
-          $('#container').hide();
-          setTimeout(function() {
-            var restartApp = resetcache;
-            setStatus('clearing cache');
-            clearCache(function() {
-              if (restartApp) {
-                restartApplication();
-              }
-              $('#container').show();
-            });
-          }, 100);
-        }
+        loadContent();
 
       });
-    });
-
-    window.addEventListener('message', function(e) {
-      var data = e.data;
-      if (data.command == 'title' && data.title && data.id) {
-        $('#tabs .tab a[href="#' + data.id + '"] .title').text(data.title);
-      }
     });
   }
 
@@ -543,152 +423,28 @@ $(function() {
     return currentURL.includes(url);
   }
 
-  function active() {
-    if ($('body').hasClass('screensaverActive')) {
-      $('body').removeClass('screensaverActive');
-      refreshContent(true);
-    }
-    if (resetTimeout) {
-      clearTimeout(resetTimeout);
-      resetTimeout = false;
-    }
-    if (screensaverTimeout) {
-      clearTimeout(screensaverTimeout);
-      screensaverTimeout = false;
-    }
-    $('#screensaverWarningModal').modal('close');
-    if (screensaverWarningInterval) {
-      clearInterval(screensaverWarningTimeRemaining);
-      screensaverWarningInterval = false;
-    }
-    if (screensaverReloadInterval) {
-      clearInterval(screensaverReloadInterval);
-      screensaverReloadInterval = false;
-    }
-    startScreensaverTimeout();
-    startResetTimeout();
-  }
-
-  function startScreensaverTimeout() {
-    if (useScreensaver && !screensaverTimeout) {
-      screensaverTimeout = setTimeout(function() {
-        screensaverTimeout = setTimeout(function() {
-          screensaverTimeout = false;
-          $('#screensaverWarningModal').modal('close');
-          if (screensaverWarningInterval) {
-            clearInterval(screensaverWarningInterval);
-            screensaverWarningInterval = false;
-          }
-          if ($('body').hasClass('screensaverActive')) {
-            return;
-          }
-          if (screensaverReloadIntervalTime) {
-            screensaverReloadInterval = setInterval(function() {
-              refreshContent(true);
-            }, screensaverReloadIntervalTime * 60 * 1000);
-          }
-          $('body').addClass('screensaverActive');
-          if (clearcookies) {
-            clearCache(function() {
-              refreshContent(false);
-            });
-          } else {
-            refreshContent(false);
-          }
-        }, screensaverWarningTime * 1000);
-        if (screensaverWarningTime && screensaverWarningMessage) {
-          screensaverWarningTimeRemaining = Math.ceil(screensaverWarningTime);
-          $('#screensaverWarning').text(screensaverWarningMessage.replace(/\{countdown\}/g, screensaverWarningTimeRemaining));
-          $('#screensaverWarningModal').modal('open');
-          screensaverWarningInterval = setInterval(function() {
-            screensaverWarningTimeRemaining--;
-            if (screensaverWarningTimeRemaining < 0) {
-              return;
-            }
-            $('#screensaverWarning').text(screensaverWarningMessage.replace(/\{countdown\}/g, screensaverWarningTimeRemaining));
-          }, 1000);
-        }
-      }, screensaverTime * 60 * 1000);
-    }
-  }
-
   function startScheduledResetInterval() {
     if (scheduledReset) {
       if (scheduledResetInterval) {
         clearInterval(scheduledResetInterval);
       }
       scheduledResetInterval = setInterval(function() {
-        if (clearcookies) {
-          clearCache(function() {
-            refreshContent(true); // screensaver 
-            refreshContent(false); // content
-          });
-        } else {
-          refreshContent(true);
-          refreshContent(false);
-        }
+        refreshContent();
       }, scheduledReset * 60 * 1000);
     }
   }
 
-  function startResetTimeout() {
-    if (reset && !resetTimeout) {
-      resetTimeout = setTimeout(function() {
-        resetTimeout = false;
-        if ($('body').hasClass('screensaverActive')) {
-          return;
-        }
-        if (clearcookies) {
-          clearCache(function() {
-            refreshContent(false);
-          });
-        } else {
-          refreshContent(false);
-        }
-      }, reset * 60 * 1000);
-    }
-  }
-
-  function getDomainWhiteListError(url) {
-    if (!whitelist || !whitelist.length) {
-      return null;
-    }
-
-    var requestedURL = url.replace('https://', '').replace('http://', '');
-    var requestedPath = requestedURL.split('/');
-    var requestedDomain = requestedPath && requestedPath.length ? requestedPath[0] : requestedPath;
-
-    for (var i = 0; i < whitelist.length; i++) {
-      var allowedURL = whitelist[i].replace('https://', '').replace('http://', '');
-      var allowedPath = allowedURL.split('/');
-      if (allowedPath && allowedPath.length > 1) {
-        //match the whole path
-        if (requestedURL.indexOf(allowedURL) == 0) {
-          return null;
-        }
-      } else {
-        //match just the domain portion
-        var allowedDomain = allowedPath && allowedPath.length ? allowedPath[0] : allowedPath;
-        if (requestedDomain.indexOf(allowedDomain) >= 0) {
-          return null;
-        }
-      }
-    }
-
-    return "Request to " + requestedDomain + " blocked.";
-  }
-
   function setNavStatus() {
     var activeBrowserID = $('#tabs a.active').attr('href');
-    var $webview = $(activeBrowserID + ' webview');
-    var activeHomeURL = $webview.data('src');
-    var currentURL = $webview.attr('src');
+    var $iframe = $(activeBrowserID + ' iframe');
+    var activeHomeURL = $iframe.data('src');
+    var currentURL = $iframe.attr('src');
     if (currentURL == activeHomeURL) {
       $('#nav .home').addClass('inactive');
     } else {
       $('#nav .home').removeClass('inactive');
     }
-    if ($webview.length && $webview.get(0).canGoBack()) {
+    if ($iframe.length && $iframe.get(0).canGoBack()) {
       $('#nav .back').removeClass('inactive');
     } else {
       $('#nav .back').addClass('inactive');
@@ -696,287 +452,35 @@ $(function() {
     setStatus('set nav status complete');
   }
 
-  function initWebview($webview) {
-    $webview.css({
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0
-      })
-      .attr('partition', 'persist:kiosk-afhcomalholahplbjhnmahkoekoijban')
-      .on('exit', onEnded)
-      .on('unresponsive', onEnded)
-      .on('loadabort', function(e) {
-        setStatus('load aborted');
-        if (e.isTopLevel) onEnded(e);
-      })
-      .on('consolemessage', function(e) {
-        if (e.originalEvent.message == 'kiosk:active') active();
-        else if (e.originalEvent.message == 'kiosk:reset') {
-          clearCache(function() {
-            refreshContent(false);
-          });
-        };
-      })
-      .on('permissionrequest', function(e) {
-        if (e.originalEvent.permission === 'media') {
-          e.preventDefault();
-          system.hasPermissions(
-            ['audioCapture', 'videoCapture']
-          , function(result) {
-            if (result) {
-              // The app has the permissions.
-              e.originalEvent.request.allow();
-            } else {
-              // The app doesn't have the permissions.
-              // request it
-              $('#mediaPermission .ok').click(function() {
-                system.requestPermissions(['audioCapture', 'videoCapture']
-                , function(granted) {
-                  if (granted) e.originalEvent.request.allow();
-                });
-              });
-              $('#mediaPermission').modal('open');
-            }
-          });
-        } else if (e.originalEvent.permission === 'fullscreen') {
-          e.originalEvent.request.allow();
-        } else if (e.originalEvent.permission === 'download') {
-          if (allowDownload) {
-            e.originalEvent.request.allow();
-          }
-        }
-      })
-      .on('contentload', function(e) {
-        setStatus('content loaded');
-        var browser = e.target;
-        browser.executeScript({
-          code: "var kioskAppWindow = null;" +
-            "var kioskAppOrigin = null;" +
-            "window.addEventListener('message', function(e){" +
-            "  if (!kioskAppWindow || !kioskAppOrigin) {" +
-            "    kioskAppWindow = event.source;" +
-            "    kioskAppOrigin = event.origin;" +
-            "  }" +
-            "  if(e.data.command == 'kioskGetTitle'){" +
-            "    kioskAppWindow.postMessage({ command: 'title', title: document.title, id: e.data.id }, kioskAppOrigin);" +
-            "  }" +
-            "});"
-        });
-        setStatus('content script executed');
-        browser.contentWindow.postMessage({
-          command: 'kioskGetTitle',
-          id: $webview.parent().attr('id')
-        }, '*');
-        setStatus('content message posted');
-
-        if (hidegslidescontrols && browser.src.indexOf('https://docs.google.com/presentation') >= 0) {
-          setStatus('apply google presentation settings');
-          $webview.css({
-            height: '99%',
-            bottom: '1px'
-          });
-          browser.insertCSS({
-            code: ".punch-viewer-nav-v2, .punch-viewer-nav-fixed{ display:none; visibility:hidden; }"
-          });
-          setTimeout(function() {
-            setStatus('completing google presentation settings');
-            $webview.css({
-              height: '100%',
-              bottom: 0,
-            });
-          }, 10);
-        }
-        if (!allowPrint) {
-          browser.insertCSS({
-            code: "@media print{ body {display:none;} }"
-          });
-        }
-        if (disallowUpload) {
-          browser.executeScript({
-            code: "document.querySelectorAll('input[type=file]').forEach(function(f){ f.disabled = true });"
-          });
-        }
-        if (hidecursor)
-          browser.insertCSS({
-            code: "*{cursor:none;}"
-          });
-        if (disablecontextmenu)
-          browser.executeScript({
-            code: "window.oncontextmenu = function(){return false};"
-          });
-        if (disabledrag)
-          browser.executeScript({
-            code: "window.ondragstart = function(){return false};"
-          });
-        if (disabletouchhighlight)
-          browser.insertCSS({
-            code: "*{-webkit-tap-highlight-color: rgba(0,0,0,0); -webkit-touch-callout: none;}"
-          });
-        if (disableselection)
-          browser.insertCSS({
-            code: "*{-webkit-user-select: none; user-select: none;}"
-          });
-        setStatus('focusing on browser');
-        browser.focus();
-      })
-      .on('loadstop', function(e) {
-        if (disallowIframes) {
-          setStatus('disallowing iframes');
-          e.target.executeScript({
-            code: "(function () { var iframes =  document.getElementsByTagName('iframe'); for (i = 0; i < iframes.length; ++i) { iframes[i].outerHTML = ''; } })();"
-          });
-        }
-        if (reset || useScreensaver) {
-          setStatus('adding keepalive logging');
-          ACTIVE_EVENTS.split(' ').forEach(function(type, i) {
-            e.target.executeScript({
-              code: "document.addEventListener('" + type + "',function(){console.log('kiosk:active')},false)"
-            });
-          });
-        }
-        setStatus('setting navigation status');
-        setNavStatus();
-        setStatus('content load complete');
-        $("#status").hide();
-      })
-      .on('loadcommit', function(e) {
-        if (e.originalEvent.isTopLevel && $webview.parent().attr('id').indexOf('screensaver') < 0) {
-          var err = getDomainWhiteListError(e.originalEvent.url);
-          if (err) {
-            var webview = $webview.get(0);
-            webview.stop();
-            webview.back();
-            Materialize.toast(err, 4000);
-            return;
-          }
-        }
-        if (useragent) e.target.setUserAgentOverride(useragent);
-      });
-    $webview[0].request.onBeforeSendHeaders.addListener(
-      function(details) {
-        if (authorization) {
-          details.requestHeaders.push({
-            name: 'Authorization',
-            value: authorization
-          });
-        }
-        return {
-          requestHeaders: details.requestHeaders
-        };
-      }, {
-        urls: ["<all_urls>"]
-      }, ["blocking", "requestHeaders"]);
+  function initIframe($iframe) {
+    $iframe.css({
+      width: '100%',
+      height: '100%',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0
+    });
+    var sandboxValue = "";
     if (allowNewWindow) {
-      $webview.on('newwindow', function(e) {
-          // check if the pop-up URL is allowed
-          var err = getDomainWhiteListError(e.originalEvent.targetUrl);
-          if (err) {
-            Materialize.toast(err, 4000);
-            return;
-          }
-
-          // open the window in a new tab if selected
-          if (newWindowMode === 'tab') {
-            var id = loadURL(e.originalEvent.targetUrl, {
-              type: 'newwindow'
-            });
-            e.originalEvent.window.attach($('#' + id + ' > webview')[0]);
-            return;
-          }
-
-          //otherwise open in a modal, by default
-          $('#newWindow webview').addClass('stale');
-          var $newWebview = $('<webview/>');
-          initWebview($newWebview);
-          $newWebview.css({
-            right: '1px',
-            width: '99%'
-          });
-          $newWebview.on('close', function(e) {
-            try {
-              $('#newWindow').modal('close');
-            } catch (err) {
-              console.error(err);
-            }
-          });
-          e.originalEvent.window.attach($newWebview[0]);
-          $('#newWindow').append($newWebview).modal('open');
-          setTimeout(function() {
-            $('#newWindow webview.stale').remove();
-            $newWebview.css({
-              bottom: 0,
-              right: 0,
-              top: 0,
-              left: 0,
-              height: '100%',
-              width: '100%'
-            });
-          }, 10);
-        })
-        .on('dialog', function(e) {
-          var $modal;
-          if (e.originalEvent.messageType == "alert") {
-            $modal = $('#dialogAlert');
-          } else if (e.originalEvent.messageType == "confirm") {
-            e.preventDefault();
-            $modal = $('#dialogConfirm');
-          } else if (e.originalEvent.messageType == "prompt") {
-            e.preventDefault();
-            $modal = $('#dialogPrompt');
-            $modal.find('.input-field > input').attr('placeholder', e.originalEvent.defaultPromptText);
-          }
-          if ($modal) {
-            $modal.find('.text').text(e.originalEvent.messageText);
-            $modal.modal('open');
-            $modal.find('a.ok').click(function() {
-              $modal.modal('close');
-              try {
-                e.originalEvent.dialog.ok($modal.find('#promptValue').val());
-              } catch (err) {
-                console.error(err)
-              }
-              return;
-            });
-            $modal.find('a.cancel').click(function() {
-              $modal.modal('close');
-              try {
-                e.originalEvent.dialog.cancel();
-              } catch (err) {
-                console.error(err)
-              }
-              return;
-            });
-          }
-        });
+      sandboxValue = "allow-modals allow-popups";
     }
+    $iframe.attr("sandbox", sandboxValue);
   }
 
-  function refreshContent(screensaver) {
+  function refreshContent() {
     $('.tab > .type-newwindow').parent().remove();
     $('.type-newwindow').remove();
     updateTabs();
-    $('#' + (screensaver ? 'screensaver' : 'content') + ' webview').each(function(i, webview) {
-      webview.src = $(webview).data('src');
+    $('#content iframe').each(function(i, iframe) {
+      iframe.src = $(iframe).data('src');
     });
   }
 
-  function loadContent(alsoLoadScreensaver) {
+  function loadContent() {
     setStatus('loading content');
-    if (!$('body').hasClass('screensaverActive')) {
-      startScreensaverTimeout();
-      startResetTimeout();
-      startScheduledResetInterval();
-    }
-    if (alsoLoadScreensaver && screensaverURL) {
-      $('#screensaver .browser').remove();
-      loadURL(screensaverURL, {
-        type: 'screensaver'
-      });
-    }
+    startScheduledResetInterval();
     if (!currentURL) return;
     if (!Array.isArray(currentURL)) currentURL = [currentURL];
     $('#content .browser').remove();
@@ -1050,77 +554,107 @@ $(function() {
   function loadURL(url, options) {
     setStatus('loading url: ' + url);
     var type = (options && options.type) || 'content';
-    var isScreensaver = (type === 'screensaver');
     var isNewWindow = (type === 'newwindow');
 
-    // add a tab, if not the screensaver
+    // add a tab
     var $tabs = $('#tabs > ul.tabs');
     var numTabs = $tabs.children('.tab').length;
-    var id = isScreensaver ? "screensaver-browser" : ('browser' + (++numTabs));
-    var style = isScreensaver ? '' : 'display: none'
-    var $webviewContainer = $('<div id="' + id + '" class="browser type-' + type + '" style="' + style + '"/>');
-    if (!isScreensaver) {
-      var $tab = $('<li class="tab"><a class="content type-' + type + '" href="#' + id + '"><span class="title">' + url + '</span></a></li>');
-      // allow closing of new window pop-ups
-      if (isNewWindow) {
-        var $close = $('<i class="material-icons close">close</i>');
-        $tab.children('a').append($close);
-        $close.click(closeTab);
-      }
-      $tab.appendTo($tabs);
+    var id = 'browser' + (++numTabs);
+    var style = 'display: none'
+    var $iframeContainer = $('<div id="' + id + '" class="browser type-' + type + '" style="' + style + '"/>');
+    var $tab = $('<li class="tab"><a class="content type-' + type + '" href="#' + id + '"><span class="title">' + url + '</span></a></li>');
+    // allow closing of new window pop-ups
+    if (isNewWindow) {
+      var $close = $('<i class="material-icons close">close</i>');
+      $tab.children('a').append($close);
+      $close.click(closeTab);
     }
+    $tab.appendTo($tabs);
 
-    // add the associated webview
-    $webviewContainer.appendTo(isScreensaver ? '#screensaver' : '#content');
-    var $webview = $('<webview />');
-    setStatus('initializing webview');
-    initWebview($webview);
-    $webview
+    // add the associated iframe
+    $iframeContainer.appendTo('#content');
+    var $iframe = $('<iframe />');
+    setStatus('initializing iframe');
+    initIframe($iframe);
+    $iframe
       .data('id', id)
       .data('src', url)
       .attr('src', url)
-      .appendTo($webviewContainer);
+      .appendTo($iframeContainer);
 
     updateTabs(isNewWindow ? id : null);
     return id;
   }
 
-  function clearCache(cb) {
-    if (resetcache) { //set true when we're restarting once after saving from admin
-      system.setLocalStorage({
-        resetcache: false
-      });
-      resetcache = false;
+  function pollForCustomerConfigUpdate(cb) {
+    getCustomerConfig(data.uuid, data.paired_user_configuration, function(err) {
+      if (err) {
+        console.error('Error getting customer config', err);
+      }
+      if (cb) {
+        cb();
+      }
+      setTimeout(pollForCustomerConfigUpdate, 5 * 60 * 1000); //check in every 5 minutes
+    });
+  }
+  
+  function getCustomerConfig(deviceUuid, configId, cb) {
+    if (!deviceUuid) {
+      cb(new Error('Check in error: no device UUID'));
+      return;
     }
-    //remove entire cache
-    var clearDataType = {
-      appcache: true,
-      cache: true,
-      cookies: true,
-      sessionCookies: true,
-      persistentCookies: true,
-      fileSystems: true,
-      indexedDB: true,
-      localStorage: true,
-      webSQL: true
-    };
-    var webviews = $('webview').get();
-    async.each(webviews, function(webview, done) {
-      webview.clearData({
-        since: 0
-      }, clearDataType, done);
-    }, cb);
+    return postData(CHECK_IN_URL, {
+      uuid: deviceUuid,
+      configuration: configId
+    }).then(function(res) {
+      if (res && res.newConfig) {
+        var newConfigId = res.newConfigId;
+        var fields = Object.keys(res.newConfig);
+        var newConfig = {};
+        fields.forEach(function(field) {
+          if (typeof res.newConfig[field].Value != "undefined") {
+            newConfig[field] = res.newConfig[field].Value;
+          }
+        });
+        Object.assign(data, newConfig, {
+          paired_user_configuration: newConfigId,
+        });
+        return system.setLocalStorage(data, cb);
+      }
+      return cb();
+    }).catch(function(err) {
+      console.error(err);
+      cb(err);
+    });
+  }
+  
+  function generateGuid() {
+    var result, i, j;
+    result = '';
+    for (j = 0; j < 32; j++) {
+      if (j == 8 || j == 12 || j == 16 || j == 20)
+        result = result + '-';
+      i = Math.floor(Math.random() * 16).toString(16).toUpperCase();
+      result = result + i;
+    }
+    return result;
   }
 
-  function onEnded(event) {
-    if (!restarting) {
-      restarting = true;
-      $("#browserContainer").remove();
-      setTimeout(function() {
-        loadContent(true);
-        restarting = false;
-      }, RESTART_DELAY);
-    }
+
+  function postData(url, data) {
+    return fetch(url, {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrer: "no-referrer",
+      body: JSON.stringify(data),
+    }).then(function(response) {
+      return response.json();
+    });
   }
 
 });

@@ -464,7 +464,7 @@ $(function() {
     }).on('load', function(){
       $('#status').hide();
     });
-    var sandboxValue = "allow-scripts allow-forms";
+    var sandboxValue = "allow-scripts allow-forms allow-same-origin";
     if (allowNewWindow) {
       sandboxValue += " allow-modals allow-popups";
     }

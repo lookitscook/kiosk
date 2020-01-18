@@ -182,7 +182,7 @@ $(function() {
     async.series([
       function(next) {
         setStatus('Getting prior configuration');
-        system.getLocalStorage(null, function(res) {
+        system.getLocalStorage(function(res) {
           data = res || {};
           setStatus('Prior configuration lookup complete');
           next();
@@ -234,7 +234,7 @@ $(function() {
         setStatus('Startup error: ' + (err.toString ? err.toString() : '-'));
       }
   
-      if (!('url' in data)) {
+      if (!('url' in data) || !data.url) {
         if (('paired_user_id') in data) {
           // paired, just missing config
           setStatus('No configuration applied to this device.');
@@ -339,7 +339,7 @@ $(function() {
         setStatus('processing settings');
 
         showNav = !!data.shownav;
-        showTopBar = showNav || showBattery;
+        showTopBar = showNav;
 
         if (showTopBar) {
           $('body').addClass('show-top-bar');
@@ -461,10 +461,12 @@ $(function() {
       left: 0,
       right: 0,
       bottom: 0
+    }).on('load', function(){
+      $('#status').hide();
     });
-    var sandboxValue = "";
+    var sandboxValue = "allow-scripts allow-forms";
     if (allowNewWindow) {
-      sandboxValue = "allow-modals allow-popups";
+      sandboxValue += " allow-modals allow-popups";
     }
     $iframe.attr("sandbox", sandboxValue);
   }

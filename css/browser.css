@@ -13,12 +13,13 @@ body,
   background:#000;
 }
 
-#content{
+#content, iframe{
   position:absolute;
   top:0;
   right:0;
   bottom:0;
   left:0;
+  border:none;
 }
 
 #content{
@@ -150,4 +151,5 @@ body.show-nav .tabs{
   color: white;
   background: black;
   z-index:4;
+  text-transform: lowercase;
 }

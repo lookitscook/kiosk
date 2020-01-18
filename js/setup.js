@@ -1,10 +1,9 @@
-var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
-var FN_BASE_URL = 'https://us-central1-causal-shell-204520.cloudfunctions.net/';
-var PAIR_URL = FN_BASE_URL + 'pair';
-
-var uuid;
-
 $(function() {
+  var DEFAULT_SCHEDULE_POLL_INTERVAL = 15; //minutes
+  var FN_BASE_URL = 'https://us-central1-causal-shell-204520.cloudfunctions.net/';
+  var PAIR_URL = FN_BASE_URL + 'pair';
+
+  var data, uuid;
 
   function updateData(data) {
     if (data.newwindow) {
@@ -98,7 +97,7 @@ $(function() {
       });
     },
     function(next) {
-      system.getLocalStorage(null, function(res) {
+      system.getLocalStorage(function(res) {
         data = res || {};
         uuid = data.uuid;
         next(null, res);
@@ -201,7 +200,7 @@ $(function() {
 
     $('#exit').click(function(e) {
       e.preventDefault();
-      chrome.app.window.current().close();
+      system.exitApplication();
     });
 
     function uploadPolicy() {
@@ -227,17 +226,7 @@ $(function() {
       var errorHandler = function(err) {
         console.error('Error downloading file:', err);
       };
-      chrome.fileSystem.chooseEntry({
-        type: 'saveFile',
-        suggestedName: filename
-      }, function(writableFileEntry) {
-        writableFileEntry.createWriter(function(writer) {
-          writer.onerror = errorHandler;
-          writer.write(new Blob([text], {
-            type: 'text/plain'
-          }));
-        }, errorHandler);
-      });
+      system.downloadFile(filename, text);
     }
 
     function parseURLs(inputString) {

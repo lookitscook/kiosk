@@ -4,7 +4,7 @@
   "name": "Kiosk",
   "scope": "/",
   "display": "fullscreen",
-  "start_url": "https://app.kiosk.cook.company",
+  "start_url": "https://app.kiosk.cook.company/kiosk",
   "short_name": "Kiosk",
   "theme_color": "transparent",
   "description": "Launch any URL as a full screen kiosk.",

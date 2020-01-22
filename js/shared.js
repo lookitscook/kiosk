@@ -52,7 +52,7 @@ system.removeLocalStorage = function(keys, cb){
 }
 
 system.restart = function(){
-    if(chrome && chrome.runtime){
+    if(chrome && chrome.runtime && chrome.runtime.reload){
         if(chrome.runtime.restart) {
             chrome.runtime.restart();
         }
@@ -64,14 +64,14 @@ system.restart = function(){
 
 system.getSchemaUrl = function(){
     var relativePath = "../schema.json";
-    if(chrome && chrome.runtime){
+    if(chrome && chrome.runtime && chrome.runtime.getURL){
         return chrome.runtime.getURL(relativePath);
     }
     return relativePath;
 }
 
 system.exitApplication = function(){
-    if(chrome && chrome.app && chrome.app.window){
+    if(chrome && chrome.app && chrome.app.window && chrome.app.window.current){
         chrome.app.window.current().close();
         return;
     }

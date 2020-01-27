@@ -1,3 +1,7 @@
+var FN_BASE_URL = 'https://us-central1-causal-shell-204520.cloudfunctions.net/';
+var CHECK_IN_URL = FN_BASE_URL + 'check_in';
+var CHECK_IN_DUE = 1000 * 60 * 60 * 24 * 14; // check in due every 14 days, in ms
+
 function getCustomerConfig(deviceUuid, configId, cb) {
   if (!deviceUuid) {
     cb(new Error('Check in error: no device UUID'));

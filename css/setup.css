@@ -1,5 +1,5 @@
 html body{
-    font-family:  'Helvetica', 'Arial', sans-serif; /*'Noto Sans',*/
+    font-family:  'Helvetica', 'Arial', sans-serif;
     background :white;
     color: black;
 }
@@ -8,14 +8,14 @@ h1,
 h2, 
 h3, 
 .header{
-    font-family: 'Helvetica', 'Arial', sans-serif; /* 'Bree', */
+    font-family: 'Helvetica', 'Arial', sans-serif;
     font-weight: 100;
-    color: #45d326
+    color: #017bff
 }
 
 #logo{
-    width: 12vw;
-    margin: 3em 0 1em 0;
+    width: 24vw;
+    margin: 6em 0;
 }
 
 /*[type="checkbox"]:checked+label:before{
@@ -24,22 +24,24 @@ h3,
 }*/
 
 .waves-effect.waves-green .waves-ripple {
-    background-color: #45d326;
+    background-color: #017bff;
 }
 
-.btn, 
-.btn-large, 
-.btn-small,
-.btn:hover, 
-.btn-large:hover, 
-.btn-small:hover{
-    background-color: #45d326;
+.btn.black, 
+.btn-large.black, 
+.btn.black:hover, 
+.btn-large.black:hover, 
+.btn-large.black:active{
+    background-color: #017bff !important;
     box-shadow: none;
-    font-family: 'Bree', sans-serif;
     text-transform: uppercase;
     letter-spacing: 1.44px;
 }
 
 a{
-    color: #45d326;
+    color: #017bff;
 }
+
+.container{
+    padding-top:12vh;
+  }

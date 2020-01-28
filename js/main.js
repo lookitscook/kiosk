@@ -88,7 +88,7 @@ function init() {
         if(!remoteConfig){
           return next();
         }
-        Object.assign(data, newConfig);
+        Object.assign(data, remoteConfig);
         chrome.storage.local.set(data, next);
       });
       

@@ -30,6 +30,6 @@
     "async": "^2.5.0",
     "jquery": "=3.4.0",
     "materialize-css": "=0.99.0",
-    "moment": "=2.19.3"
+    "moment": "=2.29.2"
   }
 }

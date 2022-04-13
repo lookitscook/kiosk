@@ -27,7 +27,7 @@
     "nwjs-builder-phoenix": "^1.15.0"
   },
   "dependencies": {
-    "async": "^2.5.0",
+    "async": "^3.2.2",
     "jquery": "=3.4.0",
     "materialize-css": "=0.99.0",
     "moment": "=2.19.3"
